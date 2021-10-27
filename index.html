@@ -1,4 +1,9 @@
-<!DOCTYPE html>
+<script>
+
+  let listItems = ['Home', 'Contact', 'About', 'Projects']
+  var listTag = ''; 
+  // loop
+  </script>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,9 +23,11 @@
         NS
       </h1>
     
+
+
     </div>
     <nav>
-      <ul>
+      <!-- <ul>
         <li>
           <a href="">l1</a>
         </li>
@@ -37,6 +44,16 @@
 
         </li>
 
+      </ul> -->
+      <ul id="navList">
+        
+          <script>
+          for (let i = 0; i < listItems.length; i++) {
+            listTag += '<li>' + listItems[i] + '</li> \n';
+            document.getElementById('navList').innerHTML = listTag;  
+          }
+
+        </script>
       </ul>
     </nav>
   </header>
