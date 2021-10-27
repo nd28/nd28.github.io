@@ -1,9 +1,26 @@
 <script>
 
   let listItems = ['Home', 'Contact', 'About', 'Projects']
-  var listTag = ''; 
+  var listItemUrls = ['./', '/contact.htm', 'about.htm', 'projects.htm']
+  var listTag = '';
   // loop
-  </script>
+</script>
+
+<script>
+  function generateListElements(listItems) {
+    for (let i = 0; i < listItems.length; i++) {
+      listTag += '<li>' + 
+        '<a href="' + listItemUrls[i] + '">'
+        + listItems[i] +
+        '</a>' + '</li> \n';
+      document.getElementById('navList').innerHTML = listTag;
+    }
+  }
+</script>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,41 +35,14 @@
 <body>
   <header>
     <div class="website-name">
-      
       <h1>
         NS
       </h1>
-    
-
-
     </div>
     <nav>
-      <!-- <ul>
-        <li>
-          <a href="">l1</a>
-        </li>
-        <li>
-          <a href="">project</a>
-
-        </li>
-        <li>
-          <a href="">l1</a>
-
-        </li>
-        <li>
-          <a href="">l1</a>
-
-        </li>
-
-      </ul> -->
       <ul id="navList">
-        
-          <script>
-          for (let i = 0; i < listItems.length; i++) {
-            listTag += '<li>' + listItems[i] + '</li> \n';
-            document.getElementById('navList').innerHTML = listTag;  
-          }
-
+        <script>
+          generateListElements(listItems)
         </script>
       </ul>
     </nav>
@@ -60,10 +50,14 @@
 
   <main>
     <p>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto dolore ipsa fuga. Repellat beatae accusantium commodi reprehenderit distinctio tenetur magni! Error accusantium quae tempora ratione, alias iste libero exercitationem dolore.
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto dolore ipsa fuga. Repellat beatae accusantium
+      commodi reprehenderit distinctio tenetur magni! Error accusantium quae tempora ratione, alias iste libero
+      exercitationem dolore.
     </p>
     <p>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto dolore ipsa fuga. Repellat beatae accusantium commodi reprehenderit distinctio tenetur magni! Error accusantium quae tempora ratione, alias iste libero exercitationem dolore.
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto dolore ipsa fuga. Repellat beatae accusantium
+      commodi reprehenderit distinctio tenetur magni! Error accusantium quae tempora ratione, alias iste libero
+      exercitationem dolore.
     </p>
   </main>
 
