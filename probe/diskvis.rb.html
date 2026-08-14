@@ -133,8 +133,6 @@
         --hero-meta-mt: 16px;
         --fs-h1: clamp(23px, 6.4vw, 34px);
       }
-      .botbar a .lbl { display: none; }
-      .botbar a { padding: 9px 0; }
     }
 
     * { box-sizing: border-box; }
@@ -152,7 +150,16 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    .wrap { max-width: 1000px; margin: 0 auto; padding: var(--space-wrap-y) var(--space-wrap-x) var(--space-wrap-bot); }
+    .shell {
+      max-width: 1260px; margin: 0 auto;
+      display: grid; grid-template-columns: minmax(0, 1fr) 224px;
+      gap: 56px; align-items: start;
+      padding: 0 var(--space-wrap-x);
+    }
+    .wrap {
+      min-width: 0;
+      padding: var(--space-wrap-y) 0 var(--space-wrap-bot);
+    }
 
     /* ============ HERO ============ */
     .hero {
@@ -212,34 +219,40 @@
     }
     .herobar.show { transform: translateY(0); }
     .herobar .inner {
-      height: 100%; max-width: 1000px; margin: 0 auto;
-      padding: 0 var(--bar-x);
+      height: 100%; max-width: 1260px; margin: 0 auto;
+      padding: 0 var(--space-wrap-x);
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
     }
     .herobar .t { font-weight: 700; font-size: 15px; color: var(--text); letter-spacing: -0.01em; white-space: nowrap; }
     .herobar .s { font-size: 13px; color: var(--muted); font-family: var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     @media (max-width: 760px){ .herobar .s { display: none; } }
 
-    /* ============ STICKY BOTTOM NAV ============ */
-    .botbar {
-      position: sticky; bottom: 0; z-index: 50;
-      display: flex; gap: 6px; justify-content: center;
-      padding: 10px var(--bar-x);
-      background: var(--glass);
-      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-      border-top: 1px solid var(--border);
+    /* ============ RIGHT SIDEBAR TOC (table of contents) ============ */
+    .toc {
+      position: sticky; top: calc(var(--herobar-h) + 28px);
+      padding: 6px 0 0 20px;
+      border-left: 1px solid var(--border);
     }
-    .botbar a {
-      flex: 1 1 0; max-width: 96px;
-      display: flex; flex-direction: column; align-items: center; gap: 3px;
-      padding: 6px 4px; border-radius: var(--r-sm);
-      text-decoration: none; color: var(--muted); font-size: 11px;
+    .toc-title {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--muted); margin: 0 0 12px;
+    }
+    .toc nav { display: flex; flex-direction: column; gap: 2px; }
+    .toc a {
+      display: block; padding: 5px 10px; border-radius: 8px;
+      text-decoration: none; color: var(--muted); font-size: 13px;
       transition: color .15s, background .15s;
     }
-    .botbar a .num { font-family: var(--mono); font-size: 12px; font-weight: 600; }
-    .botbar a .lbl { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .botbar a.active { color: var(--text); background: var(--mint-dim); }
-    .botbar a.active .num { color: var(--pink-bold); }
+    .toc a:hover { color: var(--text); }
+    .toc a.l1 { font-weight: 600; color: var(--text); }
+    .toc a.l1 .num { font-family: var(--mono); font-size: 11px; color: var(--mint); margin-right: 6px; }
+    .toc a.l2 { padding-left: 26px; }
+    .toc a.active { color: var(--text); background: var(--mint-dim); }
+    .toc a.active.l1 .num { color: var(--pink-bold); }
+    @media (max-width: 1000px){
+      .shell { grid-template-columns: 1fr; }
+      .toc { display: none; }
+    }
 
     /* ============ SECTIONS — open, hairline-divided, clear hierarchy ============ */
     section { margin-top: var(--space-section); scroll-margin-top: var(--scroll-offset); }
@@ -272,6 +285,7 @@
     .sub {
       margin: 0 0 14px; font-size: var(--fs-h3); font-weight: 700;
       color: var(--text); letter-spacing: -0.01em;
+      scroll-margin-top: calc(var(--herobar-h) + 56px);
     }
 
     /* exhibits (code) — the few real boxes, with a tab label */
@@ -360,8 +374,16 @@
     .subhead { margin: 28px 0 10px; font-family: var(--mono); font-size: 12px; color: var(--mint); letter-spacing: 0.06em; text-transform: uppercase; }
     .coverage { margin: 0; color: var(--text); font-size: 15px; max-width: 62ch; }
 
-    footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: var(--space-section); }
-    footer b { color: var(--pink); }
+    footer {
+      margin-top: var(--space-section); padding-top: 28px;
+      border-top: 1px solid var(--border);
+      text-align: center; color: var(--muted); font-size: 13px;
+    }
+    footer a { color: var(--pink); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    .foot-top { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; color: var(--text); font-size: 14px; }
+    .foot-top .probe { font-family: var(--mono); color: var(--mint); }
+    .foot-meta { margin-top: 8px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
   </style>
 </head>
 <body>
@@ -374,9 +396,10 @@
     </div>
   </header>
 
-  <div class="wrap">
+  <div class="shell">
+    <div class="wrap">
 
-    <!-- HERO -->
+      <!-- HERO -->
     <header class="hero">
       <h1>Diskvis Build Session</h1>
       <p class="sub">Visual disk-usage tool.</p>
@@ -400,7 +423,7 @@
       <div class="sec-head"><div class="sec-num">01</div><h2>The Build</h2></div>
 
       <div class="part">
-        <h3 class="sub">What We Did</h3>
+        <h3 class="sub" id="s1-what">What We Did</h3>
         <p class="lede">Bash was slow to get right, Python wouldn't stop on ctrl-c — so I used what was already on the machine: Ruby. It worked instantly. Then I tried Perl too, just because it was there.</p>
         <div class="dels">
           <div class="del"><code>diskvis.rb</code><span class="lang">Ruby</span><span class="role">the one that worked — instant, ctrl-c kills it</span></div>
@@ -419,7 +442,7 @@
       </div>
 
       <div class="part">
-        <h3 class="sub">Where They Differ</h3>
+        <h3 class="sub" id="s1-diff">Where They Differ</h3>
         <p class="lede">Same algorithm, written two ways. Not bugs — each language just being itself.</p>
         <div class="diffs">
           <div class="diff">
@@ -480,7 +503,7 @@
       <div class="learn"><span class="dot"></span><p><b>The charts matched on their own</b> — same ▇/░ formula in both, so I never had to force it, it just happened. Nice when it works out that way.</p></div>
 
       <div class="part">
-        <h3 class="sub">Probes &amp; Tools</h3>
+        <h3 class="sub" id="s2-probes">Probes &amp; Tools</h3>
         <div class="tools">
           <div class="tool"><span class="name">diskvis_prompt.md</span><p>the spec, written before any code — so I'd only make each decision once.</p></div>
           <div class="tool"><span class="name">testing</span><p>ran it on <code>/Applications</code> and <code>/tmp</code>. Real folders, not fake test data.</p></div>
@@ -491,18 +514,31 @@
       </div>
     </section>
 
-    <footer><b>Diskvis</b> MIS report · Ruby &amp; Perl · single-session</footer>
-  </div>
+      <footer>
+        <div class="foot-top">
+          <a href="https://nd28.github.io/probe/" class="probe">probe</a>
+          <span>by <a href="https://nd28.github.io">nilesh suthar</a></span>
+        </div>
+        <div class="foot-meta">modified <span id="modtime">15 Aug 2026</span> · Ruby &amp; Perl · single-session · 0 deps</div>
+      </footer>
+    </div>
 
-  <nav class="botbar">
-    <a href="#s1"><span class="num">01</span><span class="lbl">Build</span></a>
-    <a href="#s2"><span class="num">02</span><span class="lbl">Learn</span></a>
-  </nav>
+    <aside class="toc" id="toc">
+      <div class="toc-title">Contents</div>
+      <nav>
+        <a href="#s1" class="l1"><span class="num">01</span>The Build</a>
+        <a href="#s1-what" class="l2">What We Did</a>
+        <a href="#s1-diff" class="l2">Where They Differ</a>
+        <a href="#s2" class="l1"><span class="num">02</span>Key Learnings</a>
+        <a href="#s2-probes" class="l2">Probes &amp; Tools</a>
+      </nav>
+    </aside>
+  </div>
 
   <script>
     (function () {
       var links = Array.prototype.slice.call(
-        document.querySelectorAll('.botbar a'));
+        document.querySelectorAll('.toc a'));
       var sections = links
         .map(function (a) { return document.querySelector(a.getAttribute('href')); })
         .filter(Boolean);
@@ -545,6 +581,16 @@
         }, { threshold: 0 }).observe(hero);
       } else if (bar) {
         bar.classList.add('show');
+      }
+
+      // footer "modified" — use the file's real last-modified time if available
+      var mt = document.getElementById('modtime');
+      if (mt) {
+        var d = new Date(document.lastModified);
+        if (!isNaN(d.getTime())) {
+          mt.textContent = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) +
+            ', ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        }
       }
     })();
   </script>
