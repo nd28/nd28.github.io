@@ -248,6 +248,7 @@
       background: var(--glass);
       backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
+      transition: padding .18s ease;
     }
     .sec-num {
       font-family: var(--mono); font-size: 14px; font-weight: 500;
@@ -256,7 +257,10 @@
     .sec-head h2 {
       margin: 0; font-size: var(--fs-h2); font-weight: 700;
       color: var(--text); letter-spacing: -0.02em;
+      transition: font-size .18s ease;
     }
+    .sec-head.condensed { padding: 6px 0 10px; }
+    .sec-head.condensed h2 { font-size: 18px; }
 
     /* exhibits (code) — the few real boxes, with a tab label */
     .exhibit { margin: 0 0 24px; }
@@ -471,6 +475,8 @@
         .filter(Boolean);
 
       var prog = document.getElementById('progress');
+      var heads = Array.prototype.slice.call(document.querySelectorAll('.sec-head'));
+      var barH = (document.getElementById('herobar') || {}).offsetHeight || 48;
 
       function update() {
         // active section = last one whose top has crossed the 35% line
@@ -482,6 +488,10 @@
         var id = '#' + current.id;
         links.forEach(function (l) {
           l.classList.toggle('active', l.getAttribute('href') === id);
+        });
+        // condense section headers once they stick to the top
+        heads.forEach(function (h) {
+          h.classList.toggle('condensed', h.getBoundingClientRect().top <= barH + 1);
         });
         // scroll progress
         var d = document.documentElement;
