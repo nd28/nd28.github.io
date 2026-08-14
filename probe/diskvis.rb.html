@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
+      color-scheme: light dark;
       /* ---- iMac Pink two-tone (soft front / bold rear) ---- */
       --pink-soft:  #FBD6E6;
       --pink:       #F7B8D2;
@@ -31,6 +32,8 @@
       --r-sm: 12px;
 
       --glow: rgba(240, 111, 163, 0.14);
+      --code: #FBD6E6;
+      --glass: rgba(21, 19, 28, 0.78);
       --font: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
       --mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
 
@@ -65,6 +68,26 @@
       --hero-eyebrow-mb: 18px;
       --hero-sub-mt: 20px;
       --hero-meta-mt: 32px;
+    }
+
+    /* ============ LIGHT THEME (system prefers light) ============ */
+    @media (prefers-color-scheme: light){
+      :root{
+        --pink-soft:  #F6C9DC;
+        --pink:       #D34F8A;
+        --pink-bold:  #C43E7C;
+        --mint:       #2E9E8F;
+        --mint-dim:   rgba(46, 158, 143, 0.13);
+        --bg:      #FBF6F0;
+        --bg-2:    #F3EDE4;
+        --surface: #FFFFFF;
+        --surface-2:#F1EAE0;
+        --border:  #E6DDD0;
+        --text:    #2A2333;
+        --muted:   #84798E;
+        --code:    #B63A74;
+        --glass:   rgba(251, 246, 240, 0.82);
+      }
     }
 
     /* ============ RESPONSIVE TOKEN OVERRIDES ============ */
@@ -179,7 +202,7 @@
     .herobar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 55;
       height: var(--herobar-h);
-      background: rgba(21, 19, 28, 0.78);
+      background: var(--glass);
       backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
       transform: translateY(-100%);
@@ -200,7 +223,7 @@
       position: sticky; bottom: 0; z-index: 50;
       display: flex; gap: 6px; justify-content: center;
       padding: 10px var(--bar-x);
-      background: rgba(21, 19, 28, 0.72);
+      background: var(--glass);
       backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
       border-top: 1px solid var(--border);
     }
@@ -285,7 +308,7 @@
     .tbl thead th { background: var(--surface-2); color: var(--pink); font-weight: 600; font-size: 13px; letter-spacing: 0.04em; }
     .tbl tbody td:first-child { color: var(--muted); width: 26%; }
     .tbl tbody tr:last-child td { border-bottom: none; }
-    code { font-family: var(--mono); font-size: 0.92em; color: var(--pink-soft); }
+    code { font-family: var(--mono); font-size: 0.92em; color: var(--code); }
 
     /* learnings — open list, left accent, hairline between (NOT cards) */
     .learn {

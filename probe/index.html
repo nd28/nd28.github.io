@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
+      color-scheme: light dark;
       --pink-soft: #FBD6E6;
       --pink: #F7B8D2;
       --pink-bold: #F06FA3;
@@ -26,6 +27,17 @@
       --r-sm: 12px;
       --font: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
       --mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --pink-bold: #C43E7C;
+        --mint: #2E9E8F;
+        --bg: #FBF6F0;
+        --surface: #FFFFFF;
+        --border: #E6DDD0;
+        --text: #2A2333;
+        --muted: #84798E;
+      }
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; }
