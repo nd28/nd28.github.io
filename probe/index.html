@@ -96,6 +96,8 @@
     .file { font-family: var(--mono); font-size: 13px; color: var(--pink-bold); }
     .title { font-weight: 700; font-size: 17px; color: var(--text); letter-spacing: -0.01em; }
     .desc { color: var(--muted); font-size: 14px; }
+    .mod { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+    .mod:empty { display: none; }
     footer { margin-top: 56px; color: var(--muted); font-size: 13px; }
     footer a { color: var(--mint); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
@@ -109,11 +111,12 @@
     <input type="search" class="search" placeholder="search probes… enter to pin" aria-label="Search probes">
     <div class="tags" id="tags"></div>
     <ul class="list">
-      <li>
+      <li data-file="probe/diskvis.rb.html">
         <a href="diskvis.rb.html">
           <span class="file">diskvis.rb.html</span>
           <span class="title">Diskvis Build Session</span>
           <span class="desc">visual disk-usage tool, written twice — Ruby and Perl</span>
+          <span class="mod" title="last modified"></span>
         </a>
       </li>
     </ul>
@@ -171,6 +174,27 @@
           }
           search.value = '';
         }
+      });
+
+      // last-modified date per card, from the repo's commit history.
+      // Every step is guarded — if the API fails or the date is missing,
+      // the span stays empty and hidden; nothing else breaks.
+      Array.prototype.slice.call(document.querySelectorAll('.list li[data-file]')).forEach(function (li) {
+        var el = li.querySelector('.mod');
+        var file = li.getAttribute('data-file');
+        if (!el || !file) return;
+        try {
+          fetch('https://api.github.com/repos/nd28/nd28.github.io/commits?path=' + encodeURIComponent(file) + '&per_page=1')
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (data) {
+              var raw = data && data[0] && data[0].commit && data[0].commit.committer && data[0].commit.committer.date;
+              if (!raw) return;
+              var d = new Date(raw);
+              if (isNaN(d.getTime())) return;
+              el.textContent = 'modified ' + d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            })
+            .catch(function () {});
+        } catch (e) {}
       });
     })();
   </script>
