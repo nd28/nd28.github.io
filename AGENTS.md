@@ -4,6 +4,12 @@ GitHub Pages site, served from the default branch (`master`) at the repo root.
 Static pages only — no build step, no framework. Anything in `probe/` is a
 one-off report or tool.
 
+## Root homepage
+
+- `index.html` is a minimal personal landing page — monogram, name, one-line
+  blurb, a short link list, one-line footer. Same design system, single
+  self-contained file, theme-aware.
+
 ## probe/ — one-off reports & tools
 
 - Every probe is a **single self-contained HTML file** in `probe/` (inline CSS
@@ -24,8 +30,8 @@ one-off report or tool.
 - **One-hand mode.** Index content starts lower (`padding-top: clamp(110px,
   20vh, 180px)`) so search + cards sit in thumb reach on a phone.
 - **Tag-based search** on the index: type → Enter pins a removable chip (× to
-  drop), field clears for the next keyword, list filters to items matching all
-  chips (AND).
+  drop), field clears for the next keyword, list filters by those chips. Capped
+  at 3 keywords; an AND/OR toggle (default AND) switches match-all to match-any.
 
 ## Publishing
 

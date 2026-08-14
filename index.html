@@ -1,227 +1,137 @@
-<script>
-  let listItems = ['Home', 'Contact', 'About', 'Projects']
-  var listItemUrls = ['./', '/contact.htm', 'about.htm', 'projects.htm']
-  var listTag = '';
-  // loop
-</script>
-
-<script>
-  function generateListElements(listItems) {
-    for (let i = 0; i < listItems.length; i++) {
-      listTag += '<li>' +
-        '<a href="' + listItemUrls[i] + '">' +
-        listItems[i] +
-        '</a>' + '</li> \n';
-      document.getElementById('navList').innerHTML = listTag;
-    }
-  }
-</script>
-
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
-
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>nd28 official github page | 2021</title>
-
-  <link rel="stylesheet" href="assets/css/main.css">
-
+  <title>Nilesh Suthar</title>
+  <meta name="description" content="Just me, a few tools, and the notes I keep along the way.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --pink: #F7B8D2;
+      --pink-bold: #F06FA3;
+      --mint: #5FD3C4;
+      --bg: #15131C;
+      --surface: #211C2E;
+      --surface-2: #2A2438;
+      --border: #342C45;
+      --text: #ECE7F4;
+      --muted: #9C93AE;
+      --r-md: 16px;
+      --font: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --mono: 'Geist Mono', ui-monospace, monospace;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --pink-bold: #C43E7C;
+        --mint: #2E9E8F;
+        --bg: #FBF6F0;
+        --surface: #FFFFFF;
+        --surface-2: #F1EAE0;
+        --border: #E6DDD0;
+        --text: #2A2333;
+        --muted: #84798E;
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg);
+      background-image:
+        radial-gradient(60% 50% at 15% 0%, rgba(240, 111, 163, 0.14), transparent 60%),
+        radial-gradient(50% 40% at 85% 10%, rgba(95, 211, 196, 0.10), transparent 60%);
+      background-attachment: fixed;
+      line-height: 1.5;
+    }
+    .wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 48px 24px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .monogram {
+      width: 56px; height: 56px;
+      border-radius: var(--r-md);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-weight: 500; font-size: 22px;
+      color: var(--pink-bold);
+    }
+    h1 {
+      font-size: clamp(34px, 7vw, 48px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 22px 0 0;
+    }
+    .handle {
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 14px;
+      margin: 6px 0 0;
+    }
+    .blurb {
+      color: var(--muted);
+      font-size: 17px;
+      margin: 24px 0 0;
+      max-width: 42ch;
+    }
+    .links {
+      list-style: none;
+      margin: 40px 0 0;
+      padding: 0;
+      display: grid;
+      gap: 2px;
+    }
+    .links a {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 10px;
+      font-size: 16px;
+      color: var(--text);
+      text-decoration: none;
+      padding: 6px 0;
+      transition: color .15s ease;
+    }
+    .links .arrow {
+      font-family: var(--mono);
+      color: var(--muted);
+      transition: color .15s ease, transform .15s ease;
+    }
+    .links a:hover { color: var(--pink-bold); }
+    .links a:hover .arrow { color: var(--pink-bold); transform: translateX(4px); }
+    footer {
+      margin-top: 72px;
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer a { color: var(--mint); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
 </head>
-
 <body>
-
-  <header>
-
-    <div class="website-name">
-
-      <h1>
-
-        NS
-
-      </h1>
-
-    </div>
-
-    <nav>
-
-      <ul id="navList">
-
-        <script>
-          generateListElements(listItems)
-        </script>
-
+  <div class="wrap">
+    <main>
+      <div class="monogram">NS</div>
+      <h1>Nilesh Suthar</h1>
+      <p class="handle">@nd28</p>
+      <p class="blurb">Just me, a few tools, and the notes I keep along the way.</p>
+      <ul class="links">
+        <li><a href="https://nd28.github.io/writing-app/">Writing App <span class="arrow">→</span></a></li>
+        <li><a href="https://nsco.netlify.app" target="_blank" rel="noopener">NS Co. <span class="arrow">→</span></a></li>
+        <li><a href="https://github.com/nd28" target="_blank" rel="noopener">GitHub <span class="arrow">→</span></a></li>
       </ul>
-
-    </nav>
-
-  </header>
-
-  <main>
-
-    <section>
-
-      <h2>Shreemad Bhagvad Geeta</h2>
-
-      <hr>
-
-      <em style="text-decoration:underline overlie">
-
-        Chapter 1 of the Bhagavad Gita, titled "Arjuna Vishada Yoga" or "The Yoga of Arjuna's Dejection," consists of 46 verses in total. These verses set the stage for the dialogue between Lord Krishna and Arjuna, highlighting Arjuna's moral dilemma and emotional turmoil on the battlefield of Kurukshetra. It serves as a prelude to the profound teachings that follow in the subsequent chapters of the Bhagavad Gita.
-
-      </em>
-
-    </section>
-    <style>
-      .ver-sec {
-        border-radius: 8px;
-        border: 1px solid #ff181818;
-        box-shadow: 0 2px 4px #18185050;
-        padding: 5px 8px;
-      }
-
-      .ver-sec h4 em {
-        text-decoration: overline underline;
-        text-align: center;
-      }
-
-      .sanskrit {
-        color: skyblue;
-        text-align: center;
-        text-shadow: 0 1px 1px grey;
-      }
-
-      .translation {
-        color: limegreen;
-        text-shadow: 0 1px 1px grey;
-      }
-    </style>
-
-    <section class="ver-sec">
-
-      <h4>
-
-        <em>
-
-          Chatper 1, Verse 1
-
-        </em>
-
-      </h4>
-
-      <div class="sanskrit">
-        <p>
-          धृतराष्ट्र उवाच |
-
-          धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः |
-
-          मामकाः पाण्डवाश्चैव किमकुर्वत संजय ||
-
-        </p>
-
-        <p>
-
-          Dhritarashtra uvacha:
-
-          Dharmakshetre Kurukshetre samaveta yuyutsavah,
-
-          Mamakah Pandavaschaiva kimakurvata Sanjaya.
-
-        </p>
-      </div>
-      <div class="translation">
-        <p>
-
-          Translation:
-
-          Dhritarashtra said: O Sanjaya, what did my sons and the sons of Pandu do when they had gathered together, eager for battle, on the holy plain of Kurukshetra?
-
-        </p>
-
-        <p>
-
-          This verse captures the inquiry of King Dhritarashtra, seeking to learn from his charioteer, Sanjaya, about the actions and intentions of his own sons (the Kauravas) and the sons of Pandu (the Pandavas) on the battlefield of Kurukshetra. It sets the stage for the ensuing dialogue and teachings that unfold throughout the Bhagavad Gita.
-
-        </p>
-      </div>
-    </section>
-
-    <section>
-
-      <h4>
-
-        <em style="text-decoration:underline overlie">
-
-          Chatper 1, Verse 1
-
-        </em>
-
-      </h4>
-
-      <p>
-
-        धृतराष्ट्र उवाच |
-
-        धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः |
-
-        मामकाः पाण्डवाश्चैव किमकुर्वत संजय ||
-
-      </p>
-
-      <p>
-
-        Dhritarashtra uvacha:
-
-        Dharmakshetre Kurukshetre samaveta yuyutsavah,
-
-        Mamakah Pandavaschaiva kimakurvata Sanjaya.
-
-      </p>
-
-      <p>
-
-        Translation:
-
-        Dhritarashtra said: O Sanjaya, what did my sons and the sons of Pandu do when they had gathered together, eager for battle, on the holy plain of Kurukshetra?
-
-      </p>
-
-      <p>
-
-        This verse captures the inquiry of King Dhritarashtra, seeking to learn from his charioteer, Sanjaya, about the actions and intentions of his own sons (the Kauravas) and the sons of Pandu (the Pandavas) on the battlefield of Kurukshetra. It sets the stage for the ensuing dialogue and teachings that unfold throughout the Bhagavad Gita.
-
-      </p>
-
-    </section>
-
-  </main>
-
-  <footer>
-
-    <ul type="none" style="display:inline-block;padding: .5em .76em;margin:.8em; text-align:center;">
-
-      <li>
-
-        <a href="https://nsco.netlify.app"> NS Co.</a>
-
-      </li>
-
-      <li>
-
-        <a href="https://nd28.github.io/writing-app/">Writing App</a>
-
-      </li>
-
-    </ul>
-
-  </footer>
-
+    </main>
+    <footer>by <a href="https://github.com/nd28">nilesh suthar</a></footer>
+  </div>
 </body>
-
 </html>
