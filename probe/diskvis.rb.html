@@ -318,7 +318,7 @@
     .note { font-size: 13px; color: var(--muted); }
     .note.whole { margin-top: 8px; }
     @media (max-width: 380px){ .pair { grid-template-columns: 1fr; gap: 10px; } }
-    code { font-family: var(--mono); font-size: 0.92em; color: var(--code); }
+    code { font-family: var(--mono); font-size: 0.85em; color: var(--code); }
 
     /* learnings — open list, left accent, hairline between (NOT cards) */
     .learn {
@@ -332,24 +332,20 @@
     .learn p { margin: 0; color: var(--text); font-size: 15px; }
     .learn b { color: var(--mint); font-weight: 600; }
 
-    /* probes — open 3-col, no boxes */
-    .probes { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap-probes); }
-    @media (max-width: 760px){ .probes { grid-template-columns: 1fr; } }
-    .probe .ic {
-      width: 44px; height: 44px; border-radius: 50%;
-      display: grid; place-items: center; font-size: 20px;
-      background: var(--mint-dim); margin-bottom: 14px;
+    /* tools — open rows: mono label + note, hairline between */
+    .tools { margin-top: 24px; }
+    .tool {
+      display: grid; grid-template-columns: 180px 1fr; gap: 16px;
+      padding: 14px 0; border-bottom: 1px solid var(--border);
     }
-    .probe h4 { margin: 0 0 6px; font-size: 16px; font-weight: 600; }
-    .probe p { margin: 0; color: var(--muted); font-size: 14px; }
+    .tool:first-child { padding-top: 0; }
+    .tool:last-child { border-bottom: none; padding-bottom: 0; }
+    .tool .name { font-family: var(--mono); font-size: 12px; color: var(--pink); padding-top: 2px; }
+    .tool p { margin: 0; color: var(--text); font-size: 15px; }
+    @media (max-width: 760px){ .tool { grid-template-columns: 1fr; gap: 4px; } }
 
-    /* spec coverage — subtle anchored card (the closing summary) */
-    .summary {
-      margin-top: 20px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--r-lg); padding: var(--pad-summary);
-    }
-    .check { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px var(--gap-check); }
+    /* spec coverage — open checklist, no box */
+    .check { list-style: none; padding: 0; margin: 24px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px var(--gap-check); }
     @media (max-width: 760px){ .check { grid-template-columns: 1fr; } }
     .check li { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; }
     .check .mk { color: var(--mint); font-weight: 700; flex: none; }
@@ -392,7 +388,7 @@
     <!-- 01 WHAT WE DID -->
     <section id="s1">
       <div class="sec-head"><div class="sec-num">01</div><h2>What We Did</h2></div>
-      <p class="lede">Bash was slow to get right, Python ignored ctrl-c — so we used what was already on the machine: Ruby. It worked instantly. Then tried Perl too, just because it was there.</p>
+      <p class="lede">Bash was slow to get right, Python wouldn't stop on ctrl-c — so I used what was already on the machine: Ruby. It worked instantly. Then I tried Perl too, just because it was there.</p>
       <div class="dels">
         <div class="del"><code>diskvis.rb</code><span class="lang">Ruby</span><span class="role">the one that worked — instant, ctrl-c kills it</span></div>
         <div class="del"><code>diskvis.pl</code><span class="lang">Perl</span><span class="role">also already there — just exploring</span></div>
@@ -412,7 +408,7 @@
     <!-- 02 WHERE THEY DIFFER -->
     <section id="s2">
       <div class="sec-head"><div class="sec-num">02</div><h2>Where They Differ</h2></div>
-      <p class="lede">Same algorithm, two accents. Not bugs — each language just being itself.</p>
+      <p class="lede">Same algorithm, written two ways. Not bugs — each language just being itself.</p>
       <div class="diffs">
         <div class="diff">
           <div class="aspect">Size of a folder</div>
@@ -465,40 +461,38 @@
     <!-- 03 KEY LEARNINGS -->
     <section id="s3">
       <div class="sec-head"><div class="sec-num">03</div><h2>Key Learnings</h2></div>
-      <div class="learn"><span class="dot"></span><p><b>Locked folders aren't an edge case</b> — macOS is full of them. Ruby raises and you <code>rescue</code>; Perl returns 0 and you check. Two ways to say "skip it", and I still don't know which I prefer.</p></div>
-      <div class="learn"><span class="dot"></span><p><b>Re-walking was the O(n²) trap</b> — my first pass walked every subtree once per child. Fine on shallow dirs, brutal the moment you hit something deep. One walk per directory fixed it. Walked straight into that one.</p></div>
-      <div class="learn"><span class="dot"></span><p><b>Bytes mean nothing to a human</b> — the divide-by-1024 <code>B/K/M/G/T/P</code> ladder is what turns a wall of digits into "2.5G".</p></div>
-      <div class="learn"><span class="dot"></span><p><b>The charts matched by accident</b> — same ▇/░ formula in both, so parity wasn't chased, it just fell out. Nice when it works out that way.</p></div>
+      <div class="learn"><span class="dot"></span><p><b>Locked folders aren't rare</b> — macOS is full of them. Ruby raises an error and you <code>rescue</code> it; Perl returns 0 and you check. Two ways to say "skip it", and I still don't know which I like better.</p></div>
+      <div class="learn"><span class="dot"></span><p><b>Walking twice was the O(n²) trap</b> — my first version walked every folder once per child. Fine on small folders, very slow on deep ones. One walk per folder fixed it. I fell right into that one.</p></div>
+      <div class="learn"><span class="dot"></span><p><b>Bytes mean nothing to a person</b> — the divide-by-1024 <code>B/K/M/G/T/P</code> scale is what turns a long number into "2.5G".</p></div>
+      <div class="learn"><span class="dot"></span><p><b>The charts matched on their own</b> — same ▇/░ formula in both, so I never had to force it, it just happened. Nice when it works out that way.</p></div>
     </section>
 
     <!-- 04 PROBES & TOOLS -->
     <section id="s4">
       <div class="sec-head"><div class="sec-num">04</div><h2>Probes &amp; Tools</h2></div>
-      <div class="probes">
-        <div class="probe"><div class="ic">📄</div><h4>diskvis_prompt.md</h4><p>the spec, written before any code — so I'd only make each decision once.</p></div>
-        <div class="probe"><div class="ic">🧪</div><h4>Testing</h4><p>ran it on <code>/Applications</code> and <code>/tmp</code>. Real folders, not fixtures.</p></div>
-        <div class="probe"><div class="ic">🐛</div><h4>Debugging</h4><p>Ruby's <code>PermissionError</code>, Perl's scoping bug, the O(n²) re-walk — all found the hard way.</p></div>
+      <div class="tools">
+        <div class="tool"><span class="name">diskvis_prompt.md</span><p>the spec, written before any code — so I'd only make each decision once.</p></div>
+        <div class="tool"><span class="name">testing</span><p>ran it on <code>/Applications</code> and <code>/tmp</code>. Real folders, not fake test data.</p></div>
+        <div class="tool"><span class="name">debugging</span><p>Ruby's <code>PermissionError</code>, Perl's scoping bug, the O(n²) re-walk — all found by running into them.</p></div>
       </div>
     </section>
 
     <!-- 05 SPEC COVERAGE -->
     <section id="s5">
       <div class="sec-head"><div class="sec-num">05</div><h2>Spec Coverage</h2></div>
-      <p class="lede">All ten boxes are green — a little suspicious. Did I spec too little? Symlinks and empty dirs never even made the list.</p>
-      <div class="summary">
-        <ul class="check">
-          <li><span class="mk">✓</span> Any path (defaults to home)</li>
-          <li><span class="mk">✓</span> Recursive size sum</li>
-          <li><span class="mk">✓</span> Sort largest-first</li>
-          <li><span class="mk">✓</span> Per-directory %</li>
-          <li><span class="mk">✓</span> ▇/░ bar charts</li>
-          <li><span class="mk">✓</span> % beside each bar</li>
-          <li><span class="mk">✓</span> Total at bottom</li>
-          <li><span class="mk">✓</span> K/M/G/T/P sizes</li>
-          <li><span class="mk">✓</span> Skip hidden dirs</li>
-          <li><span class="mk">✓</span> Survive perm errors</li>
-        </ul>
-      </div>
+      <p class="lede">All ten boxes are green — that makes me wonder. Did I ask for too little? Symlinks and empty folders never even made the list.</p>
+      <ul class="check">
+        <li><span class="mk">✓</span> Any path (defaults to home)</li>
+        <li><span class="mk">✓</span> Recursive size sum</li>
+        <li><span class="mk">✓</span> Sort largest-first</li>
+        <li><span class="mk">✓</span> Per-directory %</li>
+        <li><span class="mk">✓</span> ▇/░ bar charts</li>
+        <li><span class="mk">✓</span> % beside each bar</li>
+        <li><span class="mk">✓</span> Total at bottom</li>
+        <li><span class="mk">✓</span> K/M/G/T/P sizes</li>
+        <li><span class="mk">✓</span> Skip hidden dirs</li>
+        <li><span class="mk">✓</span> Survive perm errors</li>
+      </ul>
     </section>
 
     <footer><b>Diskvis</b> MIS report · Ruby &amp; Perl · single-session</footer>
