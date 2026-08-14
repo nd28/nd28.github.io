@@ -277,13 +277,6 @@
     pre.out .bar { color: var(--pink); }
     pre.out .dim { color: var(--muted); }
 
-    /* chips — flat, no card */
-    .chips { display: flex; flex-wrap: wrap; gap: 12px; }
-    .chip {
-      font-size: 13px; font-weight: 500; color: var(--text);
-      background: linear-gradient(120deg, var(--pink-bold), var(--mint));
-      padding: 8px 15px; border-radius: var(--r-sm);
-    }
     .lede { color: var(--muted); font-size: 15px; margin: 22px 0 0; max-width: 60ch; }
 
     /* deliverables — compact file → role strip */
@@ -398,23 +391,9 @@
       </div>
     </section>
 
-    <!-- 02 LANGUAGES & TECH -->
+    <!-- 02 WHERE THEY DIFFER -->
     <section id="s2">
-      <div class="sec-head"><div class="sec-num">02</div><h2>Languages &amp; Tech</h2></div>
-      <div class="chips">
-        <span class="chip">Ruby</span>
-        <span class="chip">Perl</span>
-        <span class="chip">Pathname</span>
-        <span class="chip">opendir / readdir</span>
-        <span class="chip">CLI</span>
-        <span class="chip">Unicode blocks</span>
-      </div>
-      <p class="lede">Standard library only — no gems, no CPAN, no network.</p>
-    </section>
-
-    <!-- 03 RUBY VS PERL -->
-    <section id="s3">
-      <div class="sec-head"><div class="sec-num">03</div><h2>Ruby vs Perl</h2></div>
+      <div class="sec-head"><div class="sec-num">02</div><h2>Where They Differ</h2></div>
       <div class="tbl-wrap">
         <table class="tbl">
           <thead>
@@ -422,30 +401,27 @@
           </thead>
           <tbody>
             <tr><td>Entry / arg</td><td><code>ARGV[0] || ENV["HOME"]</code></td><td><code>$ARGV[0] || $ENV{HOME}</code></td></tr>
-            <tr><td>Walk</td><td>Recursive <code>calculate_dir_size</code></td><td>Recursive <code>calculate_size</code></td></tr>
             <tr><td>Size sum</td><td><code>child.size</code> rescue</td><td><code>-s $full</code></td></tr>
-            <tr><td>Hidden dirs</td><td>skip <code>.</code>-prefix</td><td>skip <code>.</code>-prefix</td></tr>
             <tr><td>Errors</td><td><code>rescue =&gt; e</code></td><td><code>opendir or return 0</code></td></tr>
-            <tr><td>Human size</td><td><code>sprintf "%.1f"</code></td><td><code>sprintf "%.1f"</code></td></tr>
-            <tr><td>Bar width</td><td>30 chars</td><td>30 chars</td></tr>
             <tr><td>Header rule</td><td><code>━</code> × 45</td><td><code>━</code> × 30</td></tr>
           </tbody>
         </table>
       </div>
+      <div class="cap">Everything else matches — same walk, same formatting, same bars.</div>
     </section>
 
-    <!-- 04 KEY LEARNINGS -->
-    <section id="s4">
-      <div class="sec-head"><div class="sec-num">04</div><h2>Key Learnings</h2></div>
+    <!-- 03 KEY LEARNINGS -->
+    <section id="s3">
+      <div class="sec-head"><div class="sec-num">03</div><h2>Key Learnings</h2></div>
       <div class="learn"><span class="dot"></span><p><b>Error handling</b> — <code>rescue</code> (Ruby) / <code>opendir or return 0</code> (Perl) meant the walk shrugged off locked folders instead of dying.</p></div>
       <div class="learn"><span class="dot"></span><p><b>Recursion cost</b> — re-walking every subtree per child was ≈O(n²); one pass per directory fixed the deep-tree crawl.</p></div>
       <div class="learn"><span class="dot"></span><p><b>Size formatting</b> — divide-by-1024 with a <code>B/K/M/G/T/P</code> ladder keeps totals readable instead of raw bytes.</p></div>
       <div class="learn"><span class="dot"></span><p><b>Bar math</b> — <code>filled = pct × width / 100</code>, same ▇/░ in both, so the charts just matched.</p></div>
     </section>
 
-    <!-- 05 PROBES & TOOLS -->
-    <section id="s5">
-      <div class="sec-head"><div class="sec-num">05</div><h2>Probes &amp; Tools</h2></div>
+    <!-- 04 PROBES & TOOLS -->
+    <section id="s4">
+      <div class="sec-head"><div class="sec-num">04</div><h2>Probes &amp; Tools</h2></div>
       <div class="probes">
         <div class="probe"><div class="ic">📄</div><h4>diskvis_prompt.md</h4><p>Spec — features, output format, decisions.</p></div>
         <div class="probe"><div class="ic">🧪</div><h4>Testing</h4><p>Ran it on <code>/Applications</code>, <code>/tmp</code>, scratch dirs.</p></div>
@@ -453,9 +429,9 @@
       </div>
     </section>
 
-    <!-- 06 SPEC COVERAGE -->
-    <section id="s6">
-      <div class="sec-head"><div class="sec-num">06</div><h2>Spec Coverage</h2></div>
+    <!-- 05 SPEC COVERAGE -->
+    <section id="s5">
+      <div class="sec-head"><div class="sec-num">05</div><h2>Spec Coverage</h2></div>
       <div class="summary">
         <ul class="check">
           <li><span class="mk">✓</span> Any path (defaults to home)</li>
@@ -477,11 +453,10 @@
 
   <nav class="botbar">
     <a href="#s1"><span class="num">01</span><span class="lbl">Built</span></a>
-    <a href="#s2"><span class="num">02</span><span class="lbl">Tech</span></a>
-    <a href="#s3"><span class="num">03</span><span class="lbl">Compare</span></a>
-    <a href="#s4"><span class="num">04</span><span class="lbl">Learn</span></a>
-    <a href="#s5"><span class="num">05</span><span class="lbl">Probes</span></a>
-    <a href="#s6"><span class="num">06</span><span class="lbl">Cover</span></a>
+    <a href="#s2"><span class="num">02</span><span class="lbl">Compare</span></a>
+    <a href="#s3"><span class="num">03</span><span class="lbl">Learn</span></a>
+    <a href="#s4"><span class="num">04</span><span class="lbl">Probes</span></a>
+    <a href="#s5"><span class="num">05</span><span class="lbl">Cover</span></a>
   </nav>
 
   <script>
