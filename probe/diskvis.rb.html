@@ -344,11 +344,9 @@
     .tool p { margin: 0; color: var(--text); font-size: 15px; }
     @media (max-width: 760px){ .tool { grid-template-columns: 1fr; gap: 4px; } }
 
-    /* spec coverage — open checklist, no box */
-    .check { list-style: none; padding: 0; margin: 24px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px var(--gap-check); }
-    @media (max-width: 760px){ .check { grid-template-columns: 1fr; } }
-    .check li { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; }
-    .check .mk { color: var(--mint); font-weight: 700; flex: none; }
+    /* spec coverage — sub-section: label + one paragraph */
+    .subhead { margin: 28px 0 10px; font-family: var(--mono); font-size: 12px; color: var(--mint); letter-spacing: 0.06em; text-transform: uppercase; }
+    .coverage { margin: 0; color: var(--text); font-size: 15px; max-width: 62ch; }
 
     footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: var(--space-section); }
     footer b { color: var(--pink); }
@@ -475,24 +473,8 @@
         <div class="tool"><span class="name">testing</span><p>ran it on <code>/Applications</code> and <code>/tmp</code>. Real folders, not fake test data.</p></div>
         <div class="tool"><span class="name">debugging</span><p>Ruby's <code>PermissionError</code>, Perl's scoping bug, the O(n²) re-walk — all found by running into them.</p></div>
       </div>
-    </section>
-
-    <!-- 05 SPEC COVERAGE -->
-    <section id="s5">
-      <div class="sec-head"><div class="sec-num">05</div><h2>Spec Coverage</h2></div>
-      <p class="lede">All ten boxes are green — that makes me wonder. Did I ask for too little? Symlinks and empty folders never even made the list.</p>
-      <ul class="check">
-        <li><span class="mk">✓</span> Any path (defaults to home)</li>
-        <li><span class="mk">✓</span> Recursive size sum</li>
-        <li><span class="mk">✓</span> Sort largest-first</li>
-        <li><span class="mk">✓</span> Per-directory %</li>
-        <li><span class="mk">✓</span> ▇/░ bar charts</li>
-        <li><span class="mk">✓</span> % beside each bar</li>
-        <li><span class="mk">✓</span> Total at bottom</li>
-        <li><span class="mk">✓</span> K/M/G/T/P sizes</li>
-        <li><span class="mk">✓</span> Skip hidden dirs</li>
-        <li><span class="mk">✓</span> Survive perm errors</li>
-      </ul>
+      <h3 class="subhead">spec coverage</h3>
+      <p class="coverage">All ten spec boxes landed — take any path, add up sizes folder by folder, biggest first, a % for each, ▇/░ bars with the % beside them and a total at the bottom, sizes in K/M/G/T/P, hidden folders skipped, and no crash on a locked folder. Green across the board, which makes me wonder: did I ask for too little? Symlinks and empty folders never even made the list.</p>
     </section>
 
     <footer><b>Diskvis</b> MIS report · Ruby &amp; Perl · single-session</footer>
@@ -503,7 +485,6 @@
     <a href="#s2"><span class="num">02</span><span class="lbl">Compare</span></a>
     <a href="#s3"><span class="num">03</span><span class="lbl">Learn</span></a>
     <a href="#s4"><span class="num">04</span><span class="lbl">Probes</span></a>
-    <a href="#s5"><span class="num">05</span><span class="lbl">Cover</span></a>
   </nav>
 
   <script>
