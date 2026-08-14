@@ -61,14 +61,27 @@
     .sub { color: var(--muted); font-size: 18px; margin: 14px 0 0; }
     .intro { color: var(--muted); font-size: 15px; margin: 28px 0 0; max-width: 56ch; }
     .intro b { color: var(--text); font-weight: 600; }
+    .searchbox { position: relative; margin: 32px 0 0; }
+    .searchbox svg {
+      position: absolute; left: 18px; top: 50%;
+      transform: translateY(-50%); width: 18px; height: 18px;
+      color: var(--muted); pointer-events: none;
+    }
     .search {
-      width: 100%; margin: 32px 0 0; padding: 14px 18px;
+      width: 100%; padding: 14px 78px 14px 46px;
       font-family: var(--font); font-size: 15px; color: var(--text);
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--r-md); outline: none;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 999px; outline: none;
     }
     .search::placeholder { color: var(--muted); }
     .search:focus { border-color: var(--pink-bold); }
+    .kbd {
+      position: absolute; right: 16px; top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--mono); font-size: 11px; color: var(--muted);
+      padding: 3px 7px; border: 1px solid var(--border); border-radius: 6px;
+      pointer-events: none;
+    }
     .empty { color: var(--muted); font-size: 14px; margin: 24px 0 0; }
     .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
     .tags:empty { display: none; }
@@ -108,7 +121,11 @@
     <h1>probe<span class="dot">.</span></h1>
     <p class="sub">little tools &amp; reports, dumped here.</p>
     <p class="intro">One-off builds and session reports, each a self-contained page. <b>No framework, no build step</b> — a file dropped in and served.</p>
-    <input type="search" class="search" placeholder="search probes… enter to pin" aria-label="Search probes">
+    <div class="searchbox">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" class="search" placeholder="search probes…" aria-label="Search probes">
+      <span class="kbd">↵ pin</span>
+    </div>
     <div class="tags" id="tags"></div>
     <ul class="list">
       <li data-file="probe/diskvis.rb.html">
