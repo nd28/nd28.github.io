@@ -41,6 +41,7 @@
       --fs-base: 15.5px;
       --fs-h1: clamp(32px, 6vw, 60px);
       --fs-h2: 30px;
+      --fs-h3: 20px;
       --fs-sub: 18px;
       --fs-stat: 38px;
       --pad-stat: 32px 24px;
@@ -95,6 +96,7 @@
       :root{
         --fs-base: 15px;
         --fs-h2: 23px;
+        --fs-h3: 17px;
         --fs-sub: 16px;
         --fs-stat: 30px;
         --pad-stat: 24px 16px;
@@ -262,6 +264,16 @@
     .sec-head.condensed { padding: 6px 0 10px; }
     .sec-head.condensed h2 { font-size: 18px; }
 
+    /* type hierarchy — biggest/brightest → smallest/muted:
+       h1 > h2 > h3.sub > body > secondary (.lede/.note/.cap) > mono label
+       colors: headings/body = --text · secondary = --muted · accents = --pink/--mint · code = --code */
+    .part { margin-top: 32px; }
+    .part:first-child { margin-top: 0; }
+    .sub {
+      margin: 0 0 14px; font-size: var(--fs-h3); font-weight: 700;
+      color: var(--text); letter-spacing: -0.01em;
+    }
+
     /* exhibits (code) — the few real boxes, with a tab label */
     .exhibit { margin: 0 0 24px; }
     .exhibit:last-child { margin-bottom: 0; }
@@ -284,10 +296,10 @@
     pre.out .bar { color: var(--pink); }
     pre.out .dim { color: var(--muted); }
 
-    .lede { color: var(--muted); font-size: 15px; margin: 22px 0 0; max-width: 60ch; }
+    .lede { color: var(--muted); font-size: 14px; margin: 0 0 16px; max-width: 60ch; }
 
     /* deliverables — compact file → role strip */
-    .dels { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-grid); margin: 16px 0 24px; }
+    .dels { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-grid); margin: 0 0 24px; }
     .dels > * { min-width: 0; }
     .del {
       display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
@@ -302,7 +314,7 @@
     .cap { margin: 10px 0 0; font-size: 12.5px; color: var(--muted); font-family: var(--mono); }
 
     /* diffs — interleaved rows: aspect eyebrow + Ruby | Perl, hairline between */
-    .diffs { margin-top: 24px; }
+    .diffs { margin-top: 0; }
     .diff { padding: 16px 0; border-bottom: 1px solid var(--border); }
     .diff:first-child { padding-top: 0; }
     .diff:last-child { border-bottom: none; padding-bottom: 0; }
@@ -333,7 +345,7 @@
     .learn b { color: var(--mint); font-weight: 600; }
 
     /* tools — open rows: mono label + note, hairline between */
-    .tools { margin-top: 24px; }
+    .tools { margin-top: 0; }
     .tool {
       display: grid; grid-template-columns: 180px 1fr; gap: 16px;
       padding: 14px 0; border-bottom: 1px solid var(--border);
@@ -383,108 +395,108 @@
       <div class="stat"><div class="n">0</div><div class="l">Dependencies</div></div>
     </div>
 
-    <!-- 01 WHAT WE DID -->
+    <!-- 01 THE BUILD -->
     <section id="s1">
-      <div class="sec-head"><div class="sec-num">01</div><h2>What We Did</h2></div>
-      <p class="lede">Bash was slow to get right, Python wouldn't stop on ctrl-c — so I used what was already on the machine: Ruby. It worked instantly. Then I tried Perl too, just because it was there.</p>
-      <div class="dels">
-        <div class="del"><code>diskvis.rb</code><span class="lang">Ruby</span><span class="role">the one that worked — instant, ctrl-c kills it</span></div>
-        <div class="del"><code>diskvis.pl</code><span class="lang">Perl</span><span class="role">also already there — just exploring</span></div>
-      </div>
-      <div class="exhibit">
-        <div class="ex-head">diskvis output <span class="lang">Ruby · Perl</span></div>
-        <pre class="out"><span class="dim"> Disk Usage: 2.5G</span>
+      <div class="sec-head"><div class="sec-num">01</div><h2>The Build</h2></div>
+
+      <div class="part">
+        <h3 class="sub">What We Did</h3>
+        <p class="lede">Bash was slow to get right, Python wouldn't stop on ctrl-c — so I used what was already on the machine: Ruby. It worked instantly. Then I tried Perl too, just because it was there.</p>
+        <div class="dels">
+          <div class="del"><code>diskvis.rb</code><span class="lang">Ruby</span><span class="role">the one that worked — instant, ctrl-c kills it</span></div>
+          <div class="del"><code>diskvis.pl</code><span class="lang">Perl</span><span class="role">also already there — just exploring</span></div>
+        </div>
+        <div class="exhibit">
+          <div class="ex-head">diskvis output <span class="lang">Ruby · Perl</span></div>
+          <pre class="out"><span class="dim"> Disk Usage: 2.5G</span>
 <span class="dim">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
    51% <span class="bar">▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇░░░░░░░░░░░░░░░</span> Aloha.app
    33% <span class="bar">▇▇▇▇▇▇▇▇▇░░░░░░░░░░░░░░░░░░░░░</span> T3 Code.app
     7% <span class="bar">▇▇░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span> IINA.app
 <span class="dim">Total: 2.5G</span></pre>
-        <div class="cap">Parity — Ruby 51/33/7 · Perl 52/33/8 · only rounding differs</div>
+          <div class="cap">Parity — Ruby 51/33/7 · Perl 52/33/8 · only rounding differs</div>
+        </div>
+      </div>
+
+      <div class="part">
+        <h3 class="sub">Where They Differ</h3>
+        <p class="lede">Same algorithm, written two ways. Not bugs — each language just being itself.</p>
+        <div class="diffs">
+          <div class="diff">
+            <div class="aspect">Size of a folder</div>
+            <div class="pair">
+              <div class="side">
+                <span class="tag rb">Ruby</span>
+                <span class="val"><code>child.size</code></span>
+                <span class="note">it's an object, you just ask its size</span>
+              </div>
+              <div class="side">
+                <span class="tag pl">Perl</span>
+                <span class="val"><code>-s $full</code></span>
+                <span class="note">no object, just a built-in operator</span>
+              </div>
+            </div>
+          </div>
+          <div class="diff">
+            <div class="aspect">Locked folder</div>
+            <div class="pair">
+              <div class="side">
+                <span class="tag rb">Ruby</span>
+                <span class="val"><code>rescue =&gt; e</code></span>
+                <span class="note">raise, catch, move on</span>
+              </div>
+              <div class="side">
+                <span class="tag pl">Perl</span>
+                <span class="val"><code>opendir or return 0</code></span>
+                <span class="note">can't open it? return 0, walk away</span>
+              </div>
+            </div>
+          </div>
+          <div class="diff">
+            <div class="aspect">Divider line</div>
+            <div class="pair">
+              <div class="side">
+                <span class="tag rb">Ruby</span>
+                <span class="val"><code>━</code> × 45</span>
+              </div>
+              <div class="side">
+                <span class="tag pl">Perl</span>
+                <span class="val"><code>━</code> × 30</span>
+              </div>
+            </div>
+            <div class="note whole">I wrote 45 in one and 30 in the other and never lined them up.</div>
+          </div>
+        </div>
+        <div class="cap">Everything else matches — same walk, same formatting, same bars.</div>
       </div>
     </section>
 
-    <!-- 02 WHERE THEY DIFFER -->
+    <!-- 02 KEY LEARNINGS -->
     <section id="s2">
-      <div class="sec-head"><div class="sec-num">02</div><h2>Where They Differ</h2></div>
-      <p class="lede">Same algorithm, written two ways. Not bugs — each language just being itself.</p>
-      <div class="diffs">
-        <div class="diff">
-          <div class="aspect">Size of a folder</div>
-          <div class="pair">
-            <div class="side">
-              <span class="tag rb">Ruby</span>
-              <span class="val"><code>child.size</code></span>
-              <span class="note">it's an object, you just ask its size</span>
-            </div>
-            <div class="side">
-              <span class="tag pl">Perl</span>
-              <span class="val"><code>-s $full</code></span>
-              <span class="note">no object, just a built-in operator</span>
-            </div>
-          </div>
-        </div>
-        <div class="diff">
-          <div class="aspect">Locked folder</div>
-          <div class="pair">
-            <div class="side">
-              <span class="tag rb">Ruby</span>
-              <span class="val"><code>rescue =&gt; e</code></span>
-              <span class="note">raise, catch, move on</span>
-            </div>
-            <div class="side">
-              <span class="tag pl">Perl</span>
-              <span class="val"><code>opendir or return 0</code></span>
-              <span class="note">can't open it? return 0, walk away</span>
-            </div>
-          </div>
-        </div>
-        <div class="diff">
-          <div class="aspect">Divider line</div>
-          <div class="pair">
-            <div class="side">
-              <span class="tag rb">Ruby</span>
-              <span class="val"><code>━</code> × 45</span>
-            </div>
-            <div class="side">
-              <span class="tag pl">Perl</span>
-              <span class="val"><code>━</code> × 30</span>
-            </div>
-          </div>
-          <div class="note whole">I wrote 45 in one and 30 in the other and never lined them up.</div>
-        </div>
-      </div>
-      <div class="cap">Everything else matches — same walk, same formatting, same bars.</div>
-    </section>
-
-    <!-- 03 KEY LEARNINGS -->
-    <section id="s3">
-      <div class="sec-head"><div class="sec-num">03</div><h2>Key Learnings</h2></div>
+      <div class="sec-head"><div class="sec-num">02</div><h2>Key Learnings</h2></div>
       <div class="learn"><span class="dot"></span><p><b>Locked folders aren't rare</b> — macOS is full of them. Ruby raises an error and you <code>rescue</code> it; Perl returns 0 and you check. Two ways to say "skip it", and I still don't know which I like better.</p></div>
       <div class="learn"><span class="dot"></span><p><b>Walking twice was the O(n²) trap</b> — my first version walked every folder once per child. Fine on small folders, very slow on deep ones. One walk per folder fixed it. I fell right into that one.</p></div>
       <div class="learn"><span class="dot"></span><p><b>Bytes mean nothing to a person</b> — the divide-by-1024 <code>B/K/M/G/T/P</code> scale is what turns a long number into "2.5G".</p></div>
       <div class="learn"><span class="dot"></span><p><b>The charts matched on their own</b> — same ▇/░ formula in both, so I never had to force it, it just happened. Nice when it works out that way.</p></div>
-    </section>
 
-    <!-- 04 PROBES & TOOLS -->
-    <section id="s4">
-      <div class="sec-head"><div class="sec-num">04</div><h2>Probes &amp; Tools</h2></div>
-      <div class="tools">
-        <div class="tool"><span class="name">diskvis_prompt.md</span><p>the spec, written before any code — so I'd only make each decision once.</p></div>
-        <div class="tool"><span class="name">testing</span><p>ran it on <code>/Applications</code> and <code>/tmp</code>. Real folders, not fake test data.</p></div>
-        <div class="tool"><span class="name">debugging</span><p>Ruby's <code>PermissionError</code>, Perl's scoping bug, the O(n²) re-walk — all found by running into them.</p></div>
+      <div class="part">
+        <h3 class="sub">Probes &amp; Tools</h3>
+        <div class="tools">
+          <div class="tool"><span class="name">diskvis_prompt.md</span><p>the spec, written before any code — so I'd only make each decision once.</p></div>
+          <div class="tool"><span class="name">testing</span><p>ran it on <code>/Applications</code> and <code>/tmp</code>. Real folders, not fake test data.</p></div>
+          <div class="tool"><span class="name">debugging</span><p>Ruby's <code>PermissionError</code>, Perl's scoping bug, the O(n²) re-walk — all found by running into them.</p></div>
+        </div>
+        <h4 class="subhead">spec coverage</h4>
+        <p class="coverage">All ten spec boxes landed — take any path, add up sizes folder by folder, biggest first, a % for each, ▇/░ bars with the % beside them and a total at the bottom, sizes in K/M/G/T/P, hidden folders skipped, and no crash on a locked folder. Green across the board, which makes me wonder: did I ask for too little? Symlinks and empty folders never even made the list.</p>
       </div>
-      <h3 class="subhead">spec coverage</h3>
-      <p class="coverage">All ten spec boxes landed — take any path, add up sizes folder by folder, biggest first, a % for each, ▇/░ bars with the % beside them and a total at the bottom, sizes in K/M/G/T/P, hidden folders skipped, and no crash on a locked folder. Green across the board, which makes me wonder: did I ask for too little? Symlinks and empty folders never even made the list.</p>
     </section>
 
     <footer><b>Diskvis</b> MIS report · Ruby &amp; Perl · single-session</footer>
   </div>
 
   <nav class="botbar">
-    <a href="#s1"><span class="num">01</span><span class="lbl">Built</span></a>
-    <a href="#s2"><span class="num">02</span><span class="lbl">Compare</span></a>
-    <a href="#s3"><span class="num">03</span><span class="lbl">Learn</span></a>
-    <a href="#s4"><span class="num">04</span><span class="lbl">Probes</span></a>
+    <a href="#s1"><span class="num">01</span><span class="lbl">Build</span></a>
+    <a href="#s2"><span class="num">02</span><span class="lbl">Learn</span></a>
   </nav>
 
   <script>
