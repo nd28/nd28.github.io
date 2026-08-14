@@ -302,7 +302,7 @@
     .cap { margin: 10px 0 0; font-size: 12.5px; color: var(--muted); font-family: var(--mono); }
 
     /* comparison table — contained, but the only structural box here */
-    .tbl-wrap { border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+    .tbl-wrap { margin-top: 20px; border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
     .tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
     .tbl th, .tbl td { text-align: left; padding: 15px 20px; border-bottom: 1px solid var(--border); }
     .tbl thead th { background: var(--surface-2); color: var(--pink); font-weight: 600; font-size: 13px; letter-spacing: 0.04em; }
@@ -401,16 +401,16 @@
     <!-- 02 WHERE THEY DIFFER -->
     <section id="s2">
       <div class="sec-head"><div class="sec-num">02</div><h2>Where They Differ</h2></div>
+      <p class="lede">Same algorithm, two accents — the differences aren't bugs, they're each language's idiom showing through.</p>
       <div class="tbl-wrap">
         <table class="tbl">
           <thead>
             <tr><th>Aspect</th><th>Ruby</th><th>Perl</th></tr>
           </thead>
           <tbody>
-            <tr><td>Entry / arg</td><td><code>ARGV[0] || ENV["HOME"]</code></td><td><code>$ARGV[0] || $ENV{HOME}</code></td></tr>
-            <tr><td>Size sum</td><td><code>child.size</code> rescue</td><td><code>-s $full</code></td></tr>
-            <tr><td>Errors</td><td><code>rescue =&gt; e</code></td><td><code>opendir or return 0</code></td></tr>
-            <tr><td>Header rule</td><td><code>━</code> × 45</td><td><code>━</code> × 30</td></tr>
+            <tr><td>Size of a folder</td><td><code>child.size</code> — the folder is an <b>object</b></td><td><code>-s $full</code> — a built-in operator</td></tr>
+            <tr><td>Locked folder</td><td><code>rescue =&gt; e</code> — raise and catch</td><td><code>opendir or return 0</code> — check the return</td></tr>
+            <tr><td>Divider line</td><td><code>━</code> × 45</td><td><code>━</code> × 30 — we never bothered to match them</td></tr>
           </tbody>
         </table>
       </div>
@@ -420,10 +420,10 @@
     <!-- 03 KEY LEARNINGS -->
     <section id="s3">
       <div class="sec-head"><div class="sec-num">03</div><h2>Key Learnings</h2></div>
-      <div class="learn"><span class="dot"></span><p><b>Error handling</b> — <code>rescue</code> (Ruby) / <code>opendir or return 0</code> (Perl) meant the walk shrugged off locked folders instead of dying.</p></div>
-      <div class="learn"><span class="dot"></span><p><b>Recursion cost</b> — re-walking every subtree per child was ≈O(n²); one pass per directory fixed the deep-tree crawl.</p></div>
-      <div class="learn"><span class="dot"></span><p><b>Size formatting</b> — divide-by-1024 with a <code>B/K/M/G/T/P</code> ladder keeps totals readable instead of raw bytes.</p></div>
-      <div class="learn"><span class="dot"></span><p><b>Bar math</b> — <code>filled = pct × width / 100</code>, same ▇/░ in both, so the charts just matched.</p></div>
+      <div class="learn"><span class="dot"></span><p><b>Locked folders are the rule, not the edge case</b> — macOS hides plenty. Ruby raises and you <code>rescue</code>; Perl returns 0 and you check. Both survive, they just say "skip it" differently.</p></div>
+      <div class="learn"><span class="dot"></span><p><b>Re-walking is the O(n²) trap</b> — walking each subtree once per child was fine on shallow dirs, brutal on deep ones. One pass per directory fixed it.</p></div>
+      <div class="learn"><span class="dot"></span><p><b>Bytes are noise</b> — the divide-by-1024 <code>B/K/M/G/T/P</code> ladder is what turns a wall of digits into "2.5G".</p></div>
+      <div class="learn"><span class="dot"></span><p><b>The charts matched by accident</b> — same ▇/░ formula in both, so parity wasn't chased, it just fell out.</p></div>
     </section>
 
     <!-- 04 PROBES & TOOLS -->
