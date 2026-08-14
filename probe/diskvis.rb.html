@@ -345,6 +345,7 @@
 
     /* spec coverage — subtle anchored card (the closing summary) */
     .summary {
+      margin-top: 20px;
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--r-lg); padding: var(--pad-summary);
     }
@@ -384,7 +385,7 @@
     <div class="stats">
       <div class="stat"><div class="n">2</div><div class="l">Languages</div></div>
       <div class="stat"><div class="n">~170</div><div class="l">Lines of code</div></div>
-      <div class="stat"><div class="n">9</div><div class="l">Spec features</div></div>
+      <div class="stat"><div class="n">10</div><div class="l">Spec features</div></div>
       <div class="stat"><div class="n">0</div><div class="l">Dependencies</div></div>
     </div>
 
@@ -411,7 +412,7 @@
     <!-- 02 WHERE THEY DIFFER -->
     <section id="s2">
       <div class="sec-head"><div class="sec-num">02</div><h2>Where They Differ</h2></div>
-      <p class="lede">Same algorithm, two accents — the differences aren't bugs, they're each language's idiom showing through.</p>
+      <p class="lede">Same algorithm, two accents. Not bugs — each language just being itself.</p>
       <div class="diffs">
         <div class="diff">
           <div class="aspect">Size of a folder</div>
@@ -419,12 +420,12 @@
             <div class="side">
               <span class="tag rb">Ruby</span>
               <span class="val"><code>child.size</code></span>
-              <span class="note">the folder is an object</span>
+              <span class="note">it's an object, you just ask its size</span>
             </div>
             <div class="side">
               <span class="tag pl">Perl</span>
               <span class="val"><code>-s $full</code></span>
-              <span class="note">a built-in operator</span>
+              <span class="note">no object, just a built-in operator</span>
             </div>
           </div>
         </div>
@@ -434,12 +435,12 @@
             <div class="side">
               <span class="tag rb">Ruby</span>
               <span class="val"><code>rescue =&gt; e</code></span>
-              <span class="note">raise and catch</span>
+              <span class="note">raise, catch, move on</span>
             </div>
             <div class="side">
               <span class="tag pl">Perl</span>
               <span class="val"><code>opendir or return 0</code></span>
-              <span class="note">check the return</span>
+              <span class="note">can't open it? return 0, walk away</span>
             </div>
           </div>
         </div>
@@ -455,7 +456,7 @@
               <span class="val"><code>━</code> × 30</span>
             </div>
           </div>
-          <div class="note whole">we never bothered to match them</div>
+          <div class="note whole">I wrote 45 in one and 30 in the other and never lined them up.</div>
         </div>
       </div>
       <div class="cap">Everything else matches — same walk, same formatting, same bars.</div>
@@ -464,25 +465,26 @@
     <!-- 03 KEY LEARNINGS -->
     <section id="s3">
       <div class="sec-head"><div class="sec-num">03</div><h2>Key Learnings</h2></div>
-      <div class="learn"><span class="dot"></span><p><b>Locked folders are the rule, not the edge case</b> — macOS hides plenty. Ruby raises and you <code>rescue</code>; Perl returns 0 and you check. Both survive, they just say "skip it" differently.</p></div>
-      <div class="learn"><span class="dot"></span><p><b>Re-walking is the O(n²) trap</b> — walking each subtree once per child was fine on shallow dirs, brutal on deep ones. One pass per directory fixed it.</p></div>
-      <div class="learn"><span class="dot"></span><p><b>Bytes are noise</b> — the divide-by-1024 <code>B/K/M/G/T/P</code> ladder is what turns a wall of digits into "2.5G".</p></div>
-      <div class="learn"><span class="dot"></span><p><b>The charts matched by accident</b> — same ▇/░ formula in both, so parity wasn't chased, it just fell out.</p></div>
+      <div class="learn"><span class="dot"></span><p><b>Locked folders aren't an edge case</b> — macOS is full of them. Ruby raises and you <code>rescue</code>; Perl returns 0 and you check. Two ways to say "skip it", and I still don't know which I prefer.</p></div>
+      <div class="learn"><span class="dot"></span><p><b>Re-walking was the O(n²) trap</b> — my first pass walked every subtree once per child. Fine on shallow dirs, brutal the moment you hit something deep. One walk per directory fixed it. Walked straight into that one.</p></div>
+      <div class="learn"><span class="dot"></span><p><b>Bytes mean nothing to a human</b> — the divide-by-1024 <code>B/K/M/G/T/P</code> ladder is what turns a wall of digits into "2.5G".</p></div>
+      <div class="learn"><span class="dot"></span><p><b>The charts matched by accident</b> — same ▇/░ formula in both, so parity wasn't chased, it just fell out. Nice when it works out that way.</p></div>
     </section>
 
     <!-- 04 PROBES & TOOLS -->
     <section id="s4">
       <div class="sec-head"><div class="sec-num">04</div><h2>Probes &amp; Tools</h2></div>
       <div class="probes">
-        <div class="probe"><div class="ic">📄</div><h4>diskvis_prompt.md</h4><p>Spec — features, output format, decisions.</p></div>
-        <div class="probe"><div class="ic">🧪</div><h4>Testing</h4><p>Ran it on <code>/Applications</code>, <code>/tmp</code>, scratch dirs.</p></div>
-        <div class="probe"><div class="ic">🐛</div><h4>Debugging</h4><p>Fixed Ruby <code>PermissionError</code>, Perl scoping, the O(n²) re-walk.</p></div>
+        <div class="probe"><div class="ic">📄</div><h4>diskvis_prompt.md</h4><p>the spec, written before any code — so I'd only make each decision once.</p></div>
+        <div class="probe"><div class="ic">🧪</div><h4>Testing</h4><p>ran it on <code>/Applications</code> and <code>/tmp</code>. Real folders, not fixtures.</p></div>
+        <div class="probe"><div class="ic">🐛</div><h4>Debugging</h4><p>Ruby's <code>PermissionError</code>, Perl's scoping bug, the O(n²) re-walk — all found the hard way.</p></div>
       </div>
     </section>
 
     <!-- 05 SPEC COVERAGE -->
     <section id="s5">
       <div class="sec-head"><div class="sec-num">05</div><h2>Spec Coverage</h2></div>
+      <p class="lede">All ten boxes are green — a little suspicious. Did I spec too little? Symlinks and empty dirs never even made the list.</p>
       <div class="summary">
         <ul class="check">
           <li><span class="mk">✓</span> Any path (defaults to home)</li>
