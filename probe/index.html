@@ -51,7 +51,7 @@
       background-attachment: fixed;
       line-height: 1.5;
     }
-    .wrap { max-width: 720px; margin: 0 auto; padding: 72px 24px 48px; }
+    .wrap { max-width: 720px; margin: 0 auto; padding: clamp(110px, 20vh, 180px) 24px 48px; }
     h1 {
       font-size: clamp(34px, 7vw, 54px);
       font-weight: 700; letter-spacing: -0.03em; margin: 0;
@@ -60,6 +60,15 @@
     .sub { color: var(--muted); font-size: 18px; margin: 14px 0 0; }
     .intro { color: var(--muted); font-size: 15px; margin: 28px 0 0; max-width: 56ch; }
     .intro b { color: var(--text); font-weight: 600; }
+    .search {
+      width: 100%; margin: 32px 0 0; padding: 14px 18px;
+      font-family: var(--font); font-size: 15px; color: var(--text);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-md); outline: none;
+    }
+    .search::placeholder { color: var(--muted); }
+    .search:focus { border-color: var(--pink-bold); }
+    .empty { color: var(--muted); font-size: 14px; margin: 24px 0 0; }
     .list { list-style: none; margin: 36px 0 0; padding: 0; display: grid; gap: 14px; }
     .list a {
       display: flex; flex-direction: column; gap: 6px;
@@ -82,6 +91,7 @@
     <h1>probe<span class="dot">.</span></h1>
     <p class="sub">little tools &amp; reports, dumped here.</p>
     <p class="intro">One-off builds and session reports, each a self-contained page. <b>No framework, no build step</b> — a file dropped in and served.</p>
+    <input type="search" class="search" placeholder="search probes…" aria-label="Search probes">
     <ul class="list">
       <li>
         <a href="diskvis.rb.html">
@@ -91,7 +101,26 @@
         </a>
       </li>
     </ul>
+    <p class="empty" hidden>nothing matches — try another word.</p>
     <footer>probe · <a href="https://nd28.github.io">nd28.github.io</a></footer>
   </div>
+
+  <script>
+    (function () {
+      var search = document.querySelector('.search');
+      var items = Array.prototype.slice.call(document.querySelectorAll('.list li'));
+      var empty = document.querySelector('.empty');
+      search.addEventListener('input', function () {
+        var q = search.value.trim().toLowerCase();
+        var n = 0;
+        items.forEach(function (li) {
+          var hit = li.textContent.toLowerCase().indexOf(q) !== -1;
+          li.style.display = hit ? '' : 'none';
+          if (hit) n++;
+        });
+        if (empty) empty.hidden = n !== 0;
+      });
+    })();
+  </script>
 </body>
 </html>
