@@ -81,10 +81,24 @@
       font-family: var(--mono); font-size: 11px; color: var(--muted);
       padding: 3px 7px; border: 1px solid var(--border); border-radius: 6px;
       pointer-events: none;
+      transition: color .15s, border-color .15s;
     }
+    .kbd.warn { color: var(--pink-bold); border-color: var(--pink-bold); }
     .empty { color: var(--muted); font-size: 14px; margin: 24px 0 0; }
-    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+    .toolbar { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; }
     .tags:empty { display: none; }
+    .mode {
+      margin-left: auto; flex: none;
+      font-family: var(--mono); font-size: 12px; font-weight: 600;
+      letter-spacing: 0.06em; line-height: 1;
+      padding: 8px 14px; border-radius: 999px; cursor: pointer;
+      background: transparent; transition: color .15s, border-color .15s, background .15s;
+    }
+    .mode.and { color: var(--mint); border: 1px solid var(--mint); }
+    .mode.and:hover { background: var(--mint-dim); }
+    .mode.or { color: var(--pink-bold); border: 1px solid var(--pink-bold); }
+    .mode.or:hover { background: rgba(240,111,163,0.12); }
     .tag {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 6px 8px 6px 12px;
@@ -124,9 +138,12 @@
     <div class="searchbox">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input type="search" class="search" placeholder="search probes…" aria-label="Search probes">
-      <span class="kbd">↵ pin</span>
+      <span class="kbd" id="hint">↵ pin · 3 max</span>
     </div>
-    <div class="tags" id="tags"></div>
+    <div class="toolbar">
+      <div class="tags" id="tags"></div>
+      <button type="button" class="mode and" id="mode" aria-pressed="true" title="Match all keywords">AND</button>
+    </div>
     <ul class="list">
       <li data-file="probe/diskvis.rb.html">
         <a href="diskvis.rb.html">
@@ -148,12 +165,17 @@
       var items = Array.prototype.slice.call(document.querySelectorAll('.list li'));
       var empty = document.querySelector('.empty');
       var active = [];
+      var mode = document.getElementById('mode');
+      var hint = document.getElementById('hint');
+      var isAnd = true;
 
       function filter() {
         var n = 0;
         items.forEach(function (li) {
           var text = li.textContent.toLowerCase();
-          var hit = active.every(function (t) { return text.indexOf(t) !== -1; });
+          var hit = active.length === 0 || (isAnd
+            ? active.every(function (t) { return text.indexOf(t) !== -1; })
+            : active.some(function (t) { return text.indexOf(t) !== -1; }));
           li.style.display = hit ? '' : 'none';
           if (hit) n++;
         });
@@ -180,14 +202,36 @@
         });
       }
 
+      function warnLimit() {
+        if (!hint) return;
+        hint.classList.add('warn');
+        setTimeout(function () { hint.classList.remove('warn'); }, 700);
+      }
+
+      if (mode) {
+        mode.addEventListener('click', function () {
+          isAnd = !isAnd;
+          mode.textContent = isAnd ? 'AND' : 'OR';
+          mode.classList.toggle('and', isAnd);
+          mode.classList.toggle('or', !isAnd);
+          mode.setAttribute('aria-pressed', isAnd ? 'true' : 'false');
+          mode.title = isAnd ? 'Match all keywords' : 'Match any keyword';
+          filter();
+        });
+      }
+
       search.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
           e.preventDefault();
           var v = search.value.trim().toLowerCase();
           if (v && active.indexOf(v) === -1) {
-            active.push(v);
-            render();
-            filter();
+            if (active.length >= 3) {
+              warnLimit();
+            } else {
+              active.push(v);
+              render();
+              filter();
+            }
           }
           search.value = '';
         }
