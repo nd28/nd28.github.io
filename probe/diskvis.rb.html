@@ -242,8 +242,11 @@
     /* ============ SECTIONS — open, hairline-divided, clear hierarchy ============ */
     section { margin-top: var(--space-section); scroll-margin-top: var(--scroll-offset); }
     .sec-head {
+      position: sticky; top: var(--herobar-h); z-index: 40;
       display: flex; align-items: baseline; gap: 16px;
-      padding-bottom: 18px; margin-bottom: var(--sec-gap);
+      padding: 12px 0 18px; margin-bottom: var(--sec-gap);
+      background: var(--glass);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
     }
     .sec-num {
