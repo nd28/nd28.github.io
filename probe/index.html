@@ -131,11 +131,16 @@
     }
     .list a:hover { border-color: var(--pink-bold); }
     .list a:focus-visible { border-color: var(--pink-bold); }
+    .meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
     .file { font-family: var(--mono); font-size: 11px; color: var(--pink-bold); }
     .title { font-weight: 700; font-size: 17px; color: var(--text); letter-spacing: -0.01em; }
     .desc { color: var(--muted); font-size: 14px; }
-    .mod { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+    .mod { font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; }
     .mod:empty { display: none; }
+    @media (max-width: 380px) {
+      .meta { flex-direction: column; align-items: flex-start; gap: 2px; }
+      .mod { text-align: left; }
+    }
     footer { margin-top: 56px; color: var(--muted); font-size: 13px; }
     footer a { color: var(--mint); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
@@ -160,18 +165,22 @@
       <ul class="list">
       <li data-file="probe/diskvis.rb.html">
         <a href="diskvis.rb.html">
-          <span class="file">diskvis.rb.html</span>
+          <div class="meta">
+            <span class="file">diskvis.rb.html</span>
+            <span class="mod" title="last modified"></span>
+          </div>
           <span class="title">Diskvis Build Session</span>
           <span class="desc">visual disk-usage tool, written twice — Ruby and Perl</span>
-          <span class="mod" title="last modified"></span>
         </a>
       </li>
       <li data-file="probe/microservices-rl-pwa.html">
         <a href="microservices-rl-pwa.html">
-          <span class="file">microservices-rl-pwa.html</span>
+          <div class="meta">
+            <span class="file">microservices-rl-pwa.html</span>
+            <span class="mod" title="last modified"></span>
+          </div>
           <span class="title">Microservices Dojo — Build Session</span>
           <span class="desc">vanilla-JS learning PWA: concepts, quizzes, offline, sticky stats</span>
-          <span class="mod" title="last modified"></span>
         </a>
       </li>
     </ul>
