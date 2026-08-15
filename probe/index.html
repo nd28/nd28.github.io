@@ -127,9 +127,10 @@
       padding: 18px 20px; text-decoration: none;
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--r-md);
-      transition: transform .15s ease, border-color .15s ease;
+      transition: border-color .15s ease;
     }
-    .list a:hover { transform: translateX(4px); border-color: var(--pink-bold); }
+    .list a:hover { border-color: var(--pink-bold); }
+    .list a:focus-visible { border-color: var(--pink-bold); }
     .file { font-family: var(--mono); font-size: 13px; color: var(--pink-bold); }
     .title { font-weight: 700; font-size: 17px; color: var(--text); letter-spacing: -0.01em; }
     .desc { color: var(--muted); font-size: 14px; }
