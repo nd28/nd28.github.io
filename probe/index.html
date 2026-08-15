@@ -69,7 +69,8 @@
     }
     h1 .dot { color: var(--pink-bold); }
     .sub { color: var(--muted); font-size: 18px; margin: 14px 0 0; }
-    .intro { color: var(--muted); font-size: 15px; margin: 28px 0 0; max-width: 56ch; }
+    .intro { color: var(--muted); font-size: 15px; margin: 28px 0 0; max-width: 56ch; overflow: hidden; max-height: 12em; transition: max-height .25s ease, opacity .2s ease, margin .2s ease; }
+    .head.scrolled .intro { max-height: 0; opacity: 0; margin-top: 0; }
     .intro b { color: var(--text); font-weight: 600; }
     .searchbox { position: relative; margin: 32px 0 0; }
     .searchbox svg {
@@ -298,6 +299,16 @@
         });
         items.forEach(function (li) { listEl.appendChild(li); });
       });
+
+      // Collapse the intro paragraph once the header is pinned, so the
+      // lengthy text scrolls away (you've read it) but the title + search
+      // stay put.
+      var headEl = document.querySelector('.head');
+      function syncHead() {
+        headEl.classList.toggle('scrolled', headEl.getBoundingClientRect().top <= 0);
+      }
+      window.addEventListener('scroll', syncHead, { passive: true });
+      syncHead();
     })();
   </script>
 </body>
