@@ -108,6 +108,35 @@
     }
     .links a:hover { color: var(--pink-bold); }
     .links a:hover .arrow { color: var(--pink-bold); transform: translateX(4px); }
+    .repos-head {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 44px 0 12px;
+    }
+    .repos {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 6px;
+    }
+    .repos li {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 4px 12px;
+    }
+    .repos a {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--pink-bold);
+      text-decoration: none;
+    }
+    .repos a:hover { text-decoration: underline; }
+    .repos span { font-size: 14px; color: var(--muted); }
     footer {
       margin-top: 72px;
       font-family: var(--mono);
@@ -129,6 +158,19 @@
         <li><a href="https://nd28.github.io/writing-app/">Writing App <span class="arrow">›</span></a></li>
         <li><a href="https://nsco.netlify.app" target="_blank" rel="noopener">NS Co. <span class="arrow">›</span></a></li>
         <li><a href="https://github.com/nd28" target="_blank" rel="noopener">GitHub <span class="arrow">›</span></a></li>
+      </ul>
+      <h2 class="repos-head">repos</h2>
+      <ul class="repos">
+        <li><a href="https://github.com/nd28/moodie" target="_blank" rel="noopener">moodie</a><span>therapeutic mood tracker PWA</span></li>
+        <li><a href="https://github.com/nd28/image-ocr" target="_blank" rel="noopener">image-ocr</a><span>zero-setup batch Hindi OCR</span></li>
+        <li><a href="https://github.com/nd28/vitd" target="_blank" rel="noopener">vitd</a><span>vitamin D deficiency tracker, terminal</span></li>
+        <li><a href="https://github.com/nd28/hydrate" target="_blank" rel="noopener">hydrate</a><span>weather-aware water tracker</span></li>
+        <li><a href="https://github.com/nd28/journal-tui" target="_blank" rel="noopener">journal-tui</a><span>journal in the terminal</span></li>
+        <li><a href="https://github.com/nd28/p2p-cms" target="_blank" rel="noopener">p2p-cms</a><span>content synced across your local network</span></li>
+        <li><a href="https://github.com/nd28/one-true-date" target="_blank" rel="noopener">one-true-date</a><span>date module on jsr.io</span></li>
+        <li><a href="https://github.com/nd28/log-js" target="_blank" rel="noopener">log-js</a><span>streamlined logging</span></li>
+        <li><a href="https://github.com/nd28/gomit" target="_blank" rel="noopener">gomit</a><span>git automation for teammates</span></li>
+        <li><a href="https://github.com/nd28/nvim-config" target="_blank" rel="noopener">nvim-config</a><span>neovim config, built-ins only</span></li>
       </ul>
     </main>
     <footer>by <a href="https://github.com/nd28">nilesh suthar</a></footer>
