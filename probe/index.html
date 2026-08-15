@@ -54,12 +54,13 @@
       line-height: 1.5;
     }
     .wrap { max-width: 720px; margin: 0 auto; padding: clamp(110px, 20vh, 180px) 24px 48px; }
-    .head {
+    .head { /* title block — scrolls away with the page */ }
+    .searchbar {
       position: sticky;
       top: 0;
       z-index: 10;
       background: var(--bg);
-      padding-bottom: 16px;
+      padding: 18px 0 16px;
       margin-bottom: 8px;
       border-bottom: 1px solid var(--border);
     }
@@ -69,10 +70,9 @@
     }
     h1 .dot { color: var(--pink-bold); }
     .sub { color: var(--muted); font-size: 18px; margin: 14px 0 0; }
-    .intro { color: var(--muted); font-size: 15px; margin: 28px 0 0; max-width: 56ch; overflow: hidden; max-height: 12em; transition: max-height .25s ease, opacity .2s ease, margin .2s ease; }
-    .head.scrolled .intro { max-height: 0; opacity: 0; margin-top: 0; }
+    .intro { color: var(--muted); font-size: 15px; margin: 28px 0 0; max-width: 56ch; }
     .intro b { color: var(--text); font-weight: 600; }
-    .searchbox { position: relative; margin: 32px 0 0; }
+    .searchbox { position: relative; margin: 0; }
     .searchbox svg {
       position: absolute; left: 18px; top: 50%;
       transform: translateY(-50%); width: 18px; height: 18px;
@@ -150,19 +150,21 @@
 <body>
     <div class="wrap">
       <header class="head">
-      <h1>probe<span class="dot">.</span></h1>
-    <p class="sub">little tools &amp; reports, dumped here.</p>
-    <p class="intro">One-off builds and session reports, each a self-contained page. <b>No framework, no build step</b> — a file dropped in and served.</p>
-    <div class="searchbox">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="search" class="search" placeholder="search probes…" aria-label="Search probes">
-      <span class="kbd" id="hint">↵ pin · 3 max</span>
-    </div>
-      <div class="toolbar">
-        <div class="tags" id="tags"></div>
-        <button type="button" class="mode and" id="mode" aria-pressed="true" title="Match all keywords">AND</button>
-      </div>
+        <h1>probe<span class="dot">.</span></h1>
+        <p class="sub">little tools &amp; reports, dumped here.</p>
+        <p class="intro">One-off builds and session reports, each a self-contained page. <b>No framework, no build step</b> — a file dropped in and served.</p>
       </header>
+      <div class="searchbar">
+        <div class="searchbox">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" class="search" placeholder="search probes…" aria-label="Search probes">
+          <span class="kbd" id="hint">↵ pin · 3 max</span>
+        </div>
+        <div class="toolbar">
+          <div class="tags" id="tags"></div>
+          <button type="button" class="mode and" id="mode" aria-pressed="true" title="Match all keywords">AND</button>
+        </div>
+      </div>
       <ul class="list">
       <li data-file="probe/diskvis.rb.html">
         <a href="diskvis.rb.html">
@@ -299,16 +301,6 @@
         });
         items.forEach(function (li) { listEl.appendChild(li); });
       });
-
-      // Collapse the intro paragraph once the header is pinned, so the
-      // lengthy text scrolls away (you've read it) but the title + search
-      // stay put.
-      var headEl = document.querySelector('.head');
-      function syncHead() {
-        headEl.classList.toggle('scrolled', headEl.getBoundingClientRect().top <= 0);
-      }
-      window.addEventListener('scroll', syncHead, { passive: true });
-      syncHead();
     })();
   </script>
 </body>
