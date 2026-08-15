@@ -54,6 +54,15 @@
       line-height: 1.5;
     }
     .wrap { max-width: 720px; margin: 0 auto; padding: clamp(110px, 20vh, 180px) 24px 48px; }
+    .head {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg);
+      padding-bottom: 16px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
     h1 {
       font-size: clamp(34px, 7vw, 54px);
       font-weight: 700; letter-spacing: -0.03em; margin: 0;
@@ -132,8 +141,9 @@
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>probe<span class="dot">.</span></h1>
+    <div class="wrap">
+      <header class="head">
+      <h1>probe<span class="dot">.</span></h1>
     <p class="sub">little tools &amp; reports, dumped here.</p>
     <p class="intro">One-off builds and session reports, each a self-contained page. <b>No framework, no build step</b> — a file dropped in and served.</p>
     <div class="searchbox">
@@ -141,11 +151,12 @@
       <input type="search" class="search" placeholder="search probes…" aria-label="Search probes">
       <span class="kbd" id="hint">↵ pin · 3 max</span>
     </div>
-    <div class="toolbar">
-      <div class="tags" id="tags"></div>
-      <button type="button" class="mode and" id="mode" aria-pressed="true" title="Match all keywords">AND</button>
-    </div>
-    <ul class="list">
+      <div class="toolbar">
+        <div class="tags" id="tags"></div>
+        <button type="button" class="mode and" id="mode" aria-pressed="true" title="Match all keywords">AND</button>
+      </div>
+      </header>
+      <ul class="list">
       <li data-file="probe/diskvis.rb.html">
         <a href="diskvis.rb.html">
           <span class="file">diskvis.rb.html</span>
