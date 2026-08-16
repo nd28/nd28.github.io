@@ -587,22 +587,252 @@ function closeModal() {
     <!-- 02 -->
     <section id="s2">
       <div class="sec-head"><div class="sec-num">02</div><h2>The Stack</h2></div>
+
+      <div class="part" id="s2-stack">
+        <h3 class="sub">Two modals at once — by design</h3>
+        <p class="lede">The quiz opens on top of the concept. The concept does not close.</p>
+        <p>The learner taps "Quiz Me". The app does not replace the concept modal. It opens the quiz modal <b>on top</b> of it. Both are in the DOM, both have the <code>.open</code> class, and the quiz wins because its z-index is higher.</p>
+        <p>The app tracks this with one array: <code>modalStack</code>. Every open pushes an id. Every close pops one. The overlay follows one rule: it appears when the stack goes from empty to one, and disappears when the stack returns to empty.</p>
+        <p>So the stack can hold several modals at once. A phase-complete modal can appear above the quiz, and the quiz is still open underneath. That is not a bug — it is the design. The sheet on top is the one that accepts taps; the one below waits.</p>
+        <div class="exhibit">
+          <div class="ex-head"><span>The stack rules</span><span class="lang">app.js</span><span class="role">push on open, pop on close</span></div>
+          <div class="side"><pre class="out">let modalStack = [];
+
+function openModal(id) {
+  const modal = document.getElementById(id);
+  if (!modal) return;
+  const overlay = document.getElementById('modalOverlay');
+  if (modalStack.length === 0) overlay.classList.add('open');
+  modal.classList.add('open');
+  modalStack.push(id);
+}
+
+function closeModal() {
+  if (modalStack.length === 0) return;
+  const id = modalStack.pop();
+  const modal = document.getElementById(id);
+  modal.classList.remove('open');
+  if (modalStack.length === 0) {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+}</pre><span class="cap">the overlay opens once and closes once — everything in between is stacking</span></div>
+        </div>
+        <div class="exhibit">
+          <div class="ex-head"><span>The dynamic modal</span><span class="lang">app.js</span><span class="role">created in JS, not in the markup</span></div>
+          <div class="side"><pre class="out">function showPhaseCompleteModal(phase) {
+  const overlay = document.getElementById('modalOverlay');
+  if (overlay) overlay.classList.add('open');
+  const modal = document.createElement('div');
+  modal.className = 'modal phase-modal open';
+  modal.id = 'phaseCompleteModal';
+  modal.innerHTML = `
+    &lt;div class="modal-handle">&lt;/div>
+    &lt;div class="modal-body" style="text-align:center;padding:1.5rem;">
+      &lt;div style="font-size:3rem;margin-bottom:0.75rem;">${phase.icon}&lt;/div>
+      &lt;h3 class="modal-title" style="font-size:1.25rem;margin-bottom:0.5rem;">${phase.label} Complete&lt;/h3>
+      &lt;p class="cozy-text" style="margin-bottom:1.25rem;">You finished all concepts in this phase. The next one awaits.&lt;/p>
+      &lt;div style="padding:0.75rem 1rem;background:var(--accent-glow);border:1px solid var(--accent);border-radius:var(--radius-lg);color:var(--accent);font-weight:700;font-size:0.9375rem;">+100 XP Bonus&lt;/div>
+    &lt;/div>
+    &lt;div class="modal-footer">
+      &lt;button class="btn btn-primary" onclick="dismissPhaseModal()">Continue&lt;/button>
+    &lt;/div>
+  `;
+  document.body.appendChild(modal);
+}</pre><span class="cap">a seventh modal that only exists when a phase ends</span></div>
+        </div>
+        <p>Six modals live in the markup: profile, concept, quiz, resources, challenge, reflection. One more appears only when it is needed: the phase-complete modal is built in JavaScript and removed after it closes. The stack does not care how a modal was born.</p>
+      </div>
     </section>
     <!-- 03 -->
     <section id="s3">
       <div class="sec-head"><div class="sec-num">03</div><h2>Four Ways Out</h2></div>
+
+      <div class="dels">
+        <div class="del" id="s3-overlay"><b>Tap the overlay</b><span class="lang">pointer</span><span class="role">the dim area calls closeModal() — the top modal only</span></div>
+        <div class="del" id="s3-escape"><b>Press Escape</b><span class="lang">keyboard</span><span class="role">a keydown listener on the document calls closeModal()</span></div>
+        <div class="del" id="s3-swipe"><b>Swipe the handle</b><span class="lang">touch</span><span class="role">pull the handle down past 80px — concept modal only</span></div>
+        <div class="del" id="s3-buttons"><b>Use the buttons</b><span class="lang">tap</span><span class="role">Dismiss, Done, Continue — every modal has one</span></div>
+      </div>
+      <p>Four paths, one function. Every path ends at <code>closeModal()</code>, so every path behaves the same: the top modal closes, the one below it becomes reachable again.</p>
+      <p>The interesting one is the swipe. It is bound only to the concept modal's handle, and it is a <code>touchstart</code>/<code>touchend</code> pair with a threshold of 80 pixels. A short drag does nothing. A pull past the threshold closes the modal — the same <code>closeModal()</code> as the buttons.</p>
+      <div class="exhibit">
+        <div class="ex-head"><span>The swipe-down handler</span><span class="lang">app.js</span><span class="role">80px threshold, concept modal only</span></div>
+        <div class="side"><pre class="out">const conceptHandle = document.querySelector('#conceptModal .modal-handle');
+if (conceptHandle) {
+  let swipeActive = false;
+  let startY = 0;
+  conceptHandle.addEventListener('touchstart', (e) => {
+    swipeActive = true;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    if (!swipeActive) return;
+    swipeActive = false;
+    const endY = e.changedTouches[0].clientY;
+    if (endY - startY > 80) closeModal();
+  }, { passive: true });
+}</pre><span class="cap">the swipe is one channel — the threshold is what makes it feel deliberate</span></div>
+      </div>
+      <p>Escape works the same way on every page of the app: a single document-level listener. No modal registers its own key handler. The overlay tap is the simplest path of all — the overlay is one element, its click handler is <code>closeModal</code> itself.</p>
     </section>
     <!-- 04 -->
     <section id="s4">
       <div class="sec-head"><div class="sec-num">04</div><h2>The Chain</h2></div>
+
+      <div class="part" id="s4-quiz">
+        <h3 class="sub">Quiz Me — the modal that opens a modal</h3>
+        <p class="lede">One button opens a second sheet. The first one stays open underneath.</p>
+        <p>The concept sheet's footer is rendered by <code>openConcept</code> with one button: "Quiz Me". Its handler is <code>openQuiz(id)</code> — which renders the question and options into the quiz modal, then calls <code>openModal('quizModal')</code>. That is the stack in action: the quiz is pushed on top of the concept.</p>
+        <div class="exhibit">
+          <div class="ex-head"><span>Quiz Me</span><span class="lang">app.js</span><span class="role">openQuiz renders, then stacks</span></div>
+          <div class="side"><pre class="out">function openQuiz(id) {
+  const concept = CONCEPTS.find(c => c.id === id);
+  if (!concept) return;
+  quizAnsweredCorrectly = false;
+
+  document.getElementById('quizBody').innerHTML = `
+    &lt;div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+      &lt;h3 class="concept-title" style="margin-bottom:0;">${concept.title}&lt;/h3>
+      &lt;button class="btn btn-secondary btn-small" style="width:auto;padding:0.5rem 1rem;font-size:0.8125rem;" onclick="openResources(${id})">Resources&lt;/button>
+    &lt;/div>
+    &lt;div class="quiz-question">${concept.quiz.question}&lt;/div>
+    &lt;div class="quiz-options">
+      ${concept.quiz.options.map((opt, i) => `
+        &lt;button class="quiz-option" data-correct="${opt.correct}" onclick="checkAnswer(this, ${opt.correct}, ${id})">${opt.text}&lt;/button>
+      `).join('')}
+    &lt;/div>
+    &lt;div id="quizFeedback" style="margin-top:0.75rem;font-weight:700;font-size:0.9375rem;">&lt;/div>
+  `;
+  document.getElementById('quizFooter').innerHTML = `
+    &lt;button class="btn btn-secondary" onclick="closeModal()">Dismiss&lt;/button>
+  `;
+  openModal('quizModal');
+}</pre><span class="cap">same shape as openConcept: render, then open</span></div>
+        </div>
+      </div>
+      <div class="part" id="s4-next">
+        <h3 class="sub">Next Concept → — the 180ms hand-off</h3>
+        <p class="lede">A correct answer closes the quiz and opens the next concept.</p>
+        <p>A correct answer replaces the quiz footer with two buttons: "Next Concept →" and "Done". The next button does a two-step dance: <code>closeModal()</code>, then 180 milliseconds later <code>openConcept(nextId)</code>. The pause lets the closing animation finish before the next sheet slides in.</p>
+        <p>That hand-off pattern — close, wait, open — appears again in the bookmarks list. It is the app's way of chaining sheets without ever stacking two at once by mistake.</p>
+        <div class="exhibit">
+          <div class="ex-head"><span>The hand-off</span><span class="lang">app.js</span><span class="role">close, wait 180ms, open</span></div>
+          <div class="side"><pre class="out">const nextConcept = CONCEPTS.find(c => c.id > conceptId);
+const nextBtn = nextConcept ? `&lt;button class="btn btn-primary" onclick="closeModal();setTimeout(()=>openConcept(${nextConcept.id}),180)">Next Concept →&lt;/button>` : '';
+document.getElementById('quizFooter').innerHTML = `
+  ${nextBtn}
+  &lt;button class="btn btn-secondary" onclick="closeModal()">Done&lt;/button>
+`;</pre><span class="cap">the 180ms wait is the animation's exit fee</span></div>
+        </div>
+      </div>
     </section>
     <!-- 05 -->
     <section id="s5">
       <div class="sec-head"><div class="sec-num">05</div><h2>Bookmarks &amp; State</h2></div>
+
+      <div class="part" id="s5-bookmark">
+        <h3 class="sub">The ★ button — state inside the sheet</h3>
+        <p class="lede">The modal is not just chrome. It carries the learner's state.</p>
+        <p>Inside the concept sheet, next to the title, sits a bookmark button. Tapping it toggles the concept in <code>data.bookmarks</code>, saves the whole state object, and re-renders the concept — so the ★ reflects the new state. The same data drives the profile modal's bookmark list.</p>
+        <p>The reflection modal goes further: closing it saves a draft. <code>closeModal</code> has a special case for <code>reflectionModal</code> — it reads the textarea, the mood, and the prompt, and stores them before the sheet closes. Closing is not losing.</p>
+        <div class="exhibit">
+          <div class="ex-head"><span>Bookmark toggle</span><span class="lang">app.js</span><span class="role">toggle, save, re-render</span></div>
+          <div class="side"><pre class="out">function toggleBookmark(id) {
+  const data = getData();
+  const idx = data.bookmarks.indexOf(id);
+  if (idx >= 0) {
+    data.bookmarks.splice(idx, 1);
+  } else {
+    data.bookmarks.push(id);
+  }
+  saveData(data);
+  openConcept(id);
+  renderProfile();
+}</pre><span class="cap">the modal re-renders from the saved state</span></div>
+        </div>
+        <div class="exhibit">
+          <div class="ex-head"><span>Close = save</span><span class="lang">app.js</span><span class="role">closeModal's reflection special case</span></div>
+          <div class="side"><pre class="out">function closeModal() {
+  if (modalStack.length === 0) return;
+  const id = modalStack.pop();
+  const modal = document.getElementById(id);
+
+  if (id === 'reflectionModal') {
+    const text = document.getElementById('reflectionText').value.trim();
+    if (text || currentMood || currentPromptIndex !== null) {
+      const data = getData();
+      data.draftReflection = { text, mood: currentMood, promptIndex: currentPromptIndex };
+      saveData(data);
+    }
+  }
+
+  modal.classList.remove('open');
+  if (modalStack.length === 0) {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+}</pre><span class="cap">one function, one extra duty — close is a save point for the reflection</span></div>
+        </div>
+      </div>
     </section>
     <!-- 06 -->
     <section id="s6">
       <div class="sec-head"><div class="sec-num">06</div><h2>Glass &amp; Tokens</h2></div>
+
+      <div class="part" id="s6-glass">
+        <h3 class="sub">The visual layer — glass from two blurs</h3>
+        <p class="lede">The sheet looks expensive. It is two blur rules and four tokens.</p>
+        <p>Two <code>backdrop-filter</code> rules make the glass: 6px on the overlay, 32px on the sheet. The overlay's job is to dim the page; the sheet's job is to blur what sits under it. The surface itself is <code>var(--bg-glass)</code> — a semi-transparent token — with a glass border and a large shadow.</p>
+        <p>On phones the sheet slides to the bottom of the screen and becomes a true bottom sheet: full width, rounded only at the top, sliding up with a transform. The breakpoint is 640px. One CSS rule changes the shape; the JavaScript does not know the difference.</p>
+        <div class="exhibit">
+          <div class="ex-head"><span>The glass recipe</span><span class="lang">styles.css</span><span class="role">two blurs, one token surface</span></div>
+          <div class="side"><pre class="out">.modal-overlay {
+  background: rgba(0,0,0,0.28);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+}
+.modal {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.96);
+  width: calc(100% - 2.5rem);
+  max-width: 420px;
+  max-height: 88vh;
+  background: var(--bg-glass);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  z-index: 210;
+  opacity: 0;
+  pointer-events: none;
+}</pre><span class="cap">the sheet starts invisible — the .open class is the only switch</span></div>
+        </div>
+        <div class="exhibit">
+          <div class="ex-head"><span>The bottom-sheet switch</span><span class="lang">styles.css</span><span class="role">640px breakpoint</span></div>
+          <div class="side"><pre class="out">@media (max-width: 640px) {
+  .modal {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: translateY(100%);
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - 6vh);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    border-bottom: none;
+  }
+  .modal.open {
+    transform: translateY(0);
+  }
+}</pre><span class="cap">one media query turns the centered card into a bottom sheet</span></div>
+        </div>
+        <p>And that is the whole system: one array, one overlay, six sheets in the markup, one more born on demand, four ways out, one chain. The glass is two blurs. The state lives in one object. The concept modal looks like a platform — it is forty lines of vanilla JavaScript.</p>
+      </div>
     </section>
 
       <footer>
