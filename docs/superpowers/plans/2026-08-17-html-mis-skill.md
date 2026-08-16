@@ -67,10 +67,10 @@ Set `.sub`: `How one markdown file makes every probe article read the same.`
 - [ ] **Step 5: Replace the stats strip**
 
 ```html
-<div class="stat"><div class="n">566</div><div class="l">Skill lines</div></div>
+<div class="stat"><div class="n">415</div><div class="l">Skill lines</div></div>
 <div class="stat"><div class="n">119</div><div class="l">Lens lines</div></div>
 <div class="stat"><div class="n">3</div><div class="l">Filler levels</div></div>
-<div class="stat"><div class="n">5</div><div class="l">Check lies</div></div>
+<div class="stat"><div class="n">16</div><div class="l">Tokens</div></div>
 ```
 
 - [ ] **Step 6: Replace section heads + empty the six sections**
@@ -84,7 +84,7 @@ Each section keeps its sec-head structure. Set the six heads and make each secti
 | `#s3` | 03 | The Voice |
 | `#s4` | 04 | The Design System |
 | `#s5` | 05 | The Budget |
-| `#s6` | 06 | The Checks |
+| `#s6` | 06 | The Mistakes List |
 
 ```html
 <section id="s1">
@@ -108,8 +108,8 @@ Each section keeps its sec-head structure. Set the six heads and make each secti
 <a href="#s4-tokens" class="l2">Sixteen tokens</a>
 <a href="#s5" class="l1"><span class="num">05</span>The Budget</a>
 <a href="#s5-budget" class="l2">The lens</a>
-<a href="#s6" class="l1"><span class="num">06</span>The Checks</a>
-<a href="#s6-checks" class="l2">Five lies, one truth meter</a>
+<a href="#s6" class="l1"><span class="num">06</span>The Mistakes List</a>
+<a href="#s6-checks" class="l2">The mistakes list</a>
 ```
 
 - [ ] **Step 8: Set the footer date**
@@ -162,7 +162,7 @@ git commit -m "probe: html-mis page shell (task 1)"
 <div class="part" id="s1-skill">
   <h3 class="sub">Two files</h3>
   <p class="lede">Two files write every article on this site. One holds the rules. The other checks them.</p>
-  <p>The first file is SKILL.md. It lives in the html-mis skill folder. It is 566 lines of rules about one job: turn data into a clean HTML report. Before any article starts, the agent loads this file. The rules come first — the writing comes after.</p>
+  <p>The first file is SKILL.md. It lives in the html-mis skill folder. It is 415 lines of rules about one job: turn data into a clean HTML report. Before any article starts, the agent loads this file. The rules come first — the writing comes after.</p>
   <p>The second file is lens.py. It is 119 lines of Python. It opens the finished page at five screen widths and measures it. If a rule is broken — a line that sticks out, a hero that eats the screen — the lens prints it.</p>
   <div class="exhibit">
     <div class="ex-head"><span>The front matter</span><span class="lang">SKILL.md</span><span class="role">the door the agent enters through</span></div>
@@ -323,41 +323,36 @@ DEFAULT_VP = [(320, 568), (375, 667), (768, 1024), (1024, 768), (1440, 900)]</pr
 </div>
 ```
 
-- [ ] **Step 6: Section 06 — The Checks** (`#s6`)
+- [ ] **Step 6: Section 06 — The Mistakes List** (`#s6`)
 
 ```html
 <div class="part" id="s6-checks">
-  <h3 class="sub">Five lies, one truth meter</h3>
-  <p class="lede">The skill knows automated checks lie. Five ways, with fixes.</p>
-  <p>The last part of the skill is a warning about verification itself. A green check can call a broken page working. The skill names the five classic lies and the fix for each.</p>
+  <h3 class="sub">The mistakes list</h3>
+  <p class="lede">The skill also names the classic failures. Five of them, in its own words.</p>
+  <p>The last pages of the skill are not about building. They are about failing. A list of common mistakes sits near the end — the failures the skill has seen often enough to write down. Padding beyond the filler level is number one.</p>
   <div class="exhibit">
-    <div class="ex-head"><span>The five lies</span><span class="lang">SKILL.md</span><span class="role">what breaks, and what fixes it</span></div>
-    <div class="side"><pre class="out">| The lie | What happens | The fix |
-|---|---|---|
-| Synthetic clicks | `element.click()` (and `bctl click`) fires the handler without a real pointer — it skips hit-testing entirely | Never rely on it alone. Prove what a tap would hit |
-| Off-screen probes | `elementFromPoint` returns `NULL` below the fold; a scroll mismatch reads as "blocked" | Scroll the element into view first, then hit-test |
-| Frozen tabs | A hidden/occluded tab freezes CSS transitions — computed styles stay at start values (`visibility` stuck `hidden`) | Check `document.visibilityState`; neutralize transitions (`transition:none`) before asserting |
-| Missing keys | Remote key events don't deliver to real https pages — a working Escape handler looks dead | Test handlers with a synthetic `keydown`; test the UI path with real input |
-| Stale pages | Pages CDN lags ~85s and service workers serve old shells — you verify yesterday's build | Cache-bust with `?v=$(date +%s)`; check the SW cache name |</pre><span class="cap">a green check can call a broken page working — here are the five ways</span></div>
+    <div class="ex-head"><span>The common mistakes</span><span class="lang">SKILL.md</span><span class="role">five failures, written down so they stop happening</span></div>
+    <div class="side"><pre class="out">- **Padding with prose** beyond the chosen filler level (the #1 failure — cut it).
+- **Narrating the obvious** ("This section shows the languages used.").
+- **Inventing colors/styles** instead of using the token system above.
+- **Forgetting to ask the filler level** and silently shipping verbose.
+- **Redundant descriptors** under output previews — the artifact speaks for itself.</pre><span class="cap">the number one failure is prose past the budget</span></div>
   </div>
-  <p>The truth meter behind all five fixes is one DOM call: elementFromPoint(x, y). Ask the browser what a tap at that point would actually hit. Synthetic clicks skip that question. Hit-testing answers it.</p>
+  <p>Then the workflow — eight steps, from confirming the level to publishing. The last step matters most: report any uncertainty rather than dropping data. The skill prefers an honest gap over a full page.</p>
   <div class="exhibit">
-    <div class="ex-head"><span>The method</span><span class="lang">SKILL.md</span><span class="role">six rules that outrank every check</span></div>
-    <div class="side"><pre class="out">1. **Hit-test every interactive spot** with `document.elementFromPoint(x, y)` —
-   a closed modal/overlay must never be on top. This is the truth meter.
-2. **Use real input events**, not synthetic clicks. `bctl click` runs
-   `element.click()` via Runtime.evaluate — it bypasses hit-testing, so it
-   "works" even when an invisible layer swallows every real tap. Real taps
-   need CDP `Input.dispatchMouseEvent` (mousePressed + mouseReleased).
-3. **Keep test points in the viewport** — `elementFromPoint` returns `NULL`
-   off-screen.
-4. **Read computed styles with the tab state in mind** — in a hidden tab,
-   transitions are frozen at their start values.
-5. **Never verify yesterday's page** — cache-bust, check the SW version.
-6. **The human's device is the final oracle** — a real tap on a real phone
-   outranks every automated check.</pre><span class="cap">the checks can lie — these six rules are what actually count</span></div>
+    <div class="ex-head"><span>The workflow</span><span class="lang">SKILL.md</span><span class="role">eight steps, one honest last rule</span></div>
+    <div class="side"><pre class="out">1. Confirm filler level + scope.
+2. Gather/compute the data (read files if needed).
+3. Write the complete `mis_report.html`.
+4. Open/verify it renders, fits, and respects the filler level.
+5. Run `lens.py` to view the report across the pixel-budget spectrum
+   (320 → 1440); confirm no overflow and a lean hero at phone widths.
+6. Make it theme-aware (light + dark) and, if it's a probe, add a card to
+   `probe/index.html` with a search tag.
+7. Publish to GitHub Pages and verify the live URL (see *Publishing*).
+8. Report any uncertainty rather than dropping data.</pre><span class="cap">the last step is the honesty rule</span></div>
   </div>
-  <p>That is the whole machine: one file of rules, one script of checks, a word budget, a color budget, a pixel budget, and a truth meter. None of it is talent. All of it is constraints. The articles look the same because the rules are the same — the creativity goes into what to say, never into how to say it.</p>
+  <p>That is the whole machine: one file of rules, one script of checks, a word budget, a color budget, a pixel budget, and a list of the classic failures. None of it is talent. All of it is constraints. The articles look the same because the rules are the same — the creativity goes into what to say, never into how to say it.</p>
 </div>
 ```
 
@@ -452,7 +447,7 @@ Find the zoom IIFE (`zoomModal` / `querySelectorAll('.side')` block). Insert bef
   var versions = {
     min: '<h4 class="subhead">today\'s build</h4><div class="demo-stats"><span><b>3</b> articles</span><span><b>2</b> demos</span><span><b>1</b> bug</span></div><ul class="demo-checks"><li>concept-modal published</li><li>verification-lied published</li><li>html-mis article written</li></ul>',
     bal: '<h4 class="subhead">today\'s build</h4><div class="demo-stats"><span><b>3</b> articles</span><span><b>2</b> demos</span><span><b>1</b> bug</span></div><ul class="demo-checks"><li>concept-modal published</li><li>verification-lied published</li><li>html-mis article written</li></ul><p class="demo-note">Three articles shipped; the lens caught one overflow bug.</p>',
-    verb: '<h4 class="subhead">today\'s build</h4><div class="demo-stats"><span><b>3</b> articles</span><span><b>2</b> demos</span><span><b>1</b> bug</span></div><ul class="demo-checks"><li>concept-modal published</li><li>verification-lied published</li><li>html-mis article written</li></ul><p class="demo-note">Three articles shipped today. Two carried live demos — a modal stack and a filler dial. The lens caught one overflow bug at 320px before it reached a phone; the fix took two minutes. Both demos were hit-tested at every width, then published after the 85-second CDN wait.</p>'
+    verb: '<h4 class="subhead">today\'s build</h4><div class="demo-stats"><span><b>3</b> articles</span><span><b>2</b> demos</span><span><b>1</b> bug</span></div><ul class="demo-checks"><li>concept-modal published</li><li>verification-lied published</li><li>html-mis article written</li></ul><p class="demo-note">Three articles shipped today. Two carried live demos — a modal stack and a filler dial. The lens caught one overflow bug at 320px before it reached a phone; the fix took two minutes. Both demos were hit-tested at every width, then published after the CDN wait.</p>'
   };
   var btns = {
     min: document.getElementById('demoMin'),
@@ -497,7 +492,7 @@ bctl title    # expect d3:true
 # 4. verbose: the paragraph
 bctl click "#demoVerb"
 sleep 1
-bctl eval "var n=document.getElementById('demoBody').querySelector('.demo-note'); document.title='d4:'+(n&&n.textContent.indexOf('85-second CDN wait')>-1); 'x'"
+bctl eval "var n=document.getElementById('demoBody').querySelector('.demo-note'); document.title='d4:'+(n&&n.textContent.indexOf('CDN wait')>-1); 'x'"
 sleep 1
 bctl title    # expect d4:true
 # 5. active class moves
@@ -551,7 +546,7 @@ git commit -m "probe: html-mis filler dial demo (task 3)"
 - [ ] **Step 2: Add the STATS entry** — after the concept-modal line:
 
 ```js
-'probe/html-mis.html': '566 lines · 3 levels · 16 tokens · 1 lens',
+'probe/html-mis.html': '415 lines · 3 levels · 16 tokens · 1 lens',
 ```
 
 - [ ] **Step 3: Meta-check — the article must obey the skill it describes**
@@ -605,7 +600,7 @@ bctl title    # expect live1:h1:The consistency machine stats:4 demo:true
 # live demo toggle (synthetic click — labelled):
 bctl click "#demoVerb"
 sleep 1
-bctl eval "var n=document.getElementById('demoBody').querySelector('.demo-note'); document.title='live2:'+(n&&n.textContent.indexOf('85-second CDN wait')>-1); 'x'"
+bctl eval "var n=document.getElementById('demoBody').querySelector('.demo-note'); document.title='live2:'+(n&&n.textContent.indexOf('CDN wait')>-1); 'x'"
 sleep 1
 bctl title    # expect live2:true
 bctl goto "https://nd28.github.io/probe/?v=$(date +%s)"
@@ -615,7 +610,7 @@ sleep 1
 bctl title    # expect live3:true
 bctl click "li[data-file='probe/html-mis.html'] a"
 sleep 1
-bctl eval "var p=document.getElementById('popModal'); document.title='live4:'+p.classList.contains('open')+' statsline:'+p.textContent.includes('566 lines · 3 levels · 16 tokens · 1 lens'); 'x'"
+bctl eval "var p=document.getElementById('popModal'); document.title='live4:'+p.classList.contains('open')+' statsline:'+p.textContent.includes('415 lines · 3 levels · 16 tokens · 1 lens'); 'x'"
 sleep 1
 bctl title    # expect live4:true statsline:true
 bctl console  # expect: nothing

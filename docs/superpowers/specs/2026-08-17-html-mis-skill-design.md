@@ -27,7 +27,7 @@ Structure: **journey through the skill** (same shape as concept-modal).
 - Hero title: `html-mis skill`, h1: `The consistency machine`
 - Sub: `How one markdown file makes every probe article read the same.`
 - Pills: Date 17 Aug 2026 · `probe/html-mis.html` · Read 12 min · `skill: html-mis`
-- Stats (4): `566` skill lines · `119` lens lines · `3` filler levels · `5` check lies
+- Stats (4): `415` skill lines · `119` lens lines · `3` filler levels · `16` tokens
 - Footer `#modtime`: 17 Aug 2026
 
 ## Sections (6) + TOC (7 l2)
@@ -61,11 +61,13 @@ overflow is a budget violation). Exhibit: real `lens.py` output table verbatim
 (from this session's runs) + `DEFAULT_VP` list. Prose: the lens shows the
 budget being spent.
 
-### 06 The checks — `#s6-checks`
-The five-lies table verbatim (synthetic clicks, off-screen probes, frozen tabs,
-missing keys, stale pages). The truth meter: `elementFromPoint` + the six
-verification rules. Closing meta point: consistency comes from constraints,
-not talent.
+### 06 The mistakes list — `#s6-checks`
+The Common mistakes list verbatim (5 items) + the 8-step workflow verbatim.
+Closing meta point: consistency comes from constraints, not talent.
+
+Note (17 Aug): the skill was revised mid-build — the old "Verifying the
+report" section (five-lies table) was removed by the author; the article
+describes the skill as it exists now.
 
 ## Live demo spec (02)
 
