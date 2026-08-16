@@ -142,6 +142,20 @@
       .meta { flex-direction: column; align-items: flex-start; gap: 2px; }
       .mod { text-align: left; }
     }
+    .modal-backdrop{position:fixed;inset:0;background:rgba(21,19,28,.6);backdrop-filter:blur(12px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s,visibility .3s;z-index:100}
+    .modal-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}
+    .modal{position:fixed;inset:0;z-index:101;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s,visibility .3s}
+    .modal.open{opacity:1;visibility:visible;pointer-events:auto}
+    .modal-card{width:min(520px,100%);background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:0 24px 64px rgba(0,0,0,.4)}
+    .modal-card .file{display:block;margin-bottom:10px}
+    .modal-card h2{margin:0 0 8px;font-size:22px;letter-spacing:-.02em;color:var(--text)}
+    .modal-card .desc{color:var(--muted);font-size:14px;margin:0 0 16px}
+    .modal-card .meta-line{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:14px;margin-bottom:18px}
+    .modal-actions{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .modal-close{border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:999px;padding:9px 16px;font-family:var(--font);font-size:13px;cursor:pointer}
+    .modal-close:hover{border-color:var(--pink-bold)}
+    .modal-open-link{color:var(--mint);font-weight:600;text-decoration:none;font-size:14px}
+    .modal-open-link:hover{text-decoration:underline}
     footer { margin-top: 56px; color: var(--muted); font-size: 13px; }
     footer a { color: var(--mint); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
@@ -199,6 +213,11 @@
     </ul>
     <p class="empty" hidden>nothing matches — try another word.</p>
     <footer>probe · <a href="https://nd28.github.io">nd28.github.io</a></footer>
+  </div>
+
+  <div class="modal-backdrop" id="popBackdrop"></div>
+  <div class="modal" id="popModal" role="dialog" aria-modal="true" aria-label="Probe details">
+    <div class="modal-card" id="popCard"></div>
   </div>
 
   <script>
@@ -311,6 +330,54 @@
         });
         items.forEach(function (li) { listEl.appendChild(li); });
       });
+
+      // card details popup
+      var popModal = document.getElementById('popModal');
+      var popBackdrop = document.getElementById('popBackdrop');
+      var popCard = document.getElementById('popCard');
+      var lastFocus = null;
+      var STATS = {
+        'probe/diskvis.rb.html': 'written twice — Ruby and Perl',
+        'probe/microservices-rl-pwa.html': '5 fixes: glass, modal, swipe, stats, no greeting',
+        'probe/moodie-fix.html': '1 misplaced quote · 3 lines · 1 invisible tap-blocking modal'
+      };
+      function closePopup() {
+        popModal.classList.remove('open');
+        popBackdrop.classList.remove('open');
+        if (lastFocus) lastFocus.focus();
+      }
+      function openPopup(li) {
+        var a = li.querySelector('a');
+        var file = li.getAttribute('data-file');
+        var title = li.querySelector('.title').textContent;
+        var desc = li.querySelector('.desc').textContent;
+        var mod = li.querySelector('.mod').textContent;
+        var stat = STATS[file] || '';
+        popCard.innerHTML =
+          '<span class="file">' + file + '</span>' +
+          '<h2>' + title + '</h2>' +
+          '<p class="desc">' + desc + '</p>' +
+          '<div class="meta-line"><span>' + (mod || '') + '</span><span>' + stat + '</span></div>' +
+          '<div class="modal-actions">' +
+          '<a class="modal-open-link" href="' + a.getAttribute('href') + '">Open probe →</a>' +
+          '<button type="button" class="modal-close" id="popClose">Close</button>' +
+          '</div>';
+        lastFocus = a;
+        popModal.classList.add('open');
+        popBackdrop.classList.add('open');
+        document.getElementById('popClose').focus();
+        document.getElementById('popClose').addEventListener('click', closePopup);
+        popModal.querySelector('.modal-open-link').addEventListener('click', closePopup);
+      }
+      items.forEach(function (li) {
+        li.addEventListener('click', function (e) {
+          var a = li.querySelector('a');
+          if (a && e.target.closest && e.target.closest('a')) e.preventDefault();
+          openPopup(li);
+        });
+      });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePopup(); });
+      popBackdrop.addEventListener('click', closePopup);
     })();
   </script>
 </body>
