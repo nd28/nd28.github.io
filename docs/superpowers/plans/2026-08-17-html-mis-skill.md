@@ -32,13 +32,13 @@
 **Interfaces:**
 - Produces: page with `#s1`…`#s6` placeholder sections, hero stats block, TOC with 13 anchors, `#modtime` footer — all consumed by Tasks 2–4.
 
-- [ ] **Step 1: Copy the base**
+- [x] **Step 1: Copy the base**
 
 ```bash
 cp probe/microservices-rl-pwa.html probe/html-mis.html
 ```
 
-- [ ] **Step 2: Replace `<title>`**
+- [x] **Step 2: Replace `<title>`**
 
 Find the `<title>` tag and set:
 
@@ -46,11 +46,11 @@ Find the `<title>` tag and set:
 <title>Session MIS Report — The Consistency Machine</title>
 ```
 
-- [ ] **Step 3: Replace the herobar**
+- [x] **Step 3: Replace the herobar**
 
 Find the `.herobar` div (two spans: title + one-liner). Set title `html-mis skill`, one-liner `one file · one script · zero invented styles`. If the base herobar markup differs, adapt to its structure (span classes only).
 
-- [ ] **Step 4: Replace the hero meta pills + h1 + sub**
+- [x] **Step 4: Replace the hero meta pills + h1 + sub**
 
 Replace the `.meta` row inside `.hero` with:
 
@@ -64,7 +64,7 @@ Replace the `.meta` row inside `.hero` with:
 Set `h1`: `The consistency machine`
 Set `.sub`: `How one markdown file makes every probe article read the same.`
 
-- [ ] **Step 5: Replace the stats strip**
+- [x] **Step 5: Replace the stats strip**
 
 ```html
 <div class="stat"><div class="n">415</div><div class="l">Skill lines</div></div>
@@ -73,7 +73,7 @@ Set `.sub`: `How one markdown file makes every probe article read the same.`
 <div class="stat"><div class="n">16</div><div class="l">Tokens</div></div>
 ```
 
-- [ ] **Step 6: Replace section heads + empty the six sections**
+- [x] **Step 6: Replace section heads + empty the six sections**
 
 Each section keeps its sec-head structure. Set the six heads and make each section body empty:
 
@@ -94,7 +94,7 @@ Each section keeps its sec-head structure. Set the six heads and make each secti
 
 (same pattern for s2–s6 with their numbers/titles)
 
-- [ ] **Step 7: Replace the TOC**
+- [x] **Step 7: Replace the TOC**
 
 ```html
 <a href="#s1" class="l1"><span class="num">01</span>The Skill</a>
@@ -112,11 +112,11 @@ Each section keeps its sec-head structure. Set the six heads and make each secti
 <a href="#s6-checks" class="l2">The mistakes list</a>
 ```
 
-- [ ] **Step 8: Set the footer date**
+- [x] **Step 8: Set the footer date**
 
 In `#modtime`'s initial content (before the JS fills it), set `17 Aug 2026`.
 
-- [ ] **Step 9: Verify**
+- [x] **Step 9: Verify**
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
@@ -138,7 +138,7 @@ cd /Users/nileshsuthar/.agents/skills/html-mis && python3 lens.py "html-mis" --m
 
 Expected: `ovf` column `no` at every row (320/375/768/1024/1440).
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 git add probe/html-mis.html
@@ -156,7 +156,7 @@ git commit -m "probe: html-mis page shell (task 1)"
 - Consumes: empty sections + TOC from Task 1.
 - Produces: all 12 exhibits + section prose + `#s2-demo` marker (filled by Task 3).
 
-- [ ] **Step 1: Section 01 — The Skill** (`#s1`)
+- [x] **Step 1: Section 01 — The Skill** (`#s1`)
 
 ```html
 <div class="part" id="s1-skill">
@@ -175,7 +175,7 @@ description: Use when the user asks for an MIS (Management Information System) r
 </div>
 ```
 
-- [ ] **Step 2: Section 02 — The Dial** (`#s2`) — prose part + demo marker
+- [x] **Step 2: Section 02 — The Dial** (`#s2`) — prose part + demo marker
 
 ```html
 <div class="part" id="s2-dial">
@@ -198,7 +198,7 @@ description: Use when the user asks for an MIS (Management Information System) r
 </div>
 ```
 
-- [ ] **Step 3: Section 03 — The Voice** (`#s3`)
+- [x] **Step 3: Section 03 — The Voice** (`#s3`)
 
 ```html
 <div class="part" id="s3-voice">
@@ -226,7 +226,7 @@ Keep every value — drop the polish, never the data.</pre><span class="cap">the
 </div>
 ```
 
-- [ ] **Step 4: Section 04 — The Design System** (`#s4`)
+- [x] **Step 4: Section 04 — The Design System** (`#s4`)
 
 ```html
 <div class="part" id="s4-tokens">
@@ -274,7 +274,7 @@ Keep every value — drop the polish, never the data.</pre><span class="cap">the
 </div>
 ```
 
-- [ ] **Step 5: Section 05 — The Budget** (`#s5`)
+- [x] **Step 5: Section 05 — The Budget** (`#s5`)
 
 ```html
 <div class="part" id="s5-budget">
@@ -323,7 +323,7 @@ DEFAULT_VP = [(320, 568), (375, 667), (768, 1024), (1024, 768), (1440, 900)]</pr
 </div>
 ```
 
-- [ ] **Step 6: Section 06 — The Mistakes List** (`#s6`)
+- [x] **Step 6: Section 06 — The Mistakes List** (`#s6`)
 
 ```html
 <div class="part" id="s6-checks">
@@ -356,7 +356,7 @@ DEFAULT_VP = [(320, 568), (375, 667), (768, 1024), (1024, 768), (1440, 900)]</pr
 </div>
 ```
 
-- [ ] **Step 7: Verify greps**
+- [x] **Step 7: Verify greps**
 
 ```bash
 cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages
@@ -365,7 +365,7 @@ grep -c 'id="s[0-9]-[a-z]*"' probe/html-mis.html  # expect 7 (s1-skill s2-dial s
 grep -c 'DEMO MARKER' probe/html-mis.html         # expect 1
 ```
 
-- [ ] **Step 8: Verify zoom**
+- [x] **Step 8: Verify zoom**
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
@@ -376,7 +376,7 @@ bctl eval "var m=document.getElementById('zoomModal'); document.querySelector('#
 bctl eval "var m=document.getElementById('zoomModal'); m.classList.remove('open'); document.getElementById('zoomBackdrop').classList.remove('open'); 'x'"
 ```
 
-- [ ] **Step 9: Verify lens**
+- [x] **Step 9: Verify lens**
 
 ```bash
 cd /Users/nileshsuthar/.agents/skills/html-mis && python3 lens.py "html-mis" --metrics-only
@@ -384,7 +384,7 @@ cd /Users/nileshsuthar/.agents/skills/html-mis && python3 lens.py "html-mis" --m
 
 Expected: `ovf` = `no` at every row.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 git add probe/html-mis.html
@@ -402,7 +402,7 @@ git commit -m "probe: html-mis sections 01-06 (task 2)"
 - Consumes: `#s2-demo` marker from Task 2.
 - Produces: ids `#demoMin`, `#demoBal`, `#demoVerb`, `#demoBody`; verified by Task 4's live checks.
 
-- [ ] **Step 1: Add demo CSS before `</style>`** (tokens only — `--surface`, `--surface-2`, `--border`, `--pink-bold`, `--pink`, `--muted`, `--text`, `--r-sm`, `--r-md`, `--mono`)
+- [x] **Step 1: Add demo CSS before `</style>`** (tokens only — `--surface`, `--surface-2`, `--border`, `--pink-bold`, `--pink`, `--muted`, `--text`, `--r-sm`, `--r-md`, `--mono`)
 
 ```css
 .demo-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 16px; }
@@ -425,7 +425,7 @@ git commit -m "probe: html-mis sections 01-06 (task 2)"
 .demo-note { margin: 12px 0 0; color: var(--muted); font-size: 13.5px; }
 ```
 
-- [ ] **Step 2: Replace the `<!-- DEMO MARKER — Task 3 fills this part -->` line** with:
+- [x] **Step 2: Replace the `<!-- DEMO MARKER — Task 3 fills this part -->` line** with:
 
 ```html
 <p class="lede">One sample section, three levels. Same data, different word budget.</p>
@@ -437,7 +437,7 @@ git commit -m "probe: html-mis sections 01-06 (task 2)"
 <div class="demo-frame" id="demoBody" aria-live="polite"></div>
 ```
 
-- [ ] **Step 3: Add the demo IIFE before the zoom IIFE**
+- [x] **Step 3: Add the demo IIFE before the zoom IIFE**
 
 Find the zoom IIFE (`zoomModal` / `querySelectorAll('.side')` block). Insert before it:
 
@@ -469,7 +469,7 @@ Find the zoom IIFE (`zoomModal` / `querySelectorAll('.side')` block). Insert bef
 </script>
 ```
 
-- [ ] **Step 4: Verify the demo (truth meter + level swaps)**
+- [x] **Step 4: Verify the demo (truth meter + level swaps)**
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
@@ -503,14 +503,14 @@ bctl title    # expect d5:true
 bctl eval "document.title='Session MIS Report — The Consistency Machine'; 'x'"
 ```
 
-- [ ] **Step 5: Lens + console**
+- [x] **Step 5: Lens + console**
 
 ```bash
 cd /Users/nileshsuthar/.agents/skills/html-mis && python3 lens.py "html-mis" --metrics-only   # ovf no at every row
 bctl console   # expect: nothing
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add probe/html-mis.html
@@ -528,7 +528,7 @@ git commit -m "probe: html-mis filler dial demo (task 3)"
 **Interfaces:**
 - Consumes: finished page from Task 3.
 
-- [ ] **Step 1: Add the index card** — after the concept-modal card (`</li>` of `data-file="probe/concept-modal.html"`), before `</ul>`:
+- [x] **Step 1: Add the index card** — after the concept-modal card (`</li>` of `data-file="probe/concept-modal.html"`), before `</ul>`:
 
 ```html
 <li data-file="probe/html-mis.html">
@@ -543,13 +543,13 @@ git commit -m "probe: html-mis filler dial demo (task 3)"
 </li>
 ```
 
-- [ ] **Step 2: Add the STATS entry** — after the concept-modal line:
+- [x] **Step 2: Add the STATS entry** — after the concept-modal line:
 
 ```js
 'probe/html-mis.html': '415 lines · 3 levels · 16 tokens · 1 lens',
 ```
 
-- [ ] **Step 3: Meta-check — the article must obey the skill it describes**
+- [x] **Step 3: Meta-check — the article must obey the skill it describes**
 
 Banned idioms (quoted in exhibits are fine — the check excludes `<pre>` and `<style>` content):
 
@@ -563,7 +563,7 @@ grep -oE '#[0-9a-fA-F]{3,6}' /tmp/htmlmis-prose.txt
 # expect: NO output
 ```
 
-- [ ] **Step 4: Final local pass**
+- [x] **Step 4: Final local pass**
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
@@ -578,7 +578,7 @@ cd /Users/nileshsuthar/.agents/skills/html-mis && python3 lens.py "html-mis" --m
 bctl console   # expect: nothing
 ```
 
-- [ ] **Step 5: Commit + push**
+- [x] **Step 5: Commit + push**
 
 ```bash
 cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages
@@ -587,7 +587,7 @@ git commit -m "probe: 'the consistency machine' — how the html-mis skill write
 git push origin master
 ```
 
-- [ ] **Step 6: Live verification (after 85s CDN wait)**
+- [x] **Step 6: Live verification (after 85s CDN wait)**
 
 ```bash
 sleep 85
@@ -616,7 +616,7 @@ bctl title    # expect live4:true statsline:true
 bctl console  # expect: nothing
 ```
 
-- [ ] **Step 7: Tick the plan checkboxes + commit**
+- [x] **Step 7: Tick the plan checkboxes + commit**
 
 ```bash
 cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages
@@ -626,4 +626,4 @@ git commit -m "plan: html-mis checkboxes complete"
 git push origin master
 ```
 
-- [ ] **Step 8: Report** — final summary to the user: commits, live URL, verification evidence, and the meta-check results (article passes its own skill's rules).
+- [x] **Step 8: Report** — final summary to the user: commits, live URL, verification evidence, and the meta-check results (article passes its own skill's rules).
