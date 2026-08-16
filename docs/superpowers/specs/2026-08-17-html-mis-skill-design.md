@@ -30,7 +30,7 @@ Structure: **journey through the skill** (same shape as concept-modal).
 - Stats (4): `566` skill lines · `119` lens lines · `3` filler levels · `5` check lies
 - Footer `#modtime`: 17 Aug 2026
 
-## Sections (6) + TOC (12 l2)
+## Sections (6) + TOC (7 l2)
 
 ### 01 The skill — `#s1-skill`
 One folder, two files: `SKILL.md` (the rules) and `lens.py` (the verifier).
