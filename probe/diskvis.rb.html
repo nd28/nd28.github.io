@@ -385,6 +385,16 @@
     .foot-top { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; color: var(--text); font-size: 14px; }
     .foot-top .probe { font-family: var(--mono); color: var(--mint); }
     .foot-meta { margin-top: 8px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+    .modal-backdrop{position:fixed;inset:0;background:rgba(21,19,28,.6);backdrop-filter:blur(12px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s,visibility .3s;z-index:100}
+    .modal-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}
+    .modal{position:fixed;inset:0;z-index:101;display:flex;align-items:center;justify-content:center;padding:28px 24px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s,visibility .3s}
+    .modal.open{opacity:1;visibility:visible;pointer-events:auto}
+    .zoom-card{width:min(620px,100%);max-height:80vh;overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:0 24px 64px rgba(0,0,0,.4);outline:none}
+    .zoom-card .side{font-size:19px;line-height:1.55;padding:20px;border-radius:var(--r-md);cursor:default}
+    .zoom-card .note{display:block;margin-top:12px}
+    .zoom-card .tag{font-size:13px}
+    .side{cursor:zoom-in}
+    .side:hover{border-color:var(--pink-bold)}
   </style>
 </head>
 <body>
@@ -536,6 +546,11 @@
     </aside>
   </div>
 
+  <div class="modal-backdrop" id="zoomBackdrop"></div>
+  <div class="modal" id="zoomModal" role="dialog" aria-modal="true" aria-label="Zoomed exhibit">
+    <div class="zoom-card" id="zoomCard" tabindex="-1"></div>
+  </div>
+
   <script>
     (function () {
       var links = Array.prototype.slice.call(
@@ -593,6 +608,33 @@
             ', ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
         }
       }
+    })();
+
+    (function () {
+      var modal = document.getElementById('zoomModal');
+      var backdrop = document.getElementById('zoomBackdrop');
+      var card = document.getElementById('zoomCard');
+      var last = null;
+      function close() {
+        modal.classList.remove('open');
+        backdrop.classList.remove('open');
+        if (last) last.focus();
+      }
+      document.querySelectorAll('.side').forEach(function (side) {
+        side.setAttribute('tabindex', '0');
+        side.setAttribute('role', 'button');
+        side.addEventListener('click', function () {
+          card.innerHTML = '';
+          card.appendChild(side.cloneNode(true));
+          last = side;
+          modal.classList.add('open');
+          backdrop.classList.add('open');
+          card.focus();
+        });
+      });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+      backdrop.addEventListener('click', close);
+      modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
     })();
   </script>
 </body>
