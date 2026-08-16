@@ -28,20 +28,20 @@
 - Consumes: the verified shell of `probe/microservices-rl-pwa.html` (style block, herobar, TOC aside, footer, zoom modal markup + JS).
 - Produces: the full page skeleton with `<title>`, hero, stats strip; zoom modal (`#zoomModal`, `#zoomBackdrop`, `#zoomCard`) working; empty sections 01–05 placeholders to be filled by Tasks 2–4.
 
-- [ ] **Step 1: Copy the base file**
+- [x] **Step 1: Copy the base file**
 
 ```bash
 cp /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages/probe/microservices-rl-pwa.html \
    /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages/probe/verification-lied.html
 ```
 
-- [ ] **Step 2: Replace the `<title>` and meta description**
+- [x] **Step 2: Replace the `<title>` and meta description**
 
 ```html
 <title>Session MIS Report — The Verification Lied</title>
 ```
 
-- [ ] **Step 3: Replace the hero block** (the `<header class="hero">` ... `</header>` section) with:
+- [x] **Step 3: Replace the hero block** (the `<header class="hero">` ... `</header>` section) with:
 
 ```html
       <!-- HERO -->
@@ -57,7 +57,7 @@ cp /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages/probe/mic
     </header>
 ```
 
-- [ ] **Step 4: Replace the stats strip** with:
+- [x] **Step 4: Replace the stats strip** with:
 
 ```html
     <!-- AT A GLANCE -->
@@ -69,9 +69,9 @@ cp /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages/probe/mic
     </div>
 ```
 
-- [ ] **Step 5: Strip the copied report's body sections** — delete every `<section id="s...">` block and its comments from the copy (keep only the empty `<!-- -->` markers), leaving the shell: herobar, hero, stats, footer, TOC aside (edit TOC links to `#s1`…`#s5`), zoom modal markup, and the script. Rename `#modtime` footer date to `16 Aug 2026`.
+- [x] **Step 5: Strip the copied report's body sections** — delete every `<section id="s...">` block and its comments from the copy (keep only the empty `<!-- -->` markers), leaving the shell: herobar, hero, stats, footer, TOC aside (edit TOC links to `#s1`…`#s5`), zoom modal markup, and the script. Rename `#modtime` footer date to `16 Aug 2026`.
 
-- [ ] **Step 6: Verify the shell** — page opens, hero + stats render, zoom modal exists:
+- [x] **Step 6: Verify the shell** — page opens, hero + stats render, zoom modal exists:
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
@@ -82,7 +82,7 @@ bctl title
 
 Expected: `h1:The verification lied | stats:4 | zoom:true`
 
-- [ ] **Step 7: Overflow check**
+- [x] **Step 7: Overflow check**
 
 ```bash
 cd /Users/nileshsuthar/.agents/skills/html-mis && python3 lens.py "verification-lied" --metrics-only
@@ -101,7 +101,7 @@ Expected: no overflow 320→1440.
 - Consumes: the shell from Task 1.
 - Produces: `<section id="s1">` with five `.lie-card` blocks, each containing a `.side` exhibit (zoomable via Task 1's plumbing). The live demo (Task 3) mounts after these cards.
 
-- [ ] **Step 1: Insert section 01** — replace the `<!-- 01 -->` marker with:
+- [x] **Step 1: Insert section 01** — replace the `<!-- 01 -->` marker with:
 
 ```html
     <!-- 01 THE FIVE LIES -->
@@ -165,7 +165,7 @@ moodie-v3  network-first → shipped the fix</pre>
     </section>
 ```
 
-- [ ] **Step 2: Verify section 01** — grep the five ids, zoom a `.side` exhibit:
+- [x] **Step 2: Verify section 01** — grep the five ids, zoom a `.side` exhibit:
 
 ```bash
 grep -c 'id="s1-lie' probe/verification-lied.html   # expected: 5
@@ -174,7 +174,7 @@ bctl eval "document.querySelector('#s1 .side').scrollIntoView({block:'center'});
 bctl title   # expected: zoomOpen:true
 ```
 
-- [ ] **Step 3: Overflow check** — `python3 lens.py "verification-lied" --metrics-only` → no overflow 320→1440.
+- [x] **Step 3: Overflow check** — `python3 lens.py "verification-lied" --metrics-only` → no overflow 320→1440.
 
 ---
 
@@ -187,7 +187,7 @@ bctl title   # expected: zoomOpen:true
 - Consumes: section 01 from Task 2.
 - Produces: `#demoBox` card with `#demoBtn` (fake button), `#demoToggle` (toggle), `#demoLayer` (invisible full-screen layer — deliberately the WRONG pattern), `#demoReadout` (elementFromPoint readout). Own IIFE; no CSS collisions (no `.modal` reuse).
 
-- [ ] **Step 1: Add the demo CSS** — inside the `<style>` block, before `</style>`:
+- [x] **Step 1: Add the demo CSS** — inside the `<style>` block, before `</style>`:
 
 ```css
     .demo-box{border:1px dashed var(--border);border-radius:var(--r-md);padding:24px;background:var(--surface-2);margin-top:32px}
@@ -203,7 +203,7 @@ bctl title   # expected: zoomOpen:true
     #demoReadout{font-family:var(--mono);font-size:12px;color:var(--mint);margin:14px 0 0}
 ```
 
-- [ ] **Step 2: Add the demo markup** — inside section 01, after the last lie `.part`, before `</section>`:
+- [x] **Step 2: Add the demo markup** — inside section 01, after the last lie `.part`, before `</section>`:
 
 ```html
       <div class="demo-box">
@@ -218,7 +218,7 @@ bctl title   # expected: zoomOpen:true
       </div>
 ```
 
-- [ ] **Step 3: Add the demo JS** — a new IIFE before the zoom IIFE in the script:
+- [x] **Step 3: Add the demo JS** — a new IIFE before the zoom IIFE in the script:
 
 ```js
     (function () {
@@ -244,7 +244,7 @@ bctl title   # expected: zoomOpen:true
     })();
 ```
 
-- [ ] **Step 4: Verify the demo — hit-tests only, no real-tap claims**
+- [x] **Step 4: Verify the demo — hit-tests only, no real-tap claims**
 
 ```bash
 bctl goto "file:///var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages/probe/verification-lied.html"
@@ -261,7 +261,7 @@ bctl eval "document.title='off2:'+document.getElementById('demoReadout').textCon
 
 Layer off → button is on top. Layer on → `#demoLayer` is on top. Toggle toggles back.
 
-- [ ] **Step 5: Overflow check** — `python3 lens.py "verification-lied" --metrics-only` → no overflow 320→1440.
+- [x] **Step 5: Overflow check** — `python3 lens.py "verification-lied" --metrics-only` → no overflow 320→1440.
 
 ---
 
@@ -274,7 +274,7 @@ Layer off → button is on top. Layer on → `#demoLayer` is on top. Toggle togg
 - Consumes: shell (Task 1), section 01 (Tasks 2–3).
 - Produces: `<section id="s2">` (case study), `<section id="s3">` (method), `<section id="s4">` (learnings), `<section id="s5">` (tools). TOC links updated.
 
-- [ ] **Step 1: Insert section 02 — the one bug (case study)** — replace the `<!-- 02 -->` marker with:
+- [x] **Step 1: Insert section 02 — the one bug (case study)** — replace the `<!-- 02 -->` marker with:
 
 ```html
     <!-- 02 THE ONE BUG -->
@@ -334,7 +334,7 @@ elementFromPoint(garden spot) → the spot, reachable</pre>
     </section>
 ```
 
-- [ ] **Step 2: Insert section 03 — the method that doesn't lie** — replace the `<!-- 03 -->` marker with:
+- [x] **Step 2: Insert section 03 — the method that doesn't lie** — replace the `<!-- 03 -->` marker with:
 
 ```html
     <!-- 03 THE METHOD -->
@@ -353,7 +353,7 @@ elementFromPoint(garden spot) → the spot, reachable</pre>
     </section>
 ```
 
-- [ ] **Step 3: Insert section 04 — key learnings** — replace the `<!-- 04 -->` marker with:
+- [x] **Step 3: Insert section 04 — key learnings** — replace the `<!-- 04 -->` marker with:
 
 ```html
     <!-- 04 KEY LEARNINGS -->
@@ -369,7 +369,7 @@ elementFromPoint(garden spot) → the spot, reachable</pre>
     </section>
 ```
 
-- [ ] **Step 4: Insert section 05 — probes & tools** — replace the `<!-- 05 -->` marker with:
+- [x] **Step 4: Insert section 05 — probes & tools** — replace the `<!-- 05 -->` marker with:
 
 ```html
     <!-- 05 PROBES & TOOLS -->
@@ -387,7 +387,7 @@ elementFromPoint(garden spot) → the spot, reachable</pre>
     </section>
 ```
 
-- [ ] **Step 5: Update the TOC** — `#s1`…`#s5` entries with the lie sub-links:
+- [x] **Step 5: Update the TOC** — `#s1`…`#s5` entries with the lie sub-links:
 
 ```html
         <a href="#s1" class="l1"><span class="num">01</span>The five lies</a>
@@ -408,7 +408,7 @@ elementFromPoint(garden spot) → the spot, reachable</pre>
         <a href="#s5" class="l1"><span class="num">05</span>Probes &amp; tools</a>
 ```
 
-- [ ] **Step 6: Verify sections 02–05** — grep all section ids; zoom still opens; overflow clean.
+- [x] **Step 6: Verify sections 02–05** — grep all section ids; zoom still opens; overflow clean.
 
 ```bash
 grep -c 'id="s[1-5]"' probe/verification-lied.html   # expected: 5
@@ -428,13 +428,13 @@ python3 lens.py "verification-lied" --metrics-only   # no overflow 320→1440
 - Consumes: the finished page (Tasks 1–4).
 - Produces: published report + index popup stats line; live-verified page.
 
-- [ ] **Step 1: Add the STATS map entry** — in `probe/index.html`, inside the `STATS` object (alphabetical, after `moodie-fix.html`):
+- [x] **Step 1: Add the STATS map entry** — in `probe/index.html`, inside the `STATS` object (alphabetical, after `moodie-fix.html`):
 
 ```js
         'probe/verification-lied.html': '1 invisible modal · 5 lies · 0 caught by .click()',
 ```
 
-- [ ] **Step 2: Full local verification**
+- [x] **Step 2: Full local verification**
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
@@ -452,13 +452,13 @@ bctl eval "document.title='off2:'+document.getElementById('demoReadout').textCon
 
 Expected: `zoom:true`; `off:` ends with the button; `on:` ends with the layer; `off2:` back to the button. Console: no errors.
 
-- [ ] **Step 3: Commit and push**
+- [x] **Step 3: Commit and push**
 
 ```bash
 cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git add probe/verification-lied.html probe/index.html && git commit -m "probe: 'the verification lied' — five lies, one bug, the method that doesn't lie" && git push origin master
 ```
 
-- [ ] **Step 4: Wait ~85s, verify live**
+- [x] **Step 4: Wait ~85s, verify live**
 
 ```bash
 sleep 85
@@ -474,7 +474,7 @@ bctl eval "document.title='card:'+!!document.querySelector('.list li[data-file=\
 
 Expected: `card:true`; clicking that card opens the popup showing the new stats line.
 
-- [ ] **Step 5: Final overflow + console pass on the live page**
+- [x] **Step 5: Final overflow + console pass on the live page**
 
 ```bash
 bctl console   # no errors
