@@ -435,7 +435,7 @@
 <div class="part" id="s1-skill">
   <h3 class="sub">Two files</h3>
   <p class="lede">Two files write every article on this site. One holds the rules. The other checks them.</p>
-  <p>The first file is SKILL.md. It lives in the html-mis skill folder. It is 566 lines of rules about one job: turn data into a clean HTML report. Before any article starts, the agent loads this file. The rules come first — the writing comes after.</p>
+  <p>The first file is SKILL.md. It lives in the html-mis skill folder. It is 415 lines of rules about one job: turn data into a clean HTML report. Before any article starts, the agent loads this file. The rules come first — the writing comes after.</p>
   <p>The second file is lens.py. It is 119 lines of Python. It opens the finished page at five screen widths and measures it. If a rule is broken — a line that sticks out, a hero that eats the screen — the lens prints it.</p>
   <div class="exhibit">
     <div class="ex-head"><span>The front matter</span><span class="lang">SKILL.md</span><span class="role">the door the agent enters through</span></div>
@@ -591,41 +591,36 @@ DEFAULT_VP = [(320, 568), (375, 667), (768, 1024), (1024, 768), (1440, 900)]</pr
   <p>The output row is the receipt: width, height, overflow, hero percent, content width. The lens is why no probe article has ever shipped with a phone-side scroll — the check runs before the push, every time.</p>
 </div>
     </section>
-    <!-- 06 The Checks -->
+    <!-- 06 The Mistakes List -->
     <section id="s6">
       <div class="sec-head"><div class="sec-num">06</div><h2>The Mistakes List</h2></div>
 <div class="part" id="s6-checks">
-  <h3 class="sub">Five lies, one truth meter</h3>
-  <p class="lede">The skill knows automated checks lie. Five ways, with fixes.</p>
-  <p>The last part of the skill is a warning about verification itself. A green check can call a broken page working. The skill names the five classic lies and the fix for each.</p>
+  <h3 class="sub">The mistakes list</h3>
+  <p class="lede">The skill also names the classic failures. Five of them, in its own words.</p>
+  <p>The last pages of the skill are not about building. They are about failing. A list of common mistakes sits near the end — the failures the skill has seen often enough to write down. Padding beyond the filler level is number one.</p>
   <div class="exhibit">
-    <div class="ex-head"><span>The five lies</span><span class="lang">SKILL.md</span><span class="role">what breaks, and what fixes it</span></div>
-    <div class="side"><pre class="out">| The lie | What happens | The fix |
-|---|---|---|
-| Synthetic clicks | `element.click()` (and `bctl click`) fires the handler without a real pointer — it skips hit-testing entirely | Never rely on it alone. Prove what a tap would hit |
-| Off-screen probes | `elementFromPoint` returns `NULL` below the fold; a scroll mismatch reads as "blocked" | Scroll the element into view first, then hit-test |
-| Frozen tabs | A hidden/occluded tab freezes CSS transitions — computed styles stay at start values (`visibility` stuck `hidden`) | Check `document.visibilityState`; neutralize transitions (`transition:none`) before asserting |
-| Missing keys | Remote key events don't deliver to real https pages — a working Escape handler looks dead | Test handlers with a synthetic `keydown`; test the UI path with real input |
-| Stale pages | Pages CDN lags ~85s and service workers serve old shells — you verify yesterday's build | Cache-bust with `?v=$(date +%s)`; check the SW cache name |</pre><span class="cap">a green check can call a broken page working — here are the five ways</span></div>
+    <div class="ex-head"><span>The common mistakes</span><span class="lang">SKILL.md</span><span class="role">five failures, written down so they stop happening</span></div>
+    <div class="side"><pre class="out">- **Padding with prose** beyond the chosen filler level (the #1 failure — cut it).
+- **Narrating the obvious** ("This section shows the languages used.").
+- **Inventing colors/styles** instead of using the token system above.
+- **Forgetting to ask the filler level** and silently shipping verbose.
+- **Redundant descriptors** under output previews — the artifact speaks for itself.</pre><span class="cap">the number one failure is prose past the budget</span></div>
   </div>
-  <p>The truth meter behind all five fixes is one DOM call: elementFromPoint(x, y). Ask the browser what a tap at that point would actually hit. Synthetic clicks skip that question. Hit-testing answers it.</p>
+  <p>Then the workflow — eight steps, from confirming the level to publishing. The last step matters most: report any uncertainty rather than dropping data. The skill prefers an honest gap over a full page.</p>
   <div class="exhibit">
-    <div class="ex-head"><span>The method</span><span class="lang">SKILL.md</span><span class="role">six rules that outrank every check</span></div>
-    <div class="side"><pre class="out">1. **Hit-test every interactive spot** with `document.elementFromPoint(x, y)` —
-   a closed modal/overlay must never be on top. This is the truth meter.
-2. **Use real input events**, not synthetic clicks. `bctl click` runs
-   `element.click()` via Runtime.evaluate — it bypasses hit-testing, so it
-   "works" even when an invisible layer swallows every real tap. Real taps
-   need CDP `Input.dispatchMouseEvent` (mousePressed + mouseReleased).
-3. **Keep test points in the viewport** — `elementFromPoint` returns `NULL`
-   off-screen.
-4. **Read computed styles with the tab state in mind** — in a hidden tab,
-   transitions are frozen at their start values.
-5. **Never verify yesterday's page** — cache-bust, check the SW version.
-6. **The human's device is the final oracle** — a real tap on a real phone
-   outranks every automated check.</pre><span class="cap">the checks can lie — these six rules are what actually count</span></div>
+    <div class="ex-head"><span>The workflow</span><span class="lang">SKILL.md</span><span class="role">eight steps, one honest last rule</span></div>
+    <div class="side"><pre class="out">1. Confirm filler level + scope.
+2. Gather/compute the data (read files if needed).
+3. Write the complete `mis_report.html`.
+4. Open/verify it renders, fits, and respects the filler level.
+5. Run `lens.py` to view the report across the pixel-budget spectrum
+   (320 → 1440); confirm no overflow and a lean hero at phone widths.
+6. Make it theme-aware (light + dark) and, if it's a probe, add a card to
+   `probe/index.html` with a search tag.
+7. Publish to GitHub Pages and verify the live URL (see *Publishing*).
+8. Report any uncertainty rather than dropping data.</pre><span class="cap">the last step is the honesty rule</span></div>
   </div>
-  <p>That is the whole machine: one file of rules, one script of checks, a word budget, a color budget, a pixel budget, and a truth meter. None of it is talent. All of it is constraints. The articles look the same because the rules are the same — the creativity goes into what to say, never into how to say it.</p>
+  <p>That is the whole machine: one file of rules, one script of checks, a word budget, a color budget, a pixel budget, and a list of the classic failures. None of it is talent. All of it is constraints. The articles look the same because the rules are the same — the creativity goes into what to say, never into how to say it.</p>
 </div>
     </section>
 
