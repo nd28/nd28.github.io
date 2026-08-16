@@ -34,7 +34,7 @@
 - Consumes: existing card markup `<li data-file="probe/xxx.html"><a href="xxx.html"><div class="meta">…</div><span class="title">…</span><span class="desc">…</span></a></li>`; existing `.mod` dates fetched into `li.dataset.mtime`.
 - Produces: modal `#popModal` + `#popBackdrop` + `#popCard`; functions `openPopup(li)` / `closePopup()`; card clicks open the popup instead of navigating.
 
-- [ ] **Step 1: Add the CSS** — insert before the `footer` rule (line 145):
+- [x] **Step 1: Add the CSS** — insert before the `footer` rule (line 145):
 
 ```css
     .modal-backdrop{position:fixed;inset:0;background:rgba(21,19,28,.6);backdrop-filter:blur(12px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s,visibility .3s;z-index:100}
@@ -53,7 +53,7 @@
     .modal-open-link:hover{text-decoration:underline}
 ```
 
-- [ ] **Step 2: Add the markup** — directly before `<script>` (line 204):
+- [x] **Step 2: Add the markup** — directly before `<script>` (line 204):
 
 ```html
     <div class="modal-backdrop" id="popBackdrop"></div>
@@ -62,7 +62,7 @@
     </div>
 ```
 
-- [ ] **Step 3: Add the JS** — inside the existing IIFE, after the `Promise.all(pending).then(...)` block (end of the script):
+- [x] **Step 3: Add the JS** — inside the existing IIFE, after the `Promise.all(pending).then(...)` block (end of the script):
 
 ```js
       // card details popup
@@ -114,7 +114,7 @@
       popBackdrop.addEventListener('click', closePopup);
 ```
 
-- [ ] **Step 4: Verify locally (hit-test + real tap + overflow)**
+- [x] **Step 4: Verify locally (hit-test + real tap + overflow)**
 
 ```bash
 bctl goto "file:///var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages/probe/index.html"
@@ -123,7 +123,7 @@ bctl eval "var a=document.querySelector('.list a'); var r=a.getBoundingClientRec
 Expected: `HITS_CARD` — the closed modal is NOT on top.
 Then: `bctl click ".list li"` → expect popup visible; check `#popCard` text contains the title, file, stats line and an `Open probe` link whose href equals the card's original href. Press Escape via `bctl key Escape` → popup closes, focus back on the card. Also run `python3 lens.py "index" --metrics-only` in `/Users/nileshsuthar/.agents/skills/html-mis/` → no overflow 320→1440.
 
-- [ ] **Step 5: Commit, push, verify live**
+- [x] **Step 5: Commit, push, verify live**
 
 ```bash
 cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git add probe/index.html && git commit -m "probe index: card details popup (safe modal — closed modals never block taps)" && git push origin master
@@ -141,7 +141,7 @@ Sleep 85s, then repeat Step 4 against `https://nd28.github.io/probe/?v=$(date +%
 - Consumes: existing exhibit markup `<div class="side"><span class="tag rb|pl">before|after</span><span class="note">…</span></div>` inside `.pair`.
 - Produces: `#zoomModal` + `#zoomBackdrop` + `#zoomCard`; clicking a `.side` opens the zoom modal with a clone of that panel; close via ✕ / backdrop / Escape.
 
-- [ ] **Step 1: Add the CSS** — in each report's `<style>`, after the last existing rule before `</style>`:
+- [x] **Step 1: Add the CSS** — in each report's `<style>`, after the last existing rule before `</style>`:
 
 ```css
     .modal-backdrop{position:fixed;inset:0;background:rgba(21,19,28,.6);backdrop-filter:blur(12px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s,visibility .3s;z-index:100}
@@ -156,7 +156,7 @@ Sleep 85s, then repeat Step 4 against `https://nd28.github.io/probe/?v=$(date +%
     .side:hover{border-color:var(--pink-bold)}
 ```
 
-- [ ] **Step 2: Add the markup** — in each report, directly before the closing `<script>` tag:
+- [x] **Step 2: Add the markup** — in each report, directly before the closing `<script>` tag:
 
 ```html
     <div class="modal-backdrop" id="zoomBackdrop"></div>
@@ -165,7 +165,7 @@ Sleep 85s, then repeat Step 4 against `https://nd28.github.io/probe/?v=$(date +%
     </div>
 ```
 
-- [ ] **Step 3: Add the JS** — in each report, inside the existing script block, after the existing IIFE:
+- [x] **Step 3: Add the JS** — in each report, inside the existing script block, after the existing IIFE:
 
 ```js
     (function () {
@@ -196,7 +196,7 @@ Sleep 85s, then repeat Step 4 against `https://nd28.github.io/probe/?v=$(date +%
     })();
 ```
 
-- [ ] **Step 4: Verify locally on all three pages** (hit-test + real tap + Escape):
+- [x] **Step 4: Verify locally on all three pages** (hit-test + real tap + Escape):
 
 ```bash
 bctl goto "file:///.../probe/moodie-fix.html"
@@ -204,7 +204,7 @@ bctl eval "var s=document.querySelector('.side'); var r=s.getBoundingClientRect(
 ```
 Expected: `HITS_SIDE` on each page (closed modal not on top). Then `bctl click ".side"` → zoom modal visible with the panel's `.tag` text; `bctl key Escape` closes. Repeat for `microservices-rl-pwa.html` and `diskvis.rb.html`. Run `python3 lens.py "<page-substring>" --metrics-only` for each → no overflow 320→1440.
 
-- [ ] **Step 5: Commit, push, verify live** (one commit for all three)
+- [x] **Step 5: Commit, push, verify live** (one commit for all three)
 
 ```bash
 cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git add probe/*.html && git commit -m "reports: click-to-zoom exhibits (safe modal)" && git push origin master
@@ -222,14 +222,14 @@ Sleep 85s; repeat Step 4 against the live URLs with `?v=$(date +%s)`.
 - Consumes: nothing from other tasks (content-only edit).
 - Produces: updated report; the index popup stats map from Task 1 stays consistent with it.
 
-- [ ] **Step 1: Update h1/sub** (line 412-413):
+- [x] **Step 1: Update h1/sub** (line 412-413):
 
 ```html
       <h1>moodie — two silent killers</h1>
       <p class="sub">Therapeutic mood tracker PWA. A stray quote and an invisible modal killed every tap.</p>
 ```
 
-- [ ] **Step 2: Update the stats** (lines 424-427):
+- [x] **Step 2: Update the stats** (lines 424-427):
 
 ```html
       <div class="stat"><div class="n">1</div><div class="l">Misplaced quote</div></div>
@@ -238,7 +238,7 @@ Sleep 85s; repeat Step 4 against the live URLs with `?v=$(date +%s)`.
       <div class="stat"><div class="n">v3</div><div class="l">SW cache bump</div></div>
 ```
 
-- [ ] **Step 3: Add the modal evidence** — inside section 01, after the existing Evidence `part` (after line 470), add:
+- [x] **Step 3: Add the modal evidence** — inside section 01, after the existing Evidence `part` (after line 470), add:
 
 ```html
       <div class="part">
@@ -253,7 +253,7 @@ Sleep 85s; repeat Step 4 against the live URLs with `?v=$(date +%s)`.
       </div>
 ```
 
-- [ ] **Step 4: Add the fix exhibit** — inside section 03, after the Service worker `diff` (after line 490), add:
+- [x] **Step 4: Add the fix exhibit** — inside section 03, after the Service worker `diff` (after line 490), add:
 
 ```html
         <div class="diff">
@@ -265,28 +265,28 @@ Sleep 85s; repeat Step 4 against the live URLs with `?v=$(date +%s)`.
         </div>
 ```
 
-- [ ] **Step 5: Update the SW exhibit "after" note** (line 488):
+- [x] **Step 5: Update the SW exhibit "after" note** (line 488):
 
 ```html
             <div class="side"><span class="tag pl">after</span><span class="note">bumped to <code>moodie-v3</code>, network-first — every load fetches the freshest shell</span></div>
 ```
 
-- [ ] **Step 6: Update verification lede** (line 495) and footer date (line 509):
+- [x] **Step 6: Update verification lede** (line 495) and footer date (line 509):
 
 ```html
         <p class="lede"><code>node --check</code> is clean. Live in a controlled browser: console shows no script error, and hit-testing (<code>elementFromPoint</code>) proves no invisible layer sits above any button — the real flow works: open a check-in, pick a mood, the bloom plays, the emotion page advances, plant completes.</p>
 ```
 Footer: `modified 15 Aug 2026` → `modified 16 Aug 2026`.
 
-- [ ] **Step 7: Update the TOC** — add under `s1-evidence` (after line 518):
+- [x] **Step 7: Update the TOC** — add under `s1-evidence` (after line 518):
 
 ```html
         <a href="#s1-modal" class="l2">The invisible modal</a>
 ```
 
-- [ ] **Step 8: Verify** — `python3 lens.py "moodie-fix" --metrics-only` → no overflow 320→1440; `bctl goto file:///.../probe/moodie-fix.html` → grep text: h1 "two silent killers", stat "Invisible tap-blocking modal", exhibit `#s1-modal` present, TOC link present.
+- [x] **Step 8: Verify** — `python3 lens.py "moodie-fix" --metrics-only` → no overflow 320→1440; `bctl goto file:///.../probe/moodie-fix.html` → grep text: h1 "two silent killers", stat "Invisible tap-blocking modal", exhibit `#s1-modal` present, TOC link present.
 
-- [ ] **Step 9: Commit, push, verify live**
+- [x] **Step 9: Commit, push, verify live**
 
 ```bash
 cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git add probe/moodie-fix.html && git commit -m "moodie report: add the invisible-modal root cause" && git push origin master
@@ -304,7 +304,7 @@ Sleep 85s; verify live with `?v=$(date +%s)`.
 - Consumes: nothing.
 - Produces: documented canonical pattern for all future pages.
 
-- [ ] **Step 1: Insert the recipe** after line 453 (end of the sticky-search-row section):
+- [x] **Step 1: Insert the recipe** after line 453 (end of the sticky-search-row section):
 
 ```markdown
 ### Safe modal (closed modals never block taps)
@@ -333,13 +333,13 @@ Rules:
 Used on: probe index card popup, report exhibit zoom.
 ```
 
-- [ ] **Step 2: Add a common-mistakes bullet** — in `## Common mistakes` (line 471+):
+- [x] **Step 2: Add a common-mistakes bullet** — in `## Common mistakes` (line 471+):
 
 ```markdown
 - **Invisible full-screen layers with `pointer-events: auto`** — closed modals/backdrops swallow every tap; always `pointer-events: none` + `visibility: hidden` when closed.
 ```
 
-- [ ] **Step 3: Verify** — read the file back; confirm the section sits before `## Structure`, no markdown fence is broken (the CSS block inside the recipe uses a fence inside the section).
+- [x] **Step 3: Verify** — read the file back; confirm the section sits before `## Structure`, no markdown fence is broken (the CSS block inside the recipe uses a fence inside the section).
 
 ---
 
