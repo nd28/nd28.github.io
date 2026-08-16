@@ -432,26 +432,201 @@
     <!-- 01 The Skill -->
     <section id="s1">
       <div class="sec-head"><div class="sec-num">01</div><h2>The Skill</h2></div>
+<div class="part" id="s1-skill">
+  <h3 class="sub">Two files</h3>
+  <p class="lede">Two files write every article on this site. One holds the rules. The other checks them.</p>
+  <p>The first file is SKILL.md. It lives in the html-mis skill folder. It is 566 lines of rules about one job: turn data into a clean HTML report. Before any article starts, the agent loads this file. The rules come first — the writing comes after.</p>
+  <p>The second file is lens.py. It is 119 lines of Python. It opens the finished page at five screen widths and measures it. If a rule is broken — a line that sticks out, a hero that eats the screen — the lens prints it.</p>
+  <div class="exhibit">
+    <div class="ex-head"><span>The front matter</span><span class="lang">SKILL.md</span><span class="role">the door the agent enters through</span></div>
+    <div class="side"><pre class="out">---
+name: html-mis
+description: Use when the user asks for an MIS (Management Information System) report, session/activity report, or build summary as HTML — especially when they want to control how much explanatory prose is included. Supports a per-request filler-prose level (minimal / balanced / verbose).
+---</pre><span class="cap">the trigger is a request for a report — and the last line names the special part</span></div>
+  </div>
+  <p>The front matter is the door. The description names the trigger: when the user asks for a report, this skill loads. And the last line names the defining feature — a prose level the user picks per report. That dial is section 02.</p>
+</div>
     </section>
     <!-- 02 The Dial -->
     <section id="s2">
       <div class="sec-head"><div class="sec-num">02</div><h2>The Dial</h2></div>
+<div class="part" id="s2-dial">
+  <h3 class="sub">Three levels</h3>
+  <p class="lede">Three levels. Same data. The words change, never the numbers.</p>
+  <p>The filler-prose level is the skill's defining feature. Before a report starts, the skill says: confirm the level — never assume. The user picks how much talking the page is allowed. The data stays the same at every level. Only the sentences around it shrink or grow.</p>
+  <div class="exhibit">
+    <div class="ex-head"><span>The level table</span><span class="lang">SKILL.md</span><span class="role">0, 1, 2 — a word budget</span></div>
+    <div class="side"><pre class="out">| Level | Code | What's allowed |
+|-------|------|----------------|
+| **minimal** | 0 | Facts, data, tables, checklists, code/previews only. No sentences explaining what the data means. Scannable. |
+| **balanced** | 1 | Minimal + one short sentence per section stating the key takeaway. No paragraphs. |
+| **verbose** | 2 | Balanced + short paragraphs of context/methodology. Still no padding or repetition. |</pre><span class="cap">the same report can be a dashboard or a brief — the data never moves</span></div>
+  </div>
+  <p>One rule sits under the table: prose may never exceed the chosen level. When in doubt, drop words. A report at minimal should feel like a dashboard; at verbose like a brief. The dial is a word budget — and budgets are what make output consistent.</p>
+</div>
+<div class="part" id="s2-demo">
+  <h3 class="sub">Try the dial</h3>
+  <!-- DEMO MARKER — Task 3 fills this part -->
+</div>
     </section>
     <!-- 03 The Voice -->
     <section id="s3">
       <div class="sec-head"><div class="sec-num">03</div><h2>The Voice</h2></div>
+<div class="part" id="s3-voice">
+  <h3 class="sub">Human, not polished</h3>
+  <p class="lede">The skill also picks the writer's voice — human, not polished.</p>
+  <p>Two rules. The first: write like the person who did the work talking to you. Intentionally imperfect beats sterile. The skill even quotes the phrasing it wants.</p>
+  <div class="exhibit">
+    <div class="ex-head"><span>Rule one</span><span class="lang">SKILL.md</span><span class="role">flaw is fine; robot is not</span></div>
+    <div class="side"><pre class="out">A good read is human-centric, not perfect — intentionally flawed beats sterile.
+Write like the person who did the work talking to you, not a press release:
+honest, slightly imperfect phrasing ("wrote it twice and they agree", "turned
+out", "good enough") over robotic parallel prose. Flaw is fine; robot is not.
+Keep every value — drop the polish, never the data.</pre><span class="cap">the skill prefers a real sentence over a clean one</span></div>
+  </div>
+  <p>The second rule: plain English. The skill assumes the reader is not a native speaker. Short words, short sentences, no idioms. It names the banned moves with before-and-after pairs.</p>
+  <div class="exhibit">
+    <div class="ex-head"><span>Rule two</span><span class="lang">SKILL.md</span><span class="role">say it the short way</span></div>
+    <div class="side"><pre class="out">- **Plain, simple English.** Assume the reader is not a native speaker. Short
+  words, short sentences. Drop idioms and fancy verbs — say "very slow", not
+  "brutal"; "a long number", not "a wall of digits"; "happened on its own",
+  not "fell out". Keep the technical words (they're the domain), but everything
+  around them stays simple.</pre><span class="cap">the banned idioms are quoted only to be banned</span></div>
+  </div>
+  <p>Voice is a consistency lever most writers treat as a mood. Here it is a spec. That is why every article on this site sounds like the same person wrote it — one person did: the skill.</p>
+</div>
     </section>
     <!-- 04 The Design System -->
     <section id="s4">
       <div class="sec-head"><div class="sec-num">04</div><h2>The Design System</h2></div>
+<div class="part" id="s4-tokens">
+  <h3 class="sub">Sixteen tokens</h3>
+  <p class="lede">Sixteen tokens. Nothing else is allowed.</p>
+  <p>The design rules start with a hard line: do not invent new styles. One color block sits at the top of every page. Every surface, border, text color and radius on this site is a variable from that block. A new shade of pink is a rule break — the palette is the palette.</p>
+  <div class="exhibit">
+    <div class="ex-head"><span>The palette</span><span class="lang">SKILL.md</span><span class="role">the only colors that exist</span></div>
+    <div class="side"><pre class="out">:root{
+  --pink-soft:#FBD6E6; --pink:#F7B8D2; --pink-bold:#F06FA3; /* iMac pink: soft front / bold rear */
+  --mint:#5FD3C4;        /* calm "value" highlight (checkmarks, key terms) */
+  --bg:#15131C; --bg-2:#1B1726; --surface:#211C2E; --surface-2:#2A2438;
+  --border:#342C45; --text:#ECE7F4; --muted:#9C93AE;
+  --r-lg:24px; --r-md:16px; --r-sm:12px;   /* radii: 24 sections, 16 cards, 12 pills */
+  --font:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'Geist Mono','JetBrains Mono',ui-monospace,monospace;
+}</pre><span class="cap">sixteen tokens — color, radius, and font are all here</span></div>
+  </div>
+  <p>Then a type ladder: biggest and brightest to smallest and muted. Headings and body stay in the brightest token; only secondary text drops to muted. Accents mark labels and key terms — never whole paragraphs.</p>
+  <div class="exhibit">
+    <div class="ex-head"><span>The type ladder</span><span class="lang">SKILL.md</span><span class="role">one clear hierarchy</span></div>
+    <div class="side"><pre class="out">| Level | Size | Color |
+|---|---|---|
+| `h1` (hero) | `clamp(32px, 6vw, 60px)` | `--text` |
+| `h2` (section) | `--fs-h2` 30px | `--text` |
+| `h3` (sub-section, `.sub`) | `--fs-h3` 20px | `--text` |
+| body / prose | `--fs-base` 15.5px | `--text` |
+| secondary (`.lede`/`.note`/`.cap`) | 13–14px | `--muted` |
+| mono labels (`.tag`/`.aspect`/`.subhead`) | 11–12px | `--mint`/`--pink`/`--muted` |</pre><span class="cap">brightest is for reading; accents are for labels and key terms only</span></div>
+  </div>
+  <p>One odd rule stands out: monospace is always smaller. Code sits a step or two below the prose around it, so a code word never shouts over the sentence. And the pages follow the OS theme — the dark palette is the default, a light block overrides only the colors, never the sizes.</p>
+  <div class="exhibit">
+    <div class="ex-head"><span>The light side</span><span class="lang">SKILL.md</span><span class="role">colors flip, sizes never</span></div>
+    <div class="side"><pre class="out">:root { color-scheme: light dark; /* dark tokens live here */ }
+@media (prefers-color-scheme: light){
+  :root{
+    --pink:#D34F8A; --pink-bold:#C43E7C; --mint:#2E9E8F;
+    --bg:#FBF6F0; --surface:#FFFFFF; --surface-2:#F1EAE0;
+    --border:#E6DDD0; --text:#2A2333; --muted:#84798E;
+    --code:#B63A74; --glass:rgba(251, 246, 240, 0.82);
+  }
+}</pre><span class="cap">the same neon hex cannot serve both themes — so it doesn't have to</span></div>
+  </div>
+  <p>Three contrast traps come with the theming: accent tokens color text and decoration at once, so they must get darker in light mode. Code needs its own token — a light pink in dark, a deep pink in light. And translucent chrome needs a glass token, or a sticky bar smears. The skill names all three traps before the writer can fall in.</p>
+</div>
     </section>
     <!-- 05 The Budget -->
     <section id="s5">
       <div class="sec-head"><div class="sec-num">05</div><h2>The Budget</h2></div>
+<div class="part" id="s5-budget">
+  <h3 class="sub">The lens</h3>
+  <p class="lede">Every pixel is a budget. The lens shows the spend.</p>
+  <p>Three rules. Tokens scale with width — generous at desktop, shrunk at narrow breakpoints, grown again at wide ones. The hero pays the highest rent: it is the first screen, so it must stay lean — at most about 45% of a phone viewport. And overflow is a budget violation: horizontal scroll on a phone means you spent pixels you did not have.</p>
+  <p>To enforce this, the lens re-opens the page at five widths — small phone to large desktop — and measures three things: overflow, hero footprint, and content width.</p>
+  <div class="exhibit">
+    <div class="ex-head"><span>The spectrum</span><span class="lang">lens.py</span><span class="role">five widths, small phone to desktop</span></div>
+    <div class="side"><pre class="out"># default spectrum: small phone -> large desktop
+DEFAULT_VP = [(320, 568), (375, 667), (768, 1024), (1024, 768), (1440, 900)]</pre><span class="cap">320 is the smallest budget; 1440 is the largest</span></div>
+  </div>
+  <div class="exhibit">
+    <div class="ex-head"><span>What the lens measures</span><span class="lang">lens.py</span><span class="role">overflow, hero percent, content width</span></div>
+    <div class="side"><pre class="out">def metrics_js():
+    return """(() => {
+      const de = document.documentElement;
+      const sw = de.scrollWidth, cw = de.clientWidth;
+      const hero = document.querySelector('.hero');
+      const hr = hero ? hero.getBoundingClientRect() : {height:0};
+      const wrap = document.querySelector('.wrap') || document.body;
+      const wr = wrap.getBoundingClientRect();
+      return {
+        overflowX: sw > cw,
+        scrollW: sw, clientW: cw,
+        heroH: Math.round(hr.height),
+        heroPct: Math.round(hr.height / window.innerHeight * 100),
+        contentW: Math.round(wr.width),
+        innerW: window.innerWidth,
+        sections: document.querySelectorAll('section, .stats, footer').length
+      };
+    })()"""</pre><span class="cap">overflow is the question — a scrollbar wider than the screen means the budget broke</span></div>
+  </div>
+  <div class="exhibit">
+    <div class="ex-head"><span>A real run</span><span class="lang">lens output</span><span class="role">this article's own check, before publish</span></div>
+    <div class="side"><pre class="out">W     H     ovf  hero%   contentW  scrollW  sec
+----------------------------------------------
+320   568   no   34    % 280       320      8
+375   667   no   29    % 335       375      8
+768   1024  no   15    % 696       768      8
+1024  768   no   30    % 672       1024     8
+1440  900   no   19    % 908       1440     8
+----------------------------------------------</pre><span class="cap">a no in every ovf row means the budget held at every width</span></div>
+  </div>
+  <p>The output row is the receipt: width, height, overflow, hero percent, content width. The lens is why no probe article has ever shipped with a phone-side scroll — the check runs before the push, every time.</p>
+</div>
     </section>
     <!-- 06 The Checks -->
     <section id="s6">
       <div class="sec-head"><div class="sec-num">06</div><h2>The Checks</h2></div>
+<div class="part" id="s6-checks">
+  <h3 class="sub">Five lies, one truth meter</h3>
+  <p class="lede">The skill knows automated checks lie. Five ways, with fixes.</p>
+  <p>The last part of the skill is a warning about verification itself. A green check can call a broken page working. The skill names the five classic lies and the fix for each.</p>
+  <div class="exhibit">
+    <div class="ex-head"><span>The five lies</span><span class="lang">SKILL.md</span><span class="role">what breaks, and what fixes it</span></div>
+    <div class="side"><pre class="out">| The lie | What happens | The fix |
+|---|---|---|
+| Synthetic clicks | `element.click()` (and `bctl click`) fires the handler without a real pointer — it skips hit-testing entirely | Never rely on it alone. Prove what a tap would hit |
+| Off-screen probes | `elementFromPoint` returns `NULL` below the fold; a scroll mismatch reads as "blocked" | Scroll the element into view first, then hit-test |
+| Frozen tabs | A hidden/occluded tab freezes CSS transitions — computed styles stay at start values (`visibility` stuck `hidden`) | Check `document.visibilityState`; neutralize transitions (`transition:none`) before asserting |
+| Missing keys | Remote key events don't deliver to real https pages — a working Escape handler looks dead | Test handlers with a synthetic `keydown`; test the UI path with real input |
+| Stale pages | Pages CDN lags ~85s and service workers serve old shells — you verify yesterday's build | Cache-bust with `?v=$(date +%s)`; check the SW cache name |</pre><span class="cap">a green check can call a broken page working — here are the five ways</span></div>
+  </div>
+  <p>The truth meter behind all five fixes is one DOM call: elementFromPoint(x, y). Ask the browser what a tap at that point would actually hit. Synthetic clicks skip that question. Hit-testing answers it.</p>
+  <div class="exhibit">
+    <div class="ex-head"><span>The method</span><span class="lang">SKILL.md</span><span class="role">six rules that outrank every check</span></div>
+    <div class="side"><pre class="out">1. **Hit-test every interactive spot** with `document.elementFromPoint(x, y)` —
+   a closed modal/overlay must never be on top. This is the truth meter.
+2. **Use real input events**, not synthetic clicks. `bctl click` runs
+   `element.click()` via Runtime.evaluate — it bypasses hit-testing, so it
+   "works" even when an invisible layer swallows every real tap. Real taps
+   need CDP `Input.dispatchMouseEvent` (mousePressed + mouseReleased).
+3. **Keep test points in the viewport** — `elementFromPoint` returns `NULL`
+   off-screen.
+4. **Read computed styles with the tab state in mind** — in a hidden tab,
+   transitions are frozen at their start values.
+5. **Never verify yesterday's page** — cache-bust, check the SW version.
+6. **The human's device is the final oracle** — a real tap on a real phone
+   outranks every automated check.</pre><span class="cap">the checks can lie — these six rules are what actually count</span></div>
+  </div>
+  <p>That is the whole machine: one file of rules, one script of checks, a word budget, a color budget, a pixel budget, and a truth meter. None of it is talent. All of it is constraints. The articles look the same because the rules are the same — the creativity goes into what to say, never into how to say it.</p>
+</div>
     </section>
 
       <footer>
