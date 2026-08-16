@@ -394,6 +394,24 @@
     .zoom-card .tag{font-size:13px}
     .side{cursor:zoom-in}
     .side:hover{border-color:var(--pink-bold)}
+
+    /* ============ DEMO: THE STACK (live exhibit) ============ */
+    .demo-wrap { margin: 1.5rem 0 0; }
+    .demo-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    #demoOpen { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); border-radius: 999px; padding: 8px 14px; font-family: var(--font); font-size: 13px; cursor: pointer; }
+    #demoReadout { font-family: var(--font-mono); font-size: 12px; color: var(--muted); background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 10px; }
+    #demoOverlay { position: fixed; inset: 0; z-index: 900; background: var(--bg); opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+    #demoOverlay.on { opacity: 0.6; pointer-events: auto; }
+    .demo-sheet { position: fixed; left: 50%; transform: translateX(-50%); width: min(320px, calc(100% - 2.5rem)); background: var(--surface-2); border: 1px solid var(--border-glass); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1); display: flex; flex-direction: column; overflow: hidden; }
+    .demo-sheet.open { opacity: 1; pointer-events: auto; }
+    #demoConcept { bottom: 24px; z-index: 910; }
+    #demoQuiz { bottom: 24px; z-index: 920; }
+    .demo-handle { width: 36px; height: 4px; background: var(--text-tertiary); border-radius: 2px; margin: 0.625rem auto; opacity: 0.45; flex-shrink: 0; }
+    .demo-body { padding: 0.5rem 1.25rem 1rem; font-size: 13px; color: var(--text); }
+    .demo-body h4 { margin: 0 0 0.5rem; font-size: 14px; }
+    .demo-footer { padding: 0.75rem 1.25rem 1.25rem; border-top: 1px solid var(--border-glass); display: flex; gap: 0.5rem; justify-content: flex-end; }
+    .demo-btn { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); border-radius: 999px; padding: 6px 12px; font-family: var(--font); font-size: 12px; cursor: pointer; }
+    .demo-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
   </style>
 </head>
 <body>
@@ -535,7 +553,35 @@ function closeModal() {
       <div class="part" id="s1-demo">
         <h3 class="sub">Try the stack</h3>
         <p class="lede">A working copy of the stack, right here on this page.</p>
-        <!-- demo fills this in Task 3 -->
+        <div class="demo-wrap">
+          <div class="demo-row">
+            <button id="demoOpen" type="button">Open a concept</button>
+            <span id="demoReadout">stack: —</span>
+          </div>
+          <p style="font-size:13px;color:var(--muted);margin:0 0 1rem;">The concept sheet opens. Its "Quiz Me" button opens the quiz sheet on top — the concept sheet stays open underneath. Close paths: swipe the top handle down, press Escape, tap the dim area, or use the buttons. The readout always shows the live stack.</p>
+          <div id="demoOverlay"></div>
+          <div class="demo-sheet" id="demoConcept">
+            <div class="demo-handle" id="demoHandleC"></div>
+            <div class="demo-body">
+              <h4>What is a service?</h4>
+              <p>A service is one small job, owned by one team, running on its own.</p>
+            </div>
+            <div class="demo-footer">
+              <button class="demo-btn" data-close="demoConcept" type="button">Dismiss</button>
+              <button class="demo-btn primary" data-open="demoQuiz" type="button">Quiz Me</button>
+            </div>
+          </div>
+          <div class="demo-sheet" id="demoQuiz">
+            <div class="demo-handle" id="demoHandleQ"></div>
+            <div class="demo-body">
+              <h4>Quiz: which one is a service?</h4>
+              <p>Pick an answer. Correct: "One small job". Wrong: "One giant app".</p>
+            </div>
+            <div class="demo-footer">
+              <button class="demo-btn" data-close="demoQuiz" type="button">Dismiss</button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
     <!-- 02 -->
@@ -649,6 +695,47 @@ function closeModal() {
             ', ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
         }
       }
+    })();
+
+    (function () {
+      var stack = [];
+      var overlay = document.getElementById('demoOverlay');
+      var readout = document.getElementById('demoReadout');
+      function render() {
+        readout.textContent = 'stack: ' + (stack.length ? stack.join(' → ') : '—');
+        overlay.classList.toggle('on', stack.length > 0);
+        stack.forEach(function (id) {
+          document.getElementById(id).classList.add('open');
+        });
+        ['demoConcept', 'demoQuiz'].forEach(function (id) {
+          if (stack.indexOf(id) === -1) document.getElementById(id).classList.remove('open');
+        });
+      }
+      function open(id) { stack.push(id); render(); }
+      function closeTop() { stack.pop(); render(); }
+      document.getElementById('demoOpen').addEventListener('click', function () { open('demoConcept'); });
+      document.querySelectorAll('[data-open]').forEach(function (b) {
+        b.addEventListener('click', function () { open(b.getAttribute('data-open')); });
+      });
+      document.querySelectorAll('[data-close]').forEach(function (b) {
+        b.addEventListener('click', function () { closeTop(); });
+      });
+      overlay.addEventListener('click', closeTop);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeTop();
+      });
+      document.querySelectorAll('.demo-handle').forEach(function (h) {
+        var active = false, startY = 0;
+        h.addEventListener('touchstart', function (e) {
+          active = true;
+          startY = e.touches[0].clientY;
+        }, { passive: true });
+        document.addEventListener('touchend', function (e) {
+          if (!active) return;
+          active = false;
+          if (e.changedTouches[0].clientY - startY > 80) closeTop();
+        }, { passive: true });
+      });
     })();
 
     (function () {
