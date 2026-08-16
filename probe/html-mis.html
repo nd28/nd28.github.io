@@ -394,6 +394,25 @@
     .zoom-card .tag{font-size:13px}
     .side{cursor:zoom-in}
     .side:hover{border-color:var(--pink-bold)}
+
+    .demo-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 16px; }
+    .demo-row .pill-btn {
+      padding: 8px 14px; border-radius: var(--r-sm);
+      border: 1px solid var(--border); background: var(--surface-2);
+      color: var(--muted); font-family: var(--mono); font-size: 12px; cursor: pointer;
+    }
+    .demo-row .pill-btn.active { border-color: var(--pink-bold); color: var(--pink); }
+    .demo-frame {
+      border: 1px solid var(--border); border-radius: var(--r-md);
+      background: var(--surface); padding: 18px 18px 20px;
+    }
+    .demo-frame .subhead { margin: 0 0 12px; }
+    .demo-stats { display: flex; gap: 24px; margin-bottom: 14px; flex-wrap: wrap; }
+    .demo-stats span { color: var(--muted); font-size: 13px; }
+    .demo-stats b { color: var(--pink); font-size: 22px; font-weight: 700; margin-right: 4px; }
+    .demo-checks { margin: 0; padding-left: 18px; color: var(--text); font-size: 14px; }
+    .demo-checks li { margin-bottom: 6px; }
+    .demo-note { margin: 12px 0 0; color: var(--muted); font-size: 13.5px; }
   </style>
 </head>
 <body>
@@ -466,7 +485,13 @@ description: Use when the user asks for an MIS (Management Information System) r
 </div>
 <div class="part" id="s2-demo">
   <h3 class="sub">Try the dial</h3>
-  <!-- DEMO MARKER — Task 3 fills this part -->
+  <p class="lede">One sample section, three levels. Same data, different word budget.</p>
+  <div class="demo-row">
+    <button class="pill-btn active" id="demoMin">minimal · 0</button>
+    <button class="pill-btn" id="demoBal">balanced · 1</button>
+    <button class="pill-btn" id="demoVerb">verbose · 2</button>
+  </div>
+  <div class="demo-frame" id="demoBody" aria-live="polite"></div>
 </div>
     </section>
     <!-- 03 The Voice -->
@@ -711,9 +736,37 @@ DEFAULT_VP = [(320, 568), (375, 667), (768, 1024), (1024, 768), (1440, 900)]</pr
         }
       }
     })();
+  </script>
 
-    (function () {
-      var modal = document.getElementById('zoomModal');
+  <script>
+  (function () {
+    var versions = {
+        min: '<h4 class="subhead">today\'s build</h4><div class="demo-stats"><span><b>3</b> articles</span><span><b>2</b> demos</span><span><b>1</b> bug</span></div><ul class="demo-checks"><li>concept-modal published</li><li>verification-lied published</li><li>html-mis article written</li></ul>',
+        bal: '<h4 class="subhead">today\'s build</h4><div class="demo-stats"><span><b>3</b> articles</span><span><b>2</b> demos</span><span><b>1</b> bug</span></div><ul class="demo-checks"><li>concept-modal published</li><li>verification-lied published</li><li>html-mis article written</li></ul><p class="demo-note">Three articles shipped; the lens caught one overflow bug.</p>',
+        verb: '<h4 class="subhead">today\'s build</h4><div class="demo-stats"><span><b>3</b> articles</span><span><b>2</b> demos</span><span><b>1</b> bug</span></div><ul class="demo-checks"><li>concept-modal published</li><li>verification-lied published</li><li>html-mis article written</li></ul><p class="demo-note">Three articles shipped today. Two carried live demos — a modal stack and a filler dial. The lens caught one overflow bug at 320px before it reached a phone; the fix took two minutes. Both demos were hit-tested at every width, then published after the CDN wait.</p>'
+      };
+      var btns = {
+        min: document.getElementById('demoMin'),
+        bal: document.getElementById('demoBal'),
+        verb: document.getElementById('demoVerb')
+      };
+      var body = document.getElementById('demoBody');
+      function set(level) {
+        body.innerHTML = versions[level];
+        Object.keys(btns).forEach(function (k) {
+          btns[k].classList.toggle('active', k === level);
+        });
+      }
+      btns.min.addEventListener('click', function () { set('min'); });
+      btns.bal.addEventListener('click', function () { set('bal'); });
+      btns.verb.addEventListener('click', function () { set('verb'); });
+      set('min');
+  })();
+  </script>
+
+  <script>
+  (function () {
+    var modal = document.getElementById('zoomModal');
       var backdrop = document.getElementById('zoomBackdrop');
       var card = document.getElementById('zoomCard');
       var last = null;
