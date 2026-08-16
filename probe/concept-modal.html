@@ -432,6 +432,111 @@
     <!-- 01 -->
     <section id="s1">
       <div class="sec-head"><div class="sec-num">01</div><h2>The Entrance</h2></div>
+
+      <div class="part" id="s1-entrance">
+        <h3 class="sub">A concept card opens</h3>
+        <p class="lede">Every concept is a modal. The page behind it keeps running.</p>
+        <p>A learner taps a concept card. The app finds the concept, renders its title, body, and diagram into one modal, and opens it. Nothing else on the page stops — the app stays alive behind the sheet.</p>
+        <p>The sheet is a <b>bottom sheet</b> on phones: it slides up from the bottom edge and covers most of the screen. On a wide screen it becomes a centered card. Either way it is the same element — <code>#conceptModal</code>.</p>
+        <p>The modal is not a popup window. It is one element in the page, styled to float on top. Two things make it float: the modal itself (z-index 210) and a shared overlay behind it (z-index 200).</p>
+        <div class="exhibit">
+          <div class="ex-head"><span>How a concept opens</span><span class="lang">app.js</span><span class="role">render first, open second</span></div>
+          <div class="side"><pre class="out">function openConcept(id) {
+  const concept = CONCEPTS.find(c => c.id === id);
+  if (!concept) return;
+  currentConceptId = id;
+  const data = getData();
+  data.lastReviewed[id] = new Date().toISOString();
+  data.lastConceptOpened = id;
+  saveData(data);
+  const isBookmarked = data.bookmarks.includes(id);
+
+  document.getElementById('conceptBody').innerHTML = `
+    &lt;div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;margin-bottom:0.75rem;">
+      &lt;h3 class="concept-title" style="margin-bottom:0;">${concept.title}&lt;/h3>
+      &lt;button class="bookmark-btn ${isBookmarked ? 'active' : ''}"
+        onclick="toggleBookmark(${id})" aria-label="Bookmark">${isBookmarked ? '★' : '☆'}&lt;/button>
+    &lt;/div>
+    &lt;p class="cozy-text">${concept.body}&lt;/p>
+    &lt;div class="diagram-box">${concept.diagram}&lt;/div>
+  `;
+  document.getElementById('conceptFooter').innerHTML = `
+    &lt;button class="btn btn-primary" onclick="openQuiz(${id})">Quiz Me&lt;/button>
+  `;
+  openModal('conceptModal');
+}</pre><span class="cap">render the body first, then open the modal</span></div>
+        </div>
+        <div class="exhibit">
+          <div class="ex-head"><span>The modal that floats</span><span class="lang">styles.css</span><span class="role">z-index 200 vs 210</span></div>
+          <div class="side"><pre class="out">.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.28);
+  backdrop-filter: blur(6px);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.96);
+  width: calc(100% - 2.5rem);
+  max-width: 420px;
+  max-height: 88vh;
+  background: var(--bg-glass);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  z-index: 210;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}</pre><span class="cap">the overlay sits below the modal — and the modal starts invisible</span></div>
+        </div>
+        <p>Note what the CSS says: a modal starts with <code>opacity: 0</code> and <code>pointer-events: none</code>. It is in the page, but it cannot be seen and cannot be tapped. Only the <code>.open</code> class turns it on. That class is added by <code>openModal</code> — and that tiny function is the whole system.</p>
+        <div class="exhibit">
+          <div class="ex-head"><span>The whole modal system</span><span class="lang">app.js</span><span class="role">openModal, closeModal, initModals</span></div>
+          <div class="side"><pre class="out">let modalStack = [];
+
+function openModal(id) {
+  const modal = document.getElementById(id);
+  if (!modal) return;
+  const overlay = document.getElementById('modalOverlay');
+  if (modalStack.length === 0) overlay.classList.add('open');
+  modal.classList.add('open');
+  modalStack.push(id);
+}
+
+function closeModal() {
+  if (modalStack.length === 0) return;
+  const id = modalStack.pop();
+  const modal = document.getElementById(id);
+  modal.classList.remove('open');
+  if (modalStack.length === 0) {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+}</pre><span class="cap">an array, one overlay, and a rule: the overlay lives while the stack lives</span></div>
+        </div>
+        <p>That is the entrance. The concept card opens because <code>openModal('conceptModal')</code> runs. The overlay opens only when the stack was empty. Now the learner sees the sheet — and the page behind it is still alive. Next, the quiz.</p>
+      </div>
+
+      <div class="part" id="s1-demo">
+        <h3 class="sub">Try the stack</h3>
+        <p class="lede">A working copy of the stack, right here on this page.</p>
+        <!-- demo fills this in Task 3 -->
+      </div>
     </section>
     <!-- 02 -->
     <section id="s2">
