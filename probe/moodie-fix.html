@@ -419,10 +419,10 @@
 
       <!-- HERO -->
     <header class="hero">
-      <h1>moodie — the one-character bug</h1>
-      <p class="sub">Therapeutic mood tracker PWA. One stray quote killed every tap.</p>
+      <h1>moodie — two silent killers</h1>
+      <p class="sub">Therapeutic mood tracker PWA. A stray quote and an invisible modal killed every tap.</p>
       <div class="meta">
-        <span class="pill"><span class="dot"></span>Date <b>15 Aug 2026</b></span>
+        <span class="pill"><span class="dot"></span>Date <b>16 Aug 2026</b></span>
         <span class="pill"><span class="dot"></span>Vanilla JS · HTML · CSS</span>
         <span class="pill"><span class="dot"></span>0 build deps</span>
         <a class="pill" href="https://nd28.github.io/moodie/" style="text-decoration:none"><span class="dot"></span>Open the app ↗</a>
@@ -433,8 +433,8 @@
     <div class="stats">
       <div class="stat"><div class="n">1</div><div class="l">Misplaced quote</div></div>
       <div class="stat"><div class="n">3</div><div class="l">Lines changed</div></div>
-      <div class="stat"><div class="n">1</div><div class="l">Root cause</div></div>
-      <div class="stat"><div class="n">v2</div><div class="l">SW cache bump</div></div>
+      <div class="stat"><div class="n">1</div><div class="l">Invisible tap-blocking modal</div></div>
+      <div class="stat"><div class="n">v3</div><div class="l">SW cache bump</div></div>
     </div>
 
     <!-- 01 WHAT BROKE -->
@@ -459,6 +459,17 @@
 SyntaxError: Unexpected token ')'
    (moodie — inline script)</pre>
           <div class="cap"><code>node --check</code> pinpoints it further: <code>Unexpected identifier 'system'</code></div>
+        </div>
+      </div>
+
+      <div class="part">
+        <h3 class="sub" id="s1-modal">The invisible modal</h3>
+        <p class="lede">Even after the script parses, taps can still land nowhere. The check-in modal is <code>position:fixed; inset:0; z-index:101</code> — and while closed it kept <code>pointer-events:auto</code>. Invisible, full-screen, swallowing every tap the app ever received.</p>
+        <div class="exhibit">
+          <div class="ex-head">hit-testing <span class="lang">before</span></div>
+          <pre class="out">elementFromPoint(theme-button) → DIV#pageMood
+                                    └ inside #checkinModal (closed, invisible)</pre>
+          <div class="cap"><code>elementFromPoint</code> proved it: the top layer at the button was a child of the closed modal</div>
         </div>
       </div>
     </section>
@@ -495,18 +506,26 @@ SyntaxError: Unexpected token ')'
           <div class="aspect">Service worker</div>
           <div class="pair">
             <div class="side"><span class="tag rb">before</span><span class="note">moodie-v1 cache-first — the old broken shell kept serving</span></div>
-            <div class="side"><span class="tag pl">after</span><span class="note">bumped to <code>moodie-v2</code> so installed clients drop it</span></div>
+            <div class="side"><span class="tag pl">after</span><span class="note">bumped to <code>moodie-v3</code>, network-first — every load fetches the freshest shell</span></div>
+          </div>
+        </div>
+        <div class="diff">
+          <div class="aspect">Closed modals</div>
+          <div class="pair">
+            <div class="side"><span class="tag rb">before</span><span class="note"><code>.modal</code> closed: <code>inset:0; z-index:101; pointer-events:auto</code> — an invisible full-screen tap trap</span></div>
+            <div class="side"><span class="tag pl">after</span><span class="note"><code>pointer-events:none</code> + <code>visibility:hidden</code> while closed; <code>auto</code> only when <code>.open</code></span></div>
           </div>
         </div>
       </div>
 
       <div class="part">
         <h3 class="sub" id="s3-verify">Verification</h3>
-        <p class="lede"><code>node --check</code> is clean. Live in a controlled browser: console shows no script error, and the real flow works — open a check-in, pick a mood, the bloom plays, the emotion page advances, plant completes.</p>
+        <p class="lede"><code>node --check</code> is clean. Live in a controlled browser: console shows no script error, and hit-testing (<code>elementFromPoint</code>) proves no invisible layer sits above any button — the real flow works: open a check-in, pick a mood, the bloom plays, the emotion page advances, plant completes.</p>
         <div class="tools">
           <div class="tool"><span class="name">bctl</span><p>Brave CDP controller — caught the parse error, then proved every tap works after the fix.</p></div>
           <div class="tool"><span class="name">node --check</span><p>extracted the inline script and syntax-checked it — zero remaining parse errors.</p></div>
-          <div class="tool"><span class="name">sw bump</span><p>cache name <code>moodie-v2</code> — the stale broken shell can't be served again.</p></div>
+          <div class="tool"><span class="name">sw bump</span><p>cache name <code>moodie-v3</code>, network-first — the stale broken shell can't be served again.</p></div>
+          <div class="tool"><span class="name">elementFromPoint</span><p>hit-tested every interactive spot — no invisible layer above any button, modal or nav item.</p></div>
         </div>
       </div>
     </section>
@@ -516,7 +535,7 @@ SyntaxError: Unexpected token ')'
           <a href="https://nd28.github.io/probe/" class="probe">probe</a>
           <span>by <a href="https://nd28.github.io">nilesh suthar</a></span>
         </div>
-        <div class="foot-meta">modified <span id="modtime">15 Aug 2026</span> · Vanilla JS · HTML · CSS · PWA · 0 deps</div>
+        <div class="foot-meta">modified <span id="modtime">16 Aug 2026</span> · Vanilla JS · HTML · CSS · PWA · 0 deps</div>
       </footer>
     </div>
 
@@ -526,6 +545,7 @@ SyntaxError: Unexpected token ')'
         <a href="#s1" class="l1"><span class="num">01</span>What Broke</a>
         <a href="#s1-symptom" class="l2">The Symptom</a>
         <a href="#s1-evidence" class="l2">Evidence</a>
+        <a href="#s1-modal" class="l2">The invisible modal</a>
         <a href="#s2" class="l1"><span class="num">02</span>Root Cause</a>
         <a href="#s2-quote" class="l2">One misplaced quote</a>
         <a href="#s3" class="l1"><span class="num">03</span>The Fix</a>
