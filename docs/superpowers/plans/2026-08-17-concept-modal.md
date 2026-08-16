@@ -30,13 +30,13 @@
 - Consumes: the verified shell of `probe/microservices-rl-pwa.html` (style block, herobar, TOC aside, footer, zoom modal markup + `#zoomModal`/`#zoomBackdrop`/`#zoomCard` IIFE, `.dels`/`.del`, `.learn`).
 - Produces: the empty shell of `probe/concept-modal.html` — six empty `<section id="s1">`…`<section id="s6">` markers with `.sec-head` headings (needed by the scroll-spy in the copied script), TOC with 6 `l1` entries, hero, stats, footer date `17 Aug 2026`. Later tasks fill the sections.
 
-- [ ] **Step 1: Copy the base file**
+- [x] **Step 1: Copy the base file**
 
 ```bash
 cp /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages/probe/microservices-rl-pwa.html /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages/probe/concept-modal.html
 ```
 
-- [ ] **Step 2: Replace the `<title>` and herobar**
+- [x] **Step 2: Replace the `<title>` and herobar**
 
 Title becomes: `Session MIS Report — Inside the Concept Modal`
 
@@ -44,7 +44,7 @@ The two spans inside the header herobar become:
 - `<span class="t">concept modal</span>`
 - `<span class="s">six modals · one stack · four ways out</span>`
 
-- [ ] **Step 3: Replace the hero block** (the `h1`/`p.sub`/pills area, verbatim):
+- [x] **Step 3: Replace the hero block** (the `h1`/`p.sub`/pills area, verbatim):
 
 ```html
       <h1>Inside the concept modal</h1>
@@ -56,7 +56,7 @@ The two spans inside the header herobar become:
       </div>
 ```
 
-- [ ] **Step 4: Replace the stats strip** (four stat blocks, verbatim):
+- [x] **Step 4: Replace the stats strip** (four stat blocks, verbatim):
 
 ```html
         <div class="stat"><b>6</b><span>Modals</span></div>
@@ -65,7 +65,7 @@ The two spans inside the header herobar become:
         <div class="stat"><b>4</b><span>Ways to close</span></div>
 ```
 
-- [ ] **Step 5: Strip the copied report's body sections** — delete every `<section id="s...">` block and its comments from the copy (keep only the empty `<!-- -->` markers), then leave six placeholder sections with `.sec-head` headings exactly as follows (the scroll-spy in the copied script needs real `.sec-head` targets):
+- [x] **Step 5: Strip the copied report's body sections** — delete every `<section id="s...">` block and its comments from the copy (keep only the empty `<!-- -->` markers), then leave six placeholder sections with `.sec-head` headings exactly as follows (the scroll-spy in the copied script needs real `.sec-head` targets):
 
 ```html
     <!-- 01 -->
@@ -94,7 +94,7 @@ The two spans inside the header herobar become:
     </section>
 ```
 
-- [ ] **Step 6: Replace the TOC** — exactly six `l1` entries plus these `l2` sub-links (11 in total):
+- [x] **Step 6: Replace the TOC** — exactly six `l1` entries plus these `l2` sub-links (11 in total):
 
 ```html
         <a href="#s1" class="l1"><span class="num">01</span>The entrance</a>
@@ -116,9 +116,9 @@ The two spans inside the header herobar become:
         <a href="#s6-glass" class="l2">The visual layer</a>
 ```
 
-- [ ] **Step 7: Footer** — rename the `#modtime` footer date to `17 Aug 2026`; leave the probe/author links as they are.
+- [x] **Step 7: Footer** — rename the `#modtime` footer date to `17 Aug 2026`; leave the probe/author links as they are.
 
-- [ ] **Step 8: Verify the shell**
+- [x] **Step 8: Verify the shell**
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
@@ -134,7 +134,7 @@ cd /Users/nileshsuthar/.agents/skills/html-mis && python3 lens.py "concept-modal
 
 Expected: no overflow at 320–1440.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git add probe/concept-modal.html && git commit -m "probe: concept-modal shell (task 1)"
@@ -151,7 +151,7 @@ cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git ad
 - Consumes: the shell (Task 1) — `<section id="s1">` with `.sec-head` "The Entrance".
 - Produces: section 01 = two `.part` blocks with ids `s1-entrance` and `s1-demo` (the demo block stays empty-marked with the comment `<!-- demo fills this in Task 3 -->`), each with `h3.sub`, `p.lede`, prose paragraphs, and zoomable `.side` exhibits of the real app code below.
 
-- [ ] **Step 1: Add the "A concept card opens" part** (id `s1-entrance`), copy verbatim:
+- [x] **Step 1: Add the "A concept card opens" part** (id `s1-entrance`), copy verbatim:
 
 ```html
       <div class="part" id="s1-entrance">
@@ -254,7 +254,7 @@ function closeModal() {
       </div>
 ```
 
-- [ ] **Step 2: Add the "Try the stack" part marker** (id `s1-demo`) — the full demo is Task 3; add only this now:
+- [x] **Step 2: Add the "Try the stack" part marker** (id `s1-demo`) — the full demo is Task 3; add only this now:
 
 ```html
       <div class="part" id="s1-demo">
@@ -264,7 +264,7 @@ function closeModal() {
       </div>
 ```
 
-- [ ] **Step 3: Verify** — section 01 has exactly two `.part` blocks with the ids above; the two zoomable `.side` blocks open the zoom modal (click one `.side` in `#s1` via bctl — synthetic is fine, the `.open` class on `#zoomModal` is the assertion; then close it); lens still clean:
+- [x] **Step 3: Verify** — section 01 has exactly two `.part` blocks with the ids above; the two zoomable `.side` blocks open the zoom modal (click one `.side` in `#s1` via bctl — synthetic is fine, the `.open` class on `#zoomModal` is the assertion; then close it); lens still clean:
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
@@ -273,7 +273,7 @@ grep -c 'id="s1-entrance"\|id="s1-demo"' probe/concept-modal.html   # expected: 
 cd /Users/nileshsuthar/.agents/skills/html-mis && python3 lens.py "concept-modal" --metrics-only   # no overflow
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git add probe/concept-modal.html && git commit -m "probe: concept-modal section 01 entrance (task 2)"
@@ -290,7 +290,7 @@ cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git ad
 - Consumes: section 01's `#s1-demo` part (Task 2).
 - Produces: `#demoOpen`, `#demoConcept`, `#demoQuiz`, `#demoHandleC`, `#demoHandleQ`, `#demoReadout`, `#demoOverlay` — used by Task 5's verification and by readers.
 
-- [ ] **Step 1: Add the demo CSS** (before `</style>`; tokens only):
+- [x] **Step 1: Add the demo CSS** (before `</style>`; tokens only):
 
 ```css
     /* ============ DEMO: THE STACK (live exhibit) ============ */
@@ -312,7 +312,7 @@ cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git ad
     .demo-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 ```
 
-- [ ] **Step 2: Replace the `<!-- demo fills this in Task 3 -->` marker** with:
+- [x] **Step 2: Replace the `<!-- demo fills this in Task 3 -->` marker** with:
 
 ```html
         <div class="demo-wrap">
@@ -346,7 +346,7 @@ cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git ad
         </div>
 ```
 
-- [ ] **Step 3: Add the demo IIFE** (before the zoom IIFE in the script — the app's own rules, simplified):
+- [x] **Step 3: Add the demo IIFE** (before the zoom IIFE in the script — the app's own rules, simplified):
 
 ```js
   (function () {
@@ -391,7 +391,7 @@ cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git ad
   })();
 ```
 
-- [ ] **Step 4: Verify the demo** (harness rules: force the demo into the viewport, `transition:none` on the sheets before style assertions):
+- [x] **Step 4: Verify the demo** (harness rules: force the demo into the viewport, `transition:none` on the sheets before style assertions):
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
@@ -412,7 +412,7 @@ bctl eval "document.title='d3:'+document.getElementById('demoReadout').textConte
 
 Also check the overlay state truthfully: with the stack empty, `elementFromPoint` at a point over the readout area must NOT be the overlay; with the concept open, a tap point elsewhere (e.g. `innerWidth - 60, 200`) must return `demoOverlay` — synthetic clicks never called "real taps". Then lens still clean.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git add probe/concept-modal.html && git commit -m "probe: concept-modal live stack demo (task 3)"
@@ -429,7 +429,7 @@ cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git ad
 - Consumes: the shell (Task 1) — sections `#s2`–`#s6` with their `.sec-head` headings; the zoomable `.side` pattern from section 01.
 - Produces: the completed sections with all ids referenced by the TOC: `#s2-stack`, `#s3-overlay`, `#s3-escape`, `#s3-swipe`, `#s3-buttons`, `#s4-quiz`, `#s4-next`, `#s5-bookmark`, `#s6-glass`. Plus `#s3-swipe`'s `pre` exhibit and the `.dels` grid.
 
-- [ ] **Step 1: Section 02 — The Stack** (id `s2-stack`), verbatim:
+- [x] **Step 1: Section 02 — The Stack** (id `s2-stack`), verbatim:
 
 ```html
       <div class="part" id="s2-stack">
@@ -488,7 +488,7 @@ function closeModal() {
       </div>
 ```
 
-- [ ] **Step 2: Section 03 — Four Ways Out** — the `.dels` grid plus one code exhibit, verbatim:
+- [x] **Step 2: Section 03 — Four Ways Out** — the `.dels` grid plus one code exhibit, verbatim:
 
 ```html
       <div class="dels">
@@ -520,7 +520,7 @@ if (conceptHandle) {
       <p>Escape works the same way on every page of the app: a single document-level listener. No modal registers its own key handler. The overlay tap is the simplest path of all — the overlay is one element, its click handler is <code>closeModal</code> itself.</p>
 ```
 
-- [ ] **Step 3: Section 04 — The Chain**, verbatim:
+- [x] **Step 3: Section 04 — The Chain**, verbatim:
 
 ```html
       <div class="part" id="s4-quiz">
@@ -571,7 +571,7 @@ document.getElementById('quizFooter').innerHTML = `
       </div>
 ```
 
-- [ ] **Step 4: Section 05 — Bookmarks & State**, verbatim:
+- [x] **Step 4: Section 05 — Bookmarks & State**, verbatim:
 
 ```html
       <div class="part" id="s5-bookmark">
@@ -619,7 +619,7 @@ document.getElementById('quizFooter').innerHTML = `
       </div>
 ```
 
-- [ ] **Step 5: Section 06 — Glass & Tokens**, verbatim:
+- [x] **Step 5: Section 06 — Glass & Tokens**, verbatim:
 
 ```html
       <div class="part" id="s6-glass">
@@ -679,7 +679,7 @@ document.getElementById('quizFooter').innerHTML = `
       </div>
 ```
 
-- [ ] **Step 6: Verify sections 02–06** — ids, `.dels` count, zoom still opens, lens clean:
+- [x] **Step 6: Verify sections 02–06** — ids, `.dels` count, zoom still opens, lens clean:
 
 ```bash
 cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages
@@ -691,7 +691,7 @@ bctl eval "var m=document.getElementById('zoomModal'); m.style.transition='none'
 cd /Users/nileshsuthar/.agents/skills/html-mis && python3 lens.py "concept-modal" --metrics-only   # no overflow
 ```
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git add probe/concept-modal.html && git commit -m "probe: concept-modal sections 02-06 (task 4)"
@@ -709,7 +709,7 @@ cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git ad
 - Consumes: the finished page (Tasks 1–4); the live app at https://nd28.github.io/microservices-rl-pwa/.
 - Produces: published report + index card + popup stats line; live-verified page.
 
-- [ ] **Step 1: Add the card `<li>`** in `probe/index.html`, after the `verification-lied.html` card (static HTML list, same shape as its neighbors):
+- [x] **Step 1: Add the card `<li>`** in `probe/index.html`, after the `verification-lied.html` card (static HTML list, same shape as its neighbors):
 
 ```html
       <li data-file="probe/concept-modal.html">
@@ -724,7 +724,7 @@ cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git ad
       </li>
 ```
 
-- [ ] **Step 2: Add the STATS entry** (alphabetical, after `verification-lied.html`):
+- [x] **Step 2: Add the STATS entry** (alphabetical, after `verification-lied.html`):
 
 ```js
         'probe/concept-modal.html': '6 modals · 1 stack · 4 ways out · 0 frameworks',
@@ -732,7 +732,7 @@ cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git ad
 
 The trailing comma on the previous entry must be present (check the object is still valid JSON-ish JS).
 
-- [ ] **Step 3: Verify the report against the LIVE app** — every claim the article makes is checked on the real app with hit-tests (never "real taps"):
+- [x] **Step 3: Verify the report against the LIVE app** — every claim the article makes is checked on the real app with hit-tests (never "real taps"):
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
@@ -753,20 +753,20 @@ bctl eval "var c=document.getElementById('conceptModal'), q=document.getElementB
 
 If the app's home has no directly clickable first card, adapt the selector from the app's real markup (source: the clone at `/var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/ms-pwa/app.js` — look at what renders `renderHome`). The assertion values above are the contract.
 
-- [ ] **Step 4: Full local verification** (repeat the Task 3 demo checks + zoom + lens on the finished page)
+- [x] **Step 4: Full local verification** (repeat the Task 3 demo checks + zoom + lens on the finished page)
 
 ```bash
 cd /Users/nileshsuthar/.agents/skills/html-mis && python3 lens.py "concept-modal" --metrics-only   # no overflow
 python3 lens.py "probe index" --metrics-only   # no overflow
 ```
 
-- [ ] **Step 5: Commit and push**
+- [x] **Step 5: Commit and push**
 
 ```bash
 cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git add probe/concept-modal.html probe/index.html && git commit -m "probe: 'inside the concept modal' — six modals, one stack, four ways out" && git push origin master
 ```
 
-- [ ] **Step 6: Wait ~85s, verify live** (cache-busted)
+- [x] **Step 6: Wait ~85s, verify live** (cache-busted)
 
 ```bash
 sleep 85
@@ -780,7 +780,7 @@ bctl eval "document.title='card:'+!!document.querySelector('.list li[data-file=\
 
 Clicking that card must open the popup showing `6 modals · 1 stack · 4 ways out · 0 frameworks`. Console: no errors (`bctl console`).
 
-- [ ] **Step 7: Tick every checkbox in this plan** and commit
+- [x] **Step 7: Tick every checkbox in this plan** and commit
 
 ```bash
 cd /var/folders/r8/rb3ht9r54wsdtnkdc8ctr8bc0000gn/T/opencode/nd28pages && git add docs/superpowers/plans/2026-08-17-concept-modal.md && git commit -m "plan: concept-modal checkboxes complete" && git push origin master
