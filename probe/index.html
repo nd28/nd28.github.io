@@ -429,7 +429,7 @@
     </div>
 
     <header class="head">
-      <h1>probe<span class="dot">.</span><span class="count-pill" id="countPill">5 tools</span></h1>
+      <h1>probe<span class="dot">.</span><span class="count-pill" id="countPill">7 tools</span></h1>
       <p class="sub">little tools &amp; reports, dumped here.</p>
       <p class="intro">One-off builds and session reports, each a self-contained page. <b>No framework, no build step</b> — a file dropped in and served.</p>
     </header>
@@ -451,6 +451,20 @@
     </div>
 
     <ul class="list">
+      <li data-file="probe/dir-iter.html" data-tile="peach">
+        <a href="dir-iter.html">
+          <span class="tile peach" aria-hidden="true"></span>
+          <span class="body-col">
+            <span class="row-top"><span class="file">dir-iter.html</span></span>
+            <span class="title">dir-iter</span>
+            <span class="desc">keyboard-first Bun filesystem walker — 1 REST, 1 SSE, 8 keys</span>
+          </span>
+          <span class="side-col">
+            <span class="mod" title="last modified"></span>
+            <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+          </span>
+        </a>
+      </li>
       <li data-file="probe/diskvis.rb.html" data-tile="sky">
         <a href="diskvis.rb.html">
           <span class="tile sky" aria-hidden="true"></span>
@@ -701,6 +715,7 @@
         'probe/verification-lied.html': '1 invisible modal · 5 lies · 0 caught by .click()',
         'probe/concept-modal.html': '6 modals · 1 stack · 4 ways out · 0 frameworks',
         'probe/html-mis.html': '415 lines · 3 levels · 16 tokens · 1 lens',
+        'probe/dir-iter.html': '17.7 KB · 293 LOC · 1 REST · 1 SSE · 8 keys',
       };
       function closePopup() {
         popModal.classList.remove('open');
