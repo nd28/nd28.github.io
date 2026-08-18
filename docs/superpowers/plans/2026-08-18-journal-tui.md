@@ -16,6 +16,7 @@
 - **Filler level: verbose** (level 2) — balanced plus short paragraphs of context and methodology. No padding, no repetition, never narrate the obvious.
 - **Copy:** short words, short sentences, no idioms (reader may not be a native speaker). Say "very slow", not "brutal"; "happened on its own", not "fell out". Technical words stay.
 - **Voice:** human, not polished. Honest, slightly imperfect phrasing over a press release. Flaw is fine; robot is not. Keep every value — drop the polish, never the data.
+- **Exhibit markup:** `.exhibit` > `.ex-head` + `pre.out` + `.cap`, exactly as the base shell writes it. Do NOT wrap a `pre` in `<div class="side">` — in this shell `.side` is a before/after column inside `.pair`, not an exhibit wrapper.
 - **Styling:** only tokens already in the copied `:root` — no new colors, radii or fonts, no inline `style=` attributes, no hex literals in the body.
 - **Exhibits:** verbatim from the named file and line range. No edits, no `...` elisions. Where a path contains the username, write `~/` — that is the only permitted change.
 - **Zen mode is designed, not shipped.** It must never be described as a feature that exists today. Version shipped today is `0.7.0`.
@@ -258,7 +259,7 @@ python3 /tmp/figblock.py ~/journal/docs/screenshots/writing-unsaved.png \
         <p class="lede">The rules of the game are eight numbers in one file. They are worth reading before the rest of the article, because everything that follows is a consequence of them.</p>
         <div class="exhibit">
           <div class="ex-head">the whole rulebook <span class="lang">internal/scoring/combo.go</span></div>
-          <div class="side"><pre class="out">const (
+          <pre class="out">const (
 	ComboFloor = 1.0
 	ComboCap   = 5.0
 
@@ -272,7 +273,7 @@ python3 /tmp/figblock.py ~/journal/docs/screenshots/writing-unsaved.png \
 	ComboHardResetGap = 15 * time.Second
 
 	BasePointsPerWord = 10
-)</pre></div>
+)</pre>
           <div class="cap">Three words in a row, each within 1.5 seconds of the last, buy 0.1 on the multiplier. Stop for two seconds and it starts draining at 0.08 a second. Stop for fifteen and it is back to 1.0 whatever it was before.</div>
         </div>
         <div class="learn"><span class="dot"></span><p><b>The multiplier is not a score of the session.</b> It is a reading of the last few seconds. Getting to 5.0 takes about two minutes of unbroken typing, and losing it takes fifteen seconds of not typing. A streak bonus sits on top at the end — 5% per consecutive day, capped at 50% — and that one <i>is</i> about the long run.</p></div>
@@ -287,11 +288,11 @@ python3 /tmp/figblock.py ~/journal/docs/screenshots/writing-unsaved.png \
         <p class="lede">A game that rewards pace needs to know your pace, and the header wants to show it live. The obvious way to measure it is wrong in a way that only shows up in the first few seconds.</p>
         <div class="exhibit">
           <div class="ex-head">why the denominator has a floor <span class="lang">internal/scoring/intensity.go</span></div>
-          <div class="side"><pre class="out">// PaceMinElapsed floors the denominator in WPM so the first couple of
+          <pre class="out">// PaceMinElapsed floors the denominator in WPM so the first couple of
 // words in a session (or right after a long pause) don't produce a
 // spurious spike — e.g. 2 words 1 real second apart would otherwise
 // imply 120 WPM.
-PaceMinElapsed = 5 * time.Second</pre></div>
+PaceMinElapsed = 5 * time.Second</pre>
           <div class="cap">Two words, one second apart, is a true measurement and a useless one. Without the floor the header opens every session by telling you that you write at 120 words a minute.</div>
         </div>
         <p class="lede">Pace is counted over a sliding sixty second window, kept separately from the combo. The combo is game feel; this is meant to be a fact.</p>
@@ -306,12 +307,12 @@ PaceMinElapsed = 5 * time.Second</pre></div>
         <p class="lede">The app also keeps a personal baseline, so it can say whether today is faster than usual. The number it compares against cannot be total words divided by session length, and the reason is written into the type that fixes it.</p>
         <div class="exhibit">
           <div class="ex-head">the baseline problem <span class="lang">internal/scoring/intensity.go</span></div>
-          <div class="side"><pre class="out">// PaceSampler collects live WPM readings taken while the writer is actively
+          <pre class="out">// PaceSampler collects live WPM readings taken while the writer is actively
 // typing. Its median is the session's representative pace, and unlike a
 // wall-clock average (total words ÷ session duration) it isn't dragged
 // toward zero by thinking time — which matters because the same readings
 // are what the intensity ratio divides by. Comparing a burst-measured live
-// reading against a pause-diluted baseline inflates every ratio.</pre></div>
+// reading against a pause-diluted baseline inflates every ratio.</pre>
           <div class="cap">A journal session is mostly pauses. Divide by the wall clock and the baseline sinks, and then every live reading looks like a personal best.</div>
         </div>
         <div class="learn"><span class="dot"></span><p><b>An empty string doing real work.</b> The retrospective tag and the live header use two different functions on purpose. <code>IntensityTier</code> returns nothing at ordinary pace, so old sessions written before a baseline existed stay unlabelled instead of carrying a word they never earned. <code>LiveTier</code> always returns a word — Warming, Cruising, Focused, Intense, Frantic — because a header that goes blank is a header you stop trusting.</p></div>
@@ -363,14 +364,14 @@ cd ~/nd28.github.io && git add probe/journal-tui.go.html && git commit -m "probe
         <p class="lede">A journal you might lose is not a journal. The editor writes what is on screen to disk every five seconds, into a table that holds one row per session and replaces it each time.</p>
         <div class="exhibit">
           <div class="ex-head">the draft table <span class="lang">internal/store/store.go</span></div>
-          <div class="side"><pre class="out">CREATE TABLE IF NOT EXISTS drafts (
+          <pre class="out">CREATE TABLE IF NOT EXISTS drafts (
 	session_id INTEGER PRIMARY KEY REFERENCES sessions(id),
 	body TEXT NOT NULL,
 	body_words INTEGER NOT NULL,
 	raw_score INTEGER NOT NULL,
 	total_words INTEGER NOT NULL,
 	updated_at TEXT NOT NULL
-);</pre></div>
+);</pre>
           <div class="cap">It mirrors the buffer rather than recording a history, so it stays the size of what you have written no matter how many hours the session runs. The score is stored beside the text because a combo history cannot be rebuilt after the fact.</div>
         </div>
         <p class="lede">The help line at the bottom of the writing screen says <code>saved</code> or <code>unsaved</code>. That is there because the whole value of autosaving is not having to wonder, and a silent autosave gives you no way to tell the difference between working and broken.</p>
@@ -395,10 +396,10 @@ Then:
         <p class="lede">Resuming puts the text back in the editor and the running score back on the header. It does not put the combo back, and the reason is the most honest line in the codebase.</p>
         <div class="exhibit">
           <div class="ex-head">what a resumed session gets back <span class="lang">internal/scoring/session.go</span></div>
-          <div class="side"><pre class="out">// The combo deliberately restarts at the floor. It measures the rhythm of
+          <pre class="out">// The combo deliberately restarts at the floor. It measures the rhythm of
 // the last few seconds of typing, and the interruption ended that rhythm —
 // restoring a 4x multiplier would hand out points for momentum that no
-// longer exists.</pre></div>
+// longer exists.</pre>
           <div class="cap">Giving the multiplier back would be the friendly choice and the wrong one. The number claims to describe the last few seconds, and the last few seconds were a crash.</div>
         </div>
 ```
@@ -426,13 +427,13 @@ Then close the part:
         <p class="lede">Typing the word "up" did not put "up" on the page. It moved the cursor up a line and the two letters vanished. Typing "esc" in the middle of a sentence ended the session.</p>
         <div class="exhibit">
           <div class="ex-head">captured from a real run <span class="lang">commit 30350b3</span></div>
-          <div class="side"><pre class="out">...and ask about the repor exactly where the battery cut me off. ting
-deadline before committing to anything else this week.</pre></div>
+          <pre class="out">...and ask about the repor exactly where the battery cut me off. ting
+deadline before committing to anything else this week.</pre>
           <div class="cap">The cursor jumped mid-word, so the rest of the sentence landed inside an earlier paragraph. The text is not dropped, it is rearranged — which is worse, because it survives to be read back later.</div>
         </div>
         <div class="exhibit">
           <div class="ex-head">why it happened <span class="lang">internal/tui/writing.go</span></div>
-          <div class="side"><pre class="out">// bubbletea coalesces the runes it reads in one go into a single
+          <pre class="out">// bubbletea coalesces the runes it reads in one go into a single
 // KeyMsg, and Key.String() renders that run as a plain string — so a
 // message carrying the typed letters "up" is indistinguishable from
 // the up-arrow key, and one carrying "esc" from escape. Both bubbles'
@@ -442,7 +443,7 @@ deadline before committing to anything else this week.</pre></div>
 // always text a person typed, never a key they pressed: insert it
 // directly and let no binding look at it.
 if keyMsg.Type == tea.KeyRunes && len(keyMsg.Runes) &gt; 1 {
-	m.writing.textarea.InsertString(string(keyMsg.Runes))</pre></div>
+	m.writing.textarea.InsertString(string(keyMsg.Runes))</pre>
           <div class="cap">The fix is the rule in the comment: more than one rune at once is always text somebody typed. Insert it directly so no key binding ever looks at it, and match this screen's own keys on the message type rather than its string.</div>
         </div>
         <div class="learn"><span class="dot"></span><p><b>This was not a fast-typing edge case.</b> It reproduced at a deliberate 120 milliseconds per word against the real binary. The words that broke it are ordinary ones — up, down, left, right, home, end, tab, space, delete, esc — and a journal is made of ordinary words.</p></div>
@@ -511,7 +512,14 @@ cd ~/journal && echo "commits: $(git rev-list --count HEAD)" \
   && make test
 ```
 
-Expected at time of writing: 52 / 2449 / 4162 / 170, and `make test` passing. If any number differs, use the new one in Step 3 and update the hero pills and stat tiles from Task 1 to match.
+Expected at time of writing: 52 / 2449 / 4162 / 170, and `make test` passing.
+
+If any number differs, it propagates in three directions and all three must be updated in this task:
+1. Step 3 below (the `.dels` block in section 05).
+2. Task 1's hero pills (`v0.7.0 · 52 commits · 35 days`) and the `1.7:1` stat tile — recompute as test lines ÷ code lines, one decimal.
+3. Task 7 Step 2's `STATS` string, which quotes `2,449 lines · 4,162 test lines`.
+
+Report the final four numbers in your report file so Task 7 uses the same ones.
 
 - [ ] **Step 2: Add the summary screenshot**
 
@@ -543,9 +551,9 @@ python3 /tmp/figblock.py ~/journal/docs/screenshots/summary.png \
         <p class="lede">Zen mode is a design dated 18 August 2026. It is not in v0.7.0 and it is not on disk — this section describes a document, not a feature. It silences all six places with one key, and changes nothing underneath: score, streak and lifetime total keep accruing exactly as they do now.</p>
         <div class="exhibit">
           <div class="ex-head">why ctrl+z is free to bind <span class="lang">journal-zen-mode-design.md</span></div>
-          <div class="side"><pre class="out">`ctrl+z` is free to bind. Bubble Tea puts the terminal in raw mode, and raw mode
+          <pre class="out">`ctrl+z` is free to bind. Bubble Tea puts the terminal in raw mode, and raw mode
 clears `ISIG` (`charmbracelet/x/term`'s `term_unix.go`), so the terminal never
-turns ctrl+z into SIGTSTP — it arrives as an ordinary key.</pre></div>
+turns ctrl+z into SIGTSTP — it arrives as an ordinary key.</pre>
           <div class="cap">Worth checking rather than assuming. A key that suspends the app instead of toggling a setting is a bad first impression of a feature meant to calm things down.</div>
         </div>
         <div class="learn"><span class="dot"></span><p><b>The save marker stays.</b> Zen drops the header, the score, the combo bar, the pace word and the high-score banner — but not <code>saved</code> / <code>unsaved</code>. Knowing whether your words reached disk is honesty, not a game, and the crash work in section 03 exists precisely so nobody has to wonder.</p></div>
@@ -658,18 +666,18 @@ bctl eval 'document.documentElement.removeAttribute("data-theme"); "reset"' --ma
 
 Expected: two different background colours, and text readable in both. Look at the page in each — a passing colour value is not the same as a readable page.
 
-- [ ] **Step 4: Check the zoom exhibits and the console**
+- [ ] **Step 4: Check wide exhibits scroll, and the console is clean**
+
+This article has no `.side` elements, so the shell's zoom IIFE binds nothing and there is no modal to test. Wide code blocks are handled by `pre.out` scrolling inside its own card instead.
 
 ```bash
 bctl eval 'document.querySelectorAll(".side").length' --match journal-tui
-bctl click ".side" --match journal-tui
-bctl eval 'document.getElementById("zoomModal").classList.contains("open")' --match journal-tui
-bctl key Escape --match journal-tui
-bctl eval 'document.getElementById("zoomModal").classList.contains("open")' --match journal-tui
+bctl eval '[...document.querySelectorAll("pre.out")].every(p=>getComputedStyle(p).overflowX==="auto")' --match journal-tui
+bctl eval '[...document.querySelectorAll("pre.out")].filter(p=>p.scrollWidth>p.clientWidth).length + " of " + document.querySelectorAll("pre.out").length + " scroll at this width"' --match journal-tui
 bctl console 3 --match journal-tui
 ```
 
-Expected: a non-zero `.side` count, `true` then `false`, and no console errors. `bctl click` is synthetic — do not describe it as a real tap.
+Expected: `.side` count is `0`; every `pre.out` computes `overflow-x: auto`; the scroll count is informational (at 320px several will scroll — that is correct, the page itself must not); no console errors.
 
 - [ ] **Step 5: Check every TOC anchor resolves**
 
@@ -749,6 +757,8 @@ In the `var STATS = {` object, as the first entry:
 ```javascript
         'probe/journal-tui.go.html': '×5.0 combo · 15s reset · 2,449 lines · 4,162 test lines',
 ```
+
+Use the line counts Task 5 reported, not the ones written here, if the two differ — Task 5 re-derives them from the repo and its report file names the final four.
 
 - [ ] **Step 3: Fix the stale count pill fallback**
 
