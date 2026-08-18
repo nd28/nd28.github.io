@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#FFF7F2">
+  <title>Session MIS Report — T3 Code, One Keystroke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      /* ---- One UI 8.5 soft: pink + mint, light-first ---- */
+      --accent:      #C43E7C;
+      --accent-2:    #D95B8C;
+      --accent-grad: linear-gradient(135deg, #D95B8C, #C43E7C);
+      --accent-soft: rgba(196, 62, 124, 0.10);
+      --accent-ring: rgba(196, 62, 124, 0.18);
+      --mint:        #2E9E8F;
+      --mint-soft:   rgba(46, 158, 143, 0.12);
+
+      --bg:       #FFF7F2;
+      --surface:  #FFFFFF;
+      --surface-2:#F5EFE8;
+      --surface-3:#EDE6DD;
+      --glass:    rgba(255, 247, 242, 0.82);
+      --border:   rgba(28, 18, 40, 0.07);
+      --border-strong: rgba(28, 18, 40, 0.12);
+      --text:     #16121E;
+      --muted:    #8A8394;
+
+      /* ---- squircle radius system (28 / 20 / 14) ---- */
+      --r-lg: 28px;
+      --r-md: 20px;
+      --r-sm: 14px;
+
+      --shadow-1: 0 1px 2px rgba(30,20,50,.04), 0 4px 12px rgba(30,20,50,.06);
+      --shadow-2: 0 2px 4px rgba(30,20,50,.05), 0 10px 24px rgba(30,20,50,.08), 0 24px 48px rgba(30,20,50,.10);
+      --inner-light: inset 0 1px 0 rgba(255,255,255,.85);
+
+      --code:  #B63A74;
+      --font:  'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --mono:  'JetBrains Mono', ui-monospace, monospace;
+
+      /* ---- responsive size & spacing tokens (desktop defaults) ---- */
+      --fs-base: 15.5px;
+      --fs-h1: clamp(40px, 8vw, 60px);
+      --fs-h2: 30px;
+      --fs-h3: 20px;
+      --fs-sub: 18px;
+      --fs-stat: 38px;
+      --pad-stat: 32px 24px;
+      --space-wrap-y: 72px;
+      --space-wrap-x: 36px;
+      --space-wrap-bot: 110px;
+      --space-hero-y: 56px;
+      --space-hero-x: 40px;
+      --space-section: 88px;
+      --sec-gap: 40px;
+      --scroll-offset: 56px;
+      --herobar-h: 48px;
+      --gap-grid: 28px;
+      --gap-probes: 32px;
+      --gap-check: 32px;
+      --pad-summary: 36px 40px;
+      --pad-pre: 20px;
+        --bar-x: 28px;
+        --pill-py: 6px;
+        --pill-px: 16px;
+        --pill-gap: 7px;
+        --meta-gap: 10px;
+        --hero-mark: 56px;
+      --hero-mark-mb: 22px;
+      --hero-eyebrow-mb: 18px;
+      --hero-sub-mt: 20px;
+      --hero-meta-mt: 32px;
+    }
+
+    /* ============ DARK THEME (attribute override) ============ */
+    :root[data-theme="dark"] {
+      --accent:      #F06FA3;
+      --accent-2:    #D95B8C;
+      --accent-grad: linear-gradient(135deg, #F06FA3, #D95B8C);
+      --accent-soft: rgba(240, 111, 163, 0.15);
+      --accent-ring: rgba(240, 111, 163, 0.28);
+      --mint:        #5FD3C4;
+      --mint-soft:   rgba(95, 211, 196, 0.12);
+      --bg:       #0E0E12;
+      --surface:  #1B1B24;
+      --surface-2:#232330;
+      --surface-3:#2C2C3C;
+      --glass:    rgba(14, 14, 18, 0.72);
+      --border:   rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.14);
+      --text:     #F2F1F6;
+      --muted:    #9490A2;
+      --code:     #F7B8D2;
+      --shadow-1: 0 1px 2px rgba(0,0,0,.30), 0 4px 12px rgba(0,0,0,.28);
+      --shadow-2: 0 2px 6px rgba(0,0,0,.35), 0 12px 28px rgba(0,0,0,.42), 0 28px 56px rgba(0,0,0,.50);
+      --inner-light: inset 0 1px 0 rgba(255,255,255,.07);
+    }
+
+    /* ============ DARK THEME (OS dark, light-first default above) ============ */
+    @media (prefers-color-scheme: dark){
+      :root:not([data-theme="light"]){
+        --accent:      #F06FA3;
+        --accent-2:    #D95B8C;
+        --accent-grad: linear-gradient(135deg, #F06FA3, #D95B8C);
+        --accent-soft: rgba(240, 111, 163, 0.15);
+        --accent-ring: rgba(240, 111, 163, 0.28);
+        --mint:        #5FD3C4;
+        --mint-soft:   rgba(95, 211, 196, 0.12);
+        --bg:       #0E0E12;
+        --surface:  #1B1B24;
+        --surface-2:#232330;
+        --surface-3:#2C2C3C;
+        --glass:    rgba(14, 14, 18, 0.72);
+        --border:   rgba(255, 255, 255, 0.08);
+        --border-strong: rgba(255, 255, 255, 0.14);
+        --text:     #F2F1F6;
+        --muted:    #9490A2;
+        --code:     #F7B8D2;
+        --shadow-1: 0 1px 2px rgba(0,0,0,.30), 0 4px 12px rgba(0,0,0,.28);
+        --shadow-2: 0 2px 6px rgba(0,0,0,.35), 0 12px 28px rgba(0,0,0,.42), 0 28px 56px rgba(0,0,0,.50);
+        --inner-light: inset 0 1px 0 rgba(255,255,255,.07);
+      }
+    }
+
+    /* ============ RESPONSIVE TOKEN OVERRIDES ============ */
+    @media (max-width: 760px){
+      :root{
+        --fs-base: 15px;
+        --fs-h2: 23px;
+        --fs-h3: 17px;
+        --fs-sub: 16px;
+        --fs-stat: 30px;
+        --pad-stat: 24px 16px;
+        --space-wrap-y: 52px;
+        --space-wrap-x: 20px;
+        --space-wrap-bot: 90px;
+        --space-hero-y: 52px;
+        --space-hero-x: 24px;
+        --space-section: 56px;
+        --sec-gap: 28px;
+        --scroll-offset: 52px;
+        --gap-grid: 18px;
+        --gap-probes: 22px;
+        --gap-check: 22px;
+        --pad-summary: 26px 22px;
+        --pad-pre: 16px;
+        --bar-x: 18px;
+        --fs-h1: clamp(25px, 7vw, 44px);
+        --hero-mark: 48px;
+        --hero-mark-mb: 16px;
+        --hero-eyebrow-mb: 13px;
+        --hero-sub-mt: 14px;
+        --hero-meta-mt: 22px;
+        --space-hero-y: 32px;
+      }
+    }
+    @media (max-width: 380px){
+      :root{
+        --space-hero-y: 24px;
+        --hero-mark: 40px;
+        --hero-mark-mb: 12px;
+        --hero-eyebrow-mb: 11px;
+        --hero-sub-mt: 10px;
+        --hero-meta-mt: 16px;
+        --fs-h1: clamp(23px, 6.4vw, 34px);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      font-size: var(--fs-base);
+      color: var(--text);
+      background:
+        radial-gradient(52% 40% at 8% -4%, rgba(255, 205, 224, 0.60), transparent 62%),
+        radial-gradient(46% 38% at 94% 2%, rgba(170, 231, 208, 0.55), transparent 62%),
+        radial-gradient(60% 46% at 50% 108%, rgba(170, 231, 208, 0.55), transparent 64%),
+        radial-gradient(40% 30% at 70% 60%, rgba(255, 199, 168, 0.45), transparent 60%),
+        var(--bg);
+      background-attachment: fixed;
+      line-height: 1.72;
+      -webkit-font-smoothing: antialiased;
+    }
+    @media (prefers-color-scheme: dark){
+      :root:not([data-theme="light"]) body { background:
+        radial-gradient(52% 40% at 8% -4%, rgba(240, 111, 163, 0.15), transparent 62%),
+        radial-gradient(46% 38% at 94% 2%, rgba(95, 211, 196, 0.12), transparent 62%),
+        radial-gradient(60% 46% at 50% 108%, rgba(95, 211, 196, 0.12), transparent 64%),
+        radial-gradient(40% 30% at 70% 60%, rgba(255, 140, 120, 0.10), transparent 60%),
+        var(--bg);
+        background-attachment: fixed; }
+    }
+    :root[data-theme="dark"] body { background:
+      radial-gradient(52% 40% at 8% -4%, rgba(240, 111, 163, 0.15), transparent 62%),
+      radial-gradient(46% 38% at 94% 2%, rgba(95, 211, 196, 0.12), transparent 62%),
+      radial-gradient(60% 46% at 50% 108%, rgba(95, 211, 196, 0.12), transparent 64%),
+      radial-gradient(40% 30% at 70% 60%, rgba(255, 140, 120, 0.10), transparent 60%),
+      var(--bg);
+      background-attachment: fixed; }
+    ::selection { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+    :focus-visible { outline: none; box-shadow: 0 0 0 3.5px var(--accent-ring); }
+
+    .shell {
+      max-width: 1260px; margin: 0 auto;
+      display: grid; grid-template-columns: minmax(0, 1fr) 224px;
+      gap: 56px; align-items: start;
+      padding: 0 var(--space-wrap-x);
+    }
+    .wrap {
+      min-width: 0;
+      padding: var(--space-wrap-y) 0 var(--space-wrap-bot);
+    }
+
+    /* ============ HERO ============ */
+    .hero {
+      text-align: left;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: var(--fs-h1);
+      font-weight: 800; letter-spacing: -0.035em; line-height: 1.05;
+      color: var(--text);
+    }
+    .hero p.sub { color: var(--muted); font-size: var(--fs-sub); margin: var(--hero-sub-mt) 0 0; }
+    .hero .meta { display: flex; flex-wrap: wrap; gap: var(--meta-gap); margin-top: var(--hero-meta-mt); }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: var(--pill-gap);
+      font-size: 13px; line-height: 1; color: var(--text);
+      background: var(--surface); border: 1px solid var(--border);
+      padding: var(--pill-py) var(--pill-px); border-radius: 999px;
+      box-shadow: var(--shadow-1), var(--inner-light);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .pill:hover { transform: translateY(-2px); box-shadow: var(--shadow-2), var(--inner-light); }
+    .pill:active { transform: scale(.985); }
+    .pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex: none; }
+    .pill b { color: var(--accent); font-weight: 600; }
+    a.pill { text-decoration: none; background: var(--accent-soft); color: var(--accent); border-color: color-mix(in srgb, var(--accent) 22%, transparent); }
+    a.pill .dot { background: var(--accent); }
+    a.pill:hover { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+
+    /* ============ METRICS BAND (not 4 cards — one connected strip) ============ */
+    .stats {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      margin-top: 44px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-1), var(--inner-light);
+      overflow: hidden;
+    }
+    .stat { padding: var(--pad-stat); border-left: 1px solid var(--border); }
+    .stat:first-child { border-left: none; }
+    .stat .n { font-size: var(--fs-stat); font-weight: 800; color: var(--accent); line-height: 1; letter-spacing: -0.02em; }
+    .stat .l { font-size: 13px; color: var(--muted); margin-top: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+    @media (max-width: 760px){
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .stat:nth-child(3) { border-left: none; }
+      .stat:nth-child(n+3) { border-top: 1px solid var(--border); }
+    }
+
+    /* ============ SCROLL PROGRESS ============ */
+    .progress {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0;
+      background: linear-gradient(90deg, var(--accent-2), var(--accent), var(--mint));
+      z-index: 60; transition: width .08s linear;
+    }
+
+    /* ============ STICKY HERO SUMMARY BAR ============ */
+    .herobar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 55;
+      height: var(--herobar-h);
+      background: var(--glass);
+      backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+      transform: translateY(-100%);
+      transition: transform .25s ease;
+    }
+    .herobar.show { transform: translateY(0); }
+    .herobar .inner {
+      height: 100%; max-width: 1260px; margin: 0 auto;
+      padding: 0 var(--space-wrap-x);
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .herobar .t { font-weight: 700; font-size: 15px; color: var(--text); letter-spacing: -0.01em; white-space: nowrap; }
+    .herobar .s { font-size: 13px; color: var(--muted); font-family: var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    @media (max-width: 760px){ .herobar .s { display: none; } }
+
+    /* ============ RIGHT SIDEBAR TOC (table of contents) ============ */
+    .toc {
+      position: sticky; top: calc(var(--herobar-h) + 28px);
+      padding: 6px 0 0 20px;
+      border-left: 1px solid var(--border);
+    }
+    .toc-title {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--muted); margin: 0 0 12px;
+    }
+    .toc nav { display: flex; flex-direction: column; gap: 2px; }
+    .toc a {
+      display: block; padding: 5px 10px; border-radius: 10px;
+      text-decoration: none; color: var(--muted); font-size: 13px;
+      transition: color .15s, background .15s;
+    }
+    .toc a:hover { color: var(--text); }
+    .toc a.l1 { font-weight: 600; color: var(--text); }
+    .toc a.l1 .num { font-family: var(--mono); font-size: 11px; color: var(--mint); margin-right: 6px; }
+    .toc a.l2 { padding-left: 26px; }
+    .toc a.active { color: var(--text); background: var(--mint-soft); }
+    .toc a.active.l1 .num { color: var(--accent); }
+    @media (max-width: 1000px){
+      .shell { grid-template-columns: 1fr; }
+      .toc { display: none; }
+    }
+
+    /* ============ SECTIONS — open, hairline-divided, clear hierarchy ============ */
+    section { margin-top: var(--space-section); scroll-margin-top: var(--scroll-offset); }
+    .sec-head {
+      position: sticky; top: var(--herobar-h); z-index: 40;
+      display: flex; align-items: baseline; gap: 16px;
+      padding: 12px 0 18px; margin-bottom: var(--sec-gap);
+      background: var(--glass);
+      backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+      transition: padding .18s ease;
+    }
+    .sec-num {
+      font-family: var(--mono); font-size: 14px; font-weight: 500;
+      color: var(--mint); letter-spacing: 0.12em; flex: none;
+    }
+    .sec-head h2 {
+      margin: 0; font-size: var(--fs-h2); font-weight: 800;
+      color: var(--text); letter-spacing: -0.02em;
+      transition: font-size .18s ease;
+    }
+    .sec-head.condensed { padding: 6px 0 10px; }
+    .sec-head.condensed h2 { font-size: 18px; }
+
+    /* type hierarchy — biggest/brightest → smallest/muted:
+       h1 > h2 > h3.sub > body > secondary (.lede/.note/.cap) > mono label
+       colors: headings/body = --text · secondary = --muted · accents = --accent/--mint · code = --code */
+    .part { margin-top: 32px; }
+    .part:first-child { margin-top: 0; }
+    .sub {
+      margin: 0 0 14px; font-size: var(--fs-h3); font-weight: 700;
+      color: var(--text); letter-spacing: -0.01em;
+      scroll-margin-top: calc(var(--herobar-h) + 56px);
+    }
+
+    /* exhibits (code) — the few real boxes, with a tab label */
+    .exhibit { margin: 0 0 24px; }
+    .exhibit:last-child { margin-bottom: 0; }
+    .ex-head {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 600; color: var(--text);
+      margin-bottom: 12px;
+    }
+    .ex-head .lang { font-family: var(--mono); font-size: 12px; color: var(--mint); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-grid); }
+    .grid-2 > * { min-width: 0; }
+    @media (max-width: 760px){ .grid-2 { grid-template-columns: 1fr; } }
+
+    pre.out {
+      font-family: var(--mono); font-size: 12.5px; line-height: 1.6;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-md); padding: var(--pad-pre); margin: 0;
+      color: var(--text); overflow-x: auto; white-space: pre; max-width: 100%;
+      box-shadow: var(--shadow-1), var(--inner-light);
+    }
+    pre.out .bar { color: var(--accent); }
+    pre.out .dim { color: var(--muted); }
+
+    .lede { color: var(--muted); font-size: 14px; margin: 0 0 16px; max-width: 60ch; }
+
+    /* deliverables — compact file → role strip */
+    .dels { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-grid); margin: 0 0 24px; }
+    .dels > * { min-width: 0; }
+    .del {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      padding: 13px 16px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md);
+      box-shadow: var(--shadow-1), var(--inner-light);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .del:hover { transform: translateY(-2px); box-shadow: var(--shadow-2), var(--inner-light); }
+    .del:active { transform: scale(.985); }
+    .del code { font-size: 13.5px; color: var(--accent); font-weight: 600; }
+    .del .lang { font-family: var(--mono); font-size: 11px; color: var(--mint); }
+    .del .role { color: var(--muted); font-size: 13px; }
+    @media (max-width: 760px){ .dels { grid-template-columns: 1fr; } }
+
+    .cap { margin: 10px 0 0; font-size: 12.5px; color: var(--muted); font-family: var(--mono); }
+
+    /* diffs — interleaved rows: aspect eyebrow + Ruby | Perl, hairline between */
+    .diffs { margin-top: 0; }
+    .diff { padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .diff:first-child { padding-top: 0; }
+    .diff:last-child { border-bottom: none; padding-bottom: 0; }
+    .aspect {
+      font-family: var(--mono); font-size: 12px; color: var(--muted);
+      letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 10px;
+    }
+    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .side { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .tag { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+    .tag.rb { color: var(--accent); }
+    .tag.pl { color: var(--mint); }
+    .note { font-size: 13px; color: var(--muted); }
+    .note.whole { margin-top: 8px; }
+    @media (max-width: 380px){ .pair { grid-template-columns: 1fr; gap: 10px; } }
+    code { font-family: var(--mono); font-size: 0.85em; color: var(--code); }
+
+    /* learnings — open list, left accent, hairline between (NOT cards) */
+    .learn {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 20px 0; border-bottom: 1px solid var(--border);
+      transition: transform .18s ease;
+    }
+    .learn:last-child { border-bottom: none; }
+    .learn:hover { transform: translateX(4px); }
+    .learn .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-top: 9px; flex: none; }
+    .learn p { margin: 0; color: var(--text); font-size: 15px; }
+    .learn b { color: var(--mint); font-weight: 600; }
+
+    /* tools — open rows: mono label + note, hairline between */
+    .tools { margin-top: 0; }
+    .tool {
+      display: grid; grid-template-columns: 180px 1fr; gap: 16px;
+      padding: 14px 0; border-bottom: 1px solid var(--border);
+    }
+    .tool:first-child { padding-top: 0; }
+    .tool:last-child { border-bottom: none; padding-bottom: 0; }
+    .tool .name { font-family: var(--mono); font-size: 12px; color: var(--accent); padding-top: 2px; }
+    .tool p { margin: 0; color: var(--text); font-size: 15px; }
+    @media (max-width: 760px){ .tool { grid-template-columns: 1fr; gap: 4px; } }
+
+    /* spec coverage — sub-section: label + one paragraph */
+    .subhead { margin: 28px 0 10px; font-family: var(--mono); font-size: 12px; color: var(--mint); letter-spacing: 0.06em; text-transform: uppercase; }
+    .coverage { margin: 0; color: var(--text); font-size: 15px; max-width: 62ch; }
+
+    /* ============ FIGURE — embedded screenshot ============ */
+    figure.screenshot {
+      margin: 32px 0 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-1), var(--inner-light);
+      overflow: hidden;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    figure.screenshot:hover { transform: translateY(-2px); box-shadow: var(--shadow-2), var(--inner-light); }
+    figure.screenshot img {
+      display: block; width: 100%; height: auto;
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
+    }
+    figure.screenshot figcaption {
+      padding: 14px 20px;
+      font-family: var(--mono); font-size: 12.5px; color: var(--muted);
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    figure.screenshot figcaption .tag {
+      font-family: var(--mono); font-size: 11px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--mint); padding: 3px 8px;
+      background: var(--mint-soft); border-radius: 999px;
+    }
+
+    footer {
+      margin-top: var(--space-section); padding-top: 28px;
+      border-top: 1px solid var(--border);
+      text-align: center; color: var(--muted); font-size: 13px;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    .foot-top { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; color: var(--text); font-size: 14px; }
+    .foot-top .probe { font-family: var(--mono); color: var(--mint); }
+    .foot-meta { margin-top: 8px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+    /* ---- zoom modal: centered dialog, bottom sheet on phones ---- */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(20,14,30,.35);backdrop-filter:blur(14px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s,visibility .3s;z-index:100}
+    .modal-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}
+    .modal{position:fixed;inset:0;z-index:101;display:flex;align-items:center;justify-content:center;padding:28px 24px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s,visibility .3s}
+    .modal.open{opacity:1;visibility:visible;pointer-events:auto}
+    .zoom-card{width:min(620px,100%);max-height:80vh;overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:var(--shadow-2),var(--inner-light);outline:none;transform:translateY(16px) scale(.96);opacity:0;transition:transform .32s cubic-bezier(.2,.9,.25,1),opacity .28s}
+    .modal.open .zoom-card{transform:none;opacity:1}
+    .zoom-card:focus-visible{box-shadow:0 0 0 3.5px var(--accent-ring),var(--shadow-2),var(--inner-light)}
+    .sheet-handle{display:none;width:44px;height:5px;border-radius:999px;background:var(--surface-3);margin:0 auto 16px}
+    .zoom-card .side{font-size:19px;line-height:1.55;padding:20px;border-radius:var(--r-md);cursor:default}
+    .zoom-card .note{display:block;margin-top:12px}
+    .zoom-card .tag{font-size:13px}
+    .side{cursor:zoom-in}
+    .side:hover{border-color:var(--accent)}
+    @media (max-width: 560px){
+      .modal{align-items:flex-end;padding:0}
+      .zoom-card{width:100%;border-radius:28px 28px 0 0;padding:14px 20px calc(22px + env(safe-area-inset-bottom));transform:translateY(100%);opacity:1;transition:transform .34s cubic-bezier(.2,.9,.25,1)}
+      .modal.open .zoom-card{transform:none}
+      .sheet-handle{display:block}
+    }
+
+    /* ============ PRINT ============ */
+    @media print{
+      *{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      body{ background: none; }
+      .progress,.herobar,.toc{ display: none !important; }
+      .shell{ display: block; padding: 0; }
+      .sec-head{ position: static; background: none; backdrop-filter: none; }
+      section,.stats,.del,pre.out,.zoom-card{ break-inside: avoid; }
+      .stats,.del,pre.out{ box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+
+  <header class="herobar" id="herobar">
+    <div class="inner">
+      <span class="t">T3 Code, One Keystroke</span>
+      <span class="s">AppImage → autostart, Super+T, and a verified updater</span>
+    </div>
+  </header>
+
+  <div class="shell">
+    <div class="wrap">
+
+      <!-- HERO -->
+    <header class="hero">
+      <h1>Four steps to one key</h1>
+      <p class="sub">An AppImage was sitting in Downloads. Making it behave like an installed app took a symlink, two desktop files, and an updater that checks what it downloads before it trusts it.</p>
+      <div class="meta">
+        <span class="pill"><span class="dot"></span>Date <b>18 Aug 2026</b></span>
+        <span class="pill"><span class="dot"></span>Ubuntu GNOME · Wayland</span>
+        <span class="pill"><span class="dot"></span>bash · 0 extra deps</span>
+        <a class="pill" href="https://github.com/pingdotgg/t3code"><span class="dot"></span>github.com/pingdotgg/t3code</a>
+      </div>
+    </header>
+
+    <!-- AT A GLANCE -->
+    <div class="stats">
+      <div class="stat"><div class="n">4</div><div class="l">Steps before</div></div>
+      <div class="stat"><div class="n">1</div><div class="l">Key now</div></div>
+      <div class="stat"><div class="n">3</div><div class="l">Bugs found</div></div>
+      <div class="stat"><div class="n">11s</div><div class="l">Full update</div></div>
+    </div>
+
+    <!-- 01 THE FRICTION -->
+    <section id="s1">
+      <div class="sec-head"><div class="sec-num">01</div><h2>The Friction</h2></div>
+
+      <div class="part">
+        <h3 class="sub" id="s1-cost">What It Cost To Open An App</h3>
+        <p class="lede">The file was <code>T3-Code-0.0.33-x86_64.AppImage</code>, in <code>~/Downloads</code>, executable, working. An AppImage is a single file. Nothing installs it, so nothing tells the desktop it exists. It does not appear in the app list and it has no icon anywhere. The only way in was the file manager.</p>
+        <div class="diffs">
+          <div class="diff">
+            <div class="aspect">opening the app</div>
+            <div class="pair">
+              <div class="side">
+                <span class="tag rb">before</span>
+                <span class="val">4 steps, about 15 seconds</span>
+                <span class="note">open Downloads → type "t3" in search → right click → Run → wait ~3s for the window</span>
+              </div>
+              <div class="side">
+                <span class="tag pl">after</span>
+                <span class="val">1 key, or nothing at all</span>
+                <span class="note">Super+T from anywhere, and it is already open after login</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="learn"><span class="dot"></span><p><b>The cost is not the seconds.</b> The person asking has ADHD. Four steps is four chances to get pulled somewhere else, and a file manager is full of other things to look at. So the fix is not "make it faster" — it is to remove the places where attention can leak out.</p></div>
+      </div>
+
+      <div class="part">
+        <h3 class="sub" id="s1-machine">Reading The Machine First</h3>
+        <p class="lede">Two things decided the whole approach, so they were checked before anything was written.</p>
+        <div class="tools">
+          <div class="tool"><span class="name">Ubuntu GNOME on Wayland</span><p>GNOME reads autostart entries from <code>~/.config/autostart</code> and app entries from <code>~/.local/share/applications</code>. Both are plain <code>.desktop</code> files. No package manager involved.</p></div>
+          <div class="tool"><span class="name">libfuse2 present</span><p><code>/usr/lib/x86_64-linux-gnu/libfuse.so.2</code> was there. AppImages mount themselves with FUSE. Without it the file needs an extract-and-run workaround, and every path below would have changed.</p></div>
+        </div>
+        <div class="learn"><span class="dot"></span><p><b>Wayland removed an option.</b> On X11 a script can raise another window. On Wayland it cannot, so the shortcut had to work without ever asking the compositor to focus anything.</p></div>
+      </div>
+    </section>
+
+    <!-- 02 THE INSTALL -->
+    <section id="s2">
+      <div class="sec-head"><div class="sec-num">02</div><h2>The Install</h2></div>
+
+      <div class="part">
+        <h3 class="sub" id="s2-layout">One Symlink, Everything Else Points At It</h3>
+        <p class="lede">The AppImage moved out of <code>~/Downloads</code> — that folder gets emptied, and a 153 MB file with a version in its name is easy to delete by accident. It went to <code>~/Applications</code>. Then the one decision that made the rest simple: nothing refers to the versioned filename. Everything refers to a symlink.</p>
+        <div class="dels">
+          <div class="del"><code>~/Applications/T3-Code-0.0.33-x86_64.AppImage</code><span class="lang">binary</span><span class="role">the real file, version in the name</span></div>
+          <div class="del"><code>~/.local/bin/t3-code</code><span class="lang">symlink</span><span class="role">the stable name — on PATH, so it is also a terminal command</span></div>
+          <div class="del"><code>~/.local/share/applications/t3code.desktop</code><span class="lang">desktop</span><span class="role">app list entry — Super, type "t3", Enter</span></div>
+          <div class="del"><code>~/.config/autostart/t3code.desktop</code><span class="lang">desktop</span><span class="role">login autostart, 8 second delay</span></div>
+          <div class="del"><code>~/.local/share/icons/hicolor/512x512/apps/t3code.png</code><span class="lang">png</span><span class="role">icon, found by theme lookup</span></div>
+          <div class="del"><code>~/.local/bin/t3-code-updater</code><span class="lang">bash</span><span class="role">fetch, verify, swap the symlink, prune</span></div>
+        </div>
+        <p class="lede">A version bump now touches one thing. Point the symlink at the new file and the app list, the autostart entry, the shortcut and the terminal command all follow. Without the symlink, every update means editing three files and remembering that the third one exists.</p>
+        <div class="exhibit">
+          <div class="ex-head">the autostart entry <span class="lang">~/.config/autostart/t3code.desktop</span></div>
+          <pre class="out"><span class="dim">[Desktop Entry]</span>
+<span class="bar">Type</span>=Application
+<span class="bar">Name</span>=T3 Code (Alpha)
+<span class="bar">Comment</span>=Start T3 Code automatically on login
+<span class="bar">Exec</span>=/home/&lt;user&gt;/.local/bin/t3-code --no-sandbox   <span class="dim">// the symlink, never the versioned file</span>
+<span class="bar">Icon</span>=t3code
+<span class="bar">Terminal</span>=false
+<span class="bar">StartupWMClass</span>=t3code
+<span class="bar">X-GNOME-Autostart-enabled</span>=true
+<span class="bar">X-GNOME-Autostart-Delay</span>=8</pre>
+          <div class="cap">The 8 second delay is deliberate. Starting a 153 MB Electron app at the same moment as the shell makes login feel slow, and login is exactly when a slow desktop is most annoying.</div>
+        </div>
+        <p class="lede">Both files were checked with <code>desktop-file-validate</code> before anything was launched. A <code>.desktop</code> file with one bad line does not error. It just silently never appears, and then you are debugging the wrong thing.</p>
+      </div>
+
+      <div class="part">
+        <h3 class="sub" id="s2-icon">The Icon Was A Broken Link</h3>
+        <p class="lede">AppImages carry a desktop entry and an icon inside them. Pulling them out is one command:</p>
+        <div class="exhibit">
+          <div class="ex-head">extracting the icon <span class="lang">two tries</span></div>
+          <pre class="out">$ t3-code --appimage-extract <span class="bar">'*.png'</span>
+  squashfs-root/t3code.png
+
+$ file squashfs-root/t3code.png
+  <span class="dim">broken symbolic link to</span> usr/share/icons/hicolor/512x512/apps/t3code.png
+
+$ t3-code --appimage-extract <span class="bar">'usr/share/icons/hicolor/512x512/apps/t3code.png'</span>
+  <span class="dim">PNG image data, 512 x 512, 8-bit/color RGBA</span></pre>
+          <div class="cap">The top-level <code>t3code.png</code> is a symlink into a directory the pattern did not match, so the first extract produced a link pointing at nothing. Copying it would have installed a broken file and the app would have shown a generic grey icon with no error anywhere.</div>
+        </div>
+        <p class="lede">The real icon went to the <code>hicolor</code> theme path, so the desktop entry can say <code>Icon=t3code</code> and let the icon theme resolve it, instead of hardcoding a path that a future update might invalidate.</p>
+      </div>
+    </section>
+
+    <!-- 03 THE ORDERING TRAP -->
+    <section id="s3">
+      <div class="sec-head"><div class="sec-num">03</div><h2>The Ordering Trap</h2></div>
+
+      <p class="lede">The app was launched through its new desktop entry to confirm it worked. It did — the log said <code>main window created</code>. But a check of the files afterwards showed something that had not been there a minute earlier.</p>
+
+      <div class="learn"><span class="dot"></span><p><b>The app writes its own desktop files.</b> On launch, T3 Code registered itself as the handler for the <code>t3code://</code> URL scheme. It rewrote <code>t3code.desktop</code> and created a second file, <code>t3code-url-handler.desktop</code>, that nobody asked for.</p></div>
+
+      <div class="exhibit">
+        <div class="ex-head">written by the app, not by us <span class="lang">~/.local/share/applications/t3code-url-handler.desktop</span></div>
+        <pre class="out"><span class="dim">[Desktop Entry]</span>
+<span class="bar">Type</span>=Application
+<span class="bar">Name</span>=T3 Code (Alpha)
+<span class="bar">Exec</span>="/home/&lt;user&gt;/Applications/T3-Code-0.0.33-x86_64.AppImage" %U
+<span class="bar">Terminal</span>=false
+<span class="bar">NoDisplay</span>=true
+<span class="bar">MimeType</span>=x-scheme-handler/t3code;</pre>
+        <div class="cap">Note the <code>Exec</code> line: an absolute path to the versioned file, not the symlink. The app bakes in wherever it was started from.</div>
+      </div>
+
+      <p class="lede">This is the part worth remembering. The file had been moved to <code>~/Applications</code> <i>before</i> the first launch, so the path the app recorded is permanent. Had it been launched once from <code>~/Downloads</code> first — the obvious way to test "does this thing even run" — that <code>Exec</code> line would point at a file that no longer exists, and every <code>t3code://</code> link would silently fail later, long after anyone would connect it to a file move.</p>
+
+      <div class="learn"><span class="dot"></span><p><b>Move first, launch second.</b> With self-registering apps the first launch is not a neutral test. It is a write. The order of two commands decided whether a feature works in three months.</p></div>
+
+      <div class="learn"><span class="dot"></span><p><b>You cannot stop it, only get there first.</b> The entry is rewritten on every launch, so fighting it is pointless. Giving it the right path once is enough.</p></div>
+    </section>
+
+    <!-- 04 ONE KEYSTROKE -->
+    <section id="s4">
+      <div class="sec-head"><div class="sec-num">04</div><h2>One Keystroke</h2></div>
+
+      <div class="part">
+        <h3 class="sub" id="s4-instance">Launch Or Raise, Same Command</h3>
+        <p class="lede">A shortcut that only launches is half a shortcut. If the app is already open, pressing the key should bring it forward, not start a second copy. On Wayland a script cannot raise someone else's window, so this had to be solved by the app or not at all.</p>
+        <p class="lede">The app's own log had a hint that pointed the wrong way — it picks its backend port by scanning upward from 3773, which is what you would build if you expected several copies to run at once. Rather than guess, the behaviour was measured: record the main process ID, run the launch command again, compare.</p>
+        <div class="exhibit">
+          <div class="ex-head">second-instance test <span class="lang">measured, not assumed</span></div>
+          <pre class="out">main pids before: <span class="bar">395964</span>
+$ t3-code --no-sandbox        <span class="dim">// launched again while running</span>
+main pids after:  <span class="bar">395964</span>
+
+<span class="dim">→ no new process. single-instance lock. the existing window took focus.</span></pre>
+          <div class="cap">The port scan was a red herring. One launch command does both jobs, so the shortcut stays a single line with no window management in it.</div>
+        </div>
+      </div>
+
+      <div class="part">
+        <h3 class="sub" id="s4-binding">Picking A Key That Was Free</h3>
+        <p class="lede">GNOME keeps shortcuts in three separate schemas, and a clash does not warn you — the older binding just wins and your new one does nothing. All three were checked before choosing.</p>
+        <div class="exhibit">
+          <div class="ex-head">conflict check <span class="lang">gsettings</span></div>
+          <pre class="out">org.gnome.desktop.wm.keybindings              <span class="dim">→ Super+T free</span>
+org.gnome.shell.keybindings                   <span class="dim">→ Super+T free</span>
+org.gnome.settings-daemon.plugins.media-keys  <span class="dim">→ Super+T free</span>
+custom-keybindings                            <span class="dim">→ @as [] (none defined)</span></pre>
+          <div class="cap">Super+T is free on stock Ubuntu GNOME. Ctrl+Alt+T, the reflex choice, is the terminal.</div>
+        </div>
+        <p class="lede">The binding was written as a custom keybinding under a named path — <code>.../custom-keybindings/t3code/</code> rather than the usual <code>custom0</code>. Named paths do not renumber when another shortcut is added later, and it shows up in Settings → Keyboard as a normal editable entry rather than something mysterious.</p>
+        <div class="learn"><span class="dot"></span><p><b>One honest gap.</b> On Wayland a script cannot synthesise a real key press, so "Super+T works" was not directly proven. What was proven: the binding is stored correctly in dconf, and its exact command was run in both states — cold start produced a new window, and re-running while open produced no second process. The keypress itself is the one link in the chain a person still has to test.</p></div>
+      </div>
+    </section>
+
+    <!-- 05 THE UPDATER -->
+    <section id="s5">
+      <div class="sec-head"><div class="sec-num">05</div><h2>The Updater</h2></div>
+
+      <div class="part">
+        <h3 class="sub" id="s5-manifest">Do Not Guess The Repo</h3>
+        <p class="lede">An updater needs to know where new versions come from. Searching for the project would have produced a plausible answer. The AppImage already contained the exact answer, because Electron apps ship their updater config inside the bundle.</p>
+        <div class="exhibit">
+          <div class="ex-head">the app's own updater config <span class="lang">resources/app-update.yml</span></div>
+          <pre class="out"><span class="bar">owner</span>: pingdotgg
+<span class="bar">repo</span>: t3code
+<span class="bar">provider</span>: github
+<span class="bar">releaseType</span>: release</pre>
+          <div class="cap">Extracted from the AppImage, not searched for. The script now reads from the same source the app itself would use.</div>
+        </div>
+        <p class="lede">The releases carry a manifest, <code>latest-linux.yml</code>, published by the build tool. It gives three things the updater needs and would otherwise have to infer: the version, the exact asset filename, and a SHA-512 of the file in base64.</p>
+        <div class="exhibit">
+          <div class="ex-head">verification, proven before it was trusted <span class="lang">openssl + base64</span></div>
+          <pre class="out">expected  <span class="dim">(from latest-linux.yml)</span>  l0PazCB8U3UDCVHEaINaLzGG…
+actual    <span class="dim">(installed file on disk)</span>  l0PazCB8U3UDCVHEaINaLzGG…
+<span class="bar">MATCH</span></pre>
+          <div class="cap">Run against the already-installed file first. A checksum check that has never produced a match is not a check, it is a hope.</div>
+        </div>
+      </div>
+
+      <div class="part">
+        <h3 class="sub" id="s5-guards">Three Things It Refuses To Do</h3>
+        <p class="lede">Most of the script is not downloading. Downloading is four lines. The rest is the list of ways an update can quietly damage a working setup.</p>
+        <div class="tools">
+          <div class="tool"><span class="name">will not install a file it cannot verify</span><p>SHA-512 is compared before the file is moved anywhere. On mismatch it stops and prints both values. It also runs <code>--appimage-offset</code> as a cheap sanity check, which catches the case where an HTML error page was saved with a 200 status.</p></div>
+          <div class="tool"><span class="name">will not downgrade</span><p>If the installed version is newer than the latest release — which happens when a release is pulled — it says so and stops instead of "updating" you backwards. <code>--force</code> is there for when that is actually what you want.</p></div>
+          <div class="tool"><span class="name">will not delete a running version</span><p>Pruning old AppImages reads <code>APPIMAGE</code> out of <code>/proc/&lt;pid&gt;/environ</code> for every live process and skips any file still in use. Deleting the image a running app is mounted from is how you get an app that works until you close it.</p></div>
+        </div>
+        <div class="learn"><span class="dot"></span><p><b>The swap is a rename, not a delete.</b> There is no moment where <code>t3-code</code> points at nothing. If the machine dies in the middle of an update, the old version is still what runs.</p></div>
+        <div class="exhibit">
+          <div class="ex-head">a real run <span class="lang">t3-code-updater --force --keep 2</span></div>
+          <pre class="out">==&gt; checking https://github.com/pingdotgg/t3code/releases/latest
+  installed: 0.0.33
+  latest:    0.0.33
+==&gt; downloading T3-Code-0.0.33-x86_64.AppImage
+==&gt; verifying sha512
+  <span class="bar">checksum ok</span>
+==&gt; symlink -&gt; T3-Code-0.0.33-x86_64.AppImage
+  <span class="dim">pruned T3-Code-0.0.31-x86_64.AppImage</span>
+
+reinstalled T3 Code 0.0.33
+<span class="bar">T3 Code is running -- quit and reopen it to use the new version.</span>
+
+real  0m11.016s</pre>
+          <div class="cap">153 MB fetched, hashed, installed and pruned in 11 seconds. Two fake old versions were placed on disk first so the prune path actually ran instead of being assumed to work.</div>
+        </div>
+        <p class="lede">One pleasant surprise: the running app survived having its own file replaced underneath it. The FUSE mount holds the old inode open, so a rename only changes the name, not what the running process is reading. It keeps working until you close it, which is exactly the honest thing for the script to say.</p>
+      </div>
+    </section>
+
+    <!-- 06 THE BUGS -->
+    <section id="s6">
+      <div class="sec-head"><div class="sec-num">06</div><h2>The Bugs</h2></div>
+
+      <p class="lede">Three real ones, all found by running things rather than reading them.</p>
+
+      <div class="learn"><span class="dot"></span><p><b>The new file came out with the wrong permissions.</b> <code>mktemp</code> creates files as <code>0600</code>. Adding <code>chmod +x</code> to that gives <code>0711</code>, not the <code>0755</code> everything else on the system has. It ran fine for the owner, so nothing failed — it was only visible in an <code>ls -l</code> after the first real update. Fixed by setting the mode explicitly instead of adding to whatever was already there.</p></div>
+
+      <div class="learn"><span class="dot"></span><p><b>Redirection order leaked errors.</b> The prune step reads <code>/proc/&lt;pid&gt;/environ</code>, and short-lived processes disappear between listing them and reading them. The line was written as <code>tr … &lt; /proc/$pid/environ 2&gt;/dev/null</code>, which looks safe and is not: the shell applies redirections left to right, so the input redirect fails and prints its error while <code>stderr</code> is still the terminal. The suppression arrives one step too late. Fixed by testing the file is readable first.</p></div>
+
+      <div class="learn"><span class="dot"></span><p><b>A cleanup command killed the session running it.</b> <code>pkill -f 't3code'</code> matches against full command lines — including the command line of the shell that is running <code>pkill</code>, because the pattern appears in it. It killed the app, then killed itself, and the whole step exited with code 144 halfway through. The fix is the old bracket trick: write the pattern as <code>[t]3code</code>, which still matches the target but no longer matches the literal text sitting in the shell's own command line.</p></div>
+
+      <div class="part">
+        <h3 class="sub" id="s6-shape">What The Session Actually Looked Like</h3>
+        <p class="lede">Very little of this was writing. Most of it was checking that assumptions were true before building on them, and most of the checks were cheap.</p>
+        <div class="tools">
+          <div class="tool"><span class="name">checked, not assumed</span><p>FUSE present. Super+T free in all three schemas. Single-instance lock real. Checksum logic matched a known-good file. Prune path exercised with throwaway files.</p></div>
+          <div class="tool"><span class="name">found by accident</span><p>The self-registering desktop entry only surfaced because a file listing after launch showed a timestamp one minute newer than expected. Nothing pointed at it.</p></div>
+          <div class="tool"><span class="name">still open</span><p>The physical key press. And the app has its own built-in updater, so if it ever replaces itself under a different filename the symlink will dangle — <code>t3-code-updater --force</code> puts it back.</p></div>
+        </div>
+      </div>
+    </section>
+
+      <footer>
+        <div class="foot-top">
+          <a href="https://nd28.github.io/probe/" class="probe">probe</a>
+          <span>by <a href="https://nd28.github.io">nilesh suthar</a></span>
+          <span>· <a href="https://github.com/pingdotgg/t3code">github.com/pingdotgg/t3code</a></span>
+        </div>
+        <div class="foot-meta">modified <span id="modtime">18 Aug 2026</span> · bash · single session · 3 bugs found</div>
+      </footer>
+    </div>
+
+    <aside class="toc" id="toc">
+      <div class="toc-title">Contents</div>
+      <nav>
+        <a href="#s1" class="l1"><span class="num">01</span>The Friction</a>
+        <a href="#s1-cost" class="l2">What It Cost</a>
+        <a href="#s1-machine" class="l2">Reading The Machine</a>
+        <a href="#s2" class="l1"><span class="num">02</span>The Install</a>
+        <a href="#s2-layout" class="l2">One Symlink</a>
+        <a href="#s2-icon" class="l2">The Broken Icon</a>
+        <a href="#s3" class="l1"><span class="num">03</span>The Ordering Trap</a>
+        <a href="#s4" class="l1"><span class="num">04</span>One Keystroke</a>
+        <a href="#s4-instance" class="l2">Launch Or Raise</a>
+        <a href="#s4-binding" class="l2">Picking A Key</a>
+        <a href="#s5" class="l1"><span class="num">05</span>The Updater</a>
+        <a href="#s5-manifest" class="l2">Do Not Guess</a>
+        <a href="#s5-guards" class="l2">Three Refusals</a>
+        <a href="#s6" class="l1"><span class="num">06</span>The Bugs</a>
+        <a href="#s6-shape" class="l2">Session Shape</a>
+      </nav>
+    </aside>
+  </div>
+
+  <div class="modal-backdrop" id="zoomBackdrop"></div>
+  <div class="modal" id="zoomModal" role="dialog" aria-modal="true" aria-label="Zoomed exhibit">
+    <div class="zoom-card" id="zoomCard" tabindex="-1"></div>
+  </div>
+  <script>
+    (function () {
+      var links = Array.prototype.slice.call(
+        document.querySelectorAll('.toc a'));
+      var sections = links
+        .map(function (a) { return document.querySelector(a.getAttribute('href')); })
+        .filter(Boolean);
+
+      var prog = document.getElementById('progress');
+      var heads = Array.prototype.slice.call(document.querySelectorAll('.sec-head'));
+      var barH = (document.getElementById('herobar') || {}).offsetHeight || 48;
+
+      function update() {
+        // active section = last one whose top has crossed the 35% line
+        var line = window.innerHeight * 0.35;
+        var current = sections[0];
+        for (var i = 0; i < sections.length; i++) {
+          if (sections[i].getBoundingClientRect().top <= line) current = sections[i];
+        }
+        var id = '#' + current.id;
+        links.forEach(function (l) {
+          l.classList.toggle('active', l.getAttribute('href') === id);
+        });
+        // condense section headers once they stick to the top
+        heads.forEach(function (h) {
+          h.classList.toggle('condensed', h.getBoundingClientRect().top <= barH + 1);
+        });
+        // scroll progress
+        var d = document.documentElement;
+        var max = d.scrollHeight - d.clientHeight;
+        prog.style.width = (max > 0 ? (d.scrollTop / max) * 100 : 0) + '%';
+      }
+
+      addEventListener('scroll', update, { passive: true });
+      addEventListener('resize', update);
+      update();
+
+      // sticky hero summary bar — show once the hero scrolls past
+      var bar = document.getElementById('herobar');
+      var hero = document.querySelector('.hero');
+      if (bar && hero && 'IntersectionObserver' in window) {
+        new IntersectionObserver(function (entries) {
+          bar.classList.toggle('show', !entries[0].isIntersecting);
+        }, { threshold: 0 }).observe(hero);
+      } else if (bar) {
+        bar.classList.add('show');
+      }
+
+      // footer "modified" — use the file's real last-modified time if available
+      var mt = document.getElementById('modtime');
+      if (mt) {
+        var d = new Date(document.lastModified);
+        if (!isNaN(d.getTime())) {
+          mt.textContent = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) +
+            ', ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        }
+      }
+
+      /* theme-color follows the OS theme */
+      var metaTheme = document.querySelector('meta[name="theme-color"]');
+      var mqDark = window.matchMedia('(prefers-color-scheme: dark)');
+      function setMeta() {
+        if (metaTheme) metaTheme.setAttribute('content', mqDark.matches ? '#0E0E12' : '#FFF7F2');
+      }
+      setMeta();
+      if (mqDark.addEventListener) mqDark.addEventListener('change', setMeta);
+      else if (mqDark.addListener) mqDark.addListener(setMeta);
+    })();
+
+    (function () {
+      var modal = document.getElementById('zoomModal');
+      var backdrop = document.getElementById('zoomBackdrop');
+      var card = document.getElementById('zoomCard');
+      var last = null;
+      function close() {
+        modal.classList.remove('open');
+        backdrop.classList.remove('open');
+        if (last) last.focus();
+      }
+      document.querySelectorAll('.side').forEach(function (side) {
+        side.setAttribute('tabindex', '0');
+        side.setAttribute('role', 'button');
+        side.addEventListener('click', function () {
+          card.innerHTML = '<div class="sheet-handle" aria-hidden="true"></div>';
+          card.appendChild(side.cloneNode(true));
+          last = side;
+          modal.classList.add('open');
+          backdrop.classList.add('open');
+          card.focus();
+        });
+      });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+      backdrop.addEventListener('click', close);
+      modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+    })();
+  </script>
+</body>
+</html>
