@@ -358,7 +358,7 @@
     .exhibit { margin: 0 0 24px; }
     .exhibit:last-child { margin-bottom: 0; }
     .ex-head {
-      display: flex; align-items: center; gap: 10px;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
       font-size: 14px; font-weight: 600; color: var(--text);
       margin-bottom: 12px;
     }
@@ -533,7 +533,7 @@
       <!-- HERO -->
     <header class="hero">
       <h1>A combo meter for writing</h1>
-      <p class="sub">A terminal journal that pays ten points a word and multiplies them while you keep going. Every decision that made it fun forced a second one to keep it honest — and the newest design turns the whole game off.</p>
+      <p class="sub">Every word scores points. A newer design would turn it off.</p>
       <div class="meta">
         <span class="pill"><span class="dot"></span>Date <b>18 Aug 2026</b></span>
         <span class="pill"><span class="dot"></span>Go 1.25 · Bubble Tea · SQLite</span>
@@ -698,7 +698,7 @@
 		// directly and let no binding look at it.
 		if keyMsg.Type == tea.KeyRunes && len(keyMsg.Runes) &gt; 1 {
 			m.writing.textarea.InsertString(string(keyMsg.Runes))</pre>
-          <div class="cap">The fix is the rule in the comment: more than one rune at once is always text somebody typed. Insert it directly so no key binding ever looks at it, and match this screen's own keys on the message type rather than its string.</div>
+          <div class="cap">The rule outlives this one bug: a screen should match its own key bindings on the message type, never on the rendered string, since any string a binding checks can also arrive as ordinary typed text.</div>
         </div>
         <div class="learn"><span class="dot"></span><p><b>This was not a fast-typing edge case.</b> It reproduced at a deliberate 120 milliseconds per word against the real binary. The words that broke it are ordinary ones — up, down, left, right, home, end, tab, space, delete, esc — and a journal is made of ordinary words.</p></div>
       </div>
