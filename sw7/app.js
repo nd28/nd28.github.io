@@ -9,8 +9,8 @@
 'use strict';
 
 /* Stamped by ./bump.sh on every publish — do not hand-edit these two lines. */
-const VERSION = '0.5.0';
-const BUILD   = '2026-08-27 18:14 IST';
+const VERSION = '0.6.0';
+const BUILD   = '2026-08-27 18:30 IST';
 
 const $ = (s, r = document) => r.querySelector(s);
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -164,6 +164,8 @@ const ICONS = {
   echo: ico('<circle cx="12" cy="5.2" r="2.3"/><circle cx="18.8" cy="12" r="2.3"/>' +
             '<circle cx="12" cy="18.8" r="2.3"/><circle cx="5.2" cy="12" r="2.3"/>'),
   compass: ico('<circle cx="12" cy="12" r="9"/><path d="M15.6 8.4l-2.2 5-5 2.2 2.2-5z"/>'),
+  level: ico('<rect x="2.4" y="8.4" width="19.2" height="7.2" rx="3.6"/>' +
+             '<circle cx="12" cy="12" r="2.1"/><path d="M9.2 8.4v7.2M14.8 8.4v7.2"/>'),
   react: ico('<path d="M13.4 2.4 5.6 13.4h5.2l-.6 8.2 7.8-11h-5.2z"/>'),
   torch: ico('<path d="M8.4 2.6h7.2l-.9 4.4H9.3z"/><path d="M9.3 7h5.4v13a1.4 1.4 0 0 1-1.4 1.4h-2.6A1.4 1.4 0 0 1 9.3 20z"/>' +
              '<path d="M12 10.8v2.6"/>')
@@ -349,7 +351,8 @@ reg({
     if (this.endAt - Date.now() <= 0) { this.fire(); return; }
     this.paint();
   },
-  live() { return this.running || this.done; }
+  live() { return this.running || this.done; },
+  now() { return this.done ? 'done' : mmss(this.running ? (this.endAt - Date.now()) / 1000 : this.left); }
 });
 
 /* ── intervals ─────────────────────────────────────────────────────────── */
@@ -370,6 +373,8 @@ reg({
   i: store.get('reps', 1), on: false, startAt: 0, cue: 0,
   enter() { this.paint(); },
   live() { return this.on; },
+  now() { const p = this.phaseAt((Date.now() - this.startAt) / 1000);
+          return p ? p.kind.toLowerCase() + ' ' + Math.ceil(p.left) : ''; },
 
   /* The whole run is derived from one timestamp, so leaving for the dial and
      coming back lands on the right second instead of resuming from a stall. */
@@ -494,7 +499,8 @@ reg({
     swHint.textContent = this.running ? 'hold for a lap' : this.acc ? 'hold to reset' : 'tap to start';
   },
   frame() { if (this.running) this.paint(); },
-  live() { return this.running; }
+  live() { return this.running; },
+  now() { return hms(this.el()).head; }
 });
 
 /* ── tally ─────────────────────────────────────────────────────────────── */
@@ -902,6 +908,92 @@ reg({
   }
 });
 
+/* ── level ─────────────────────────────────────────────────────────────── */
+
+const vial = $('#vial'), vlBubG = $('#vlBubG'), vlNum = $('#vlNum'), lvMsg = $('#lvMsg'), vLevel = $('#v-level');
+const RANGES = [5, 15, 45];
+const TRAVEL = 40;                       // outer ring 62 minus the bubble's 22
+
+reg({
+  key: 'level', name: 'Level', color: '#7ED0F0', icon: ICONS.level,
+  b: null, g: null, sb: 0, sg: 0, ri: store.get('lvr', 1),
+  handler: null, miss: 0, flat: false,
+  enter() {
+    HUD.off();
+    this.b = null; this.g = null; this.flat = false;
+    vial.style.opacity = '';
+    const z = store.get('lvzero', null);
+    this.zb = z ? z[0] : 0;
+    this.zg = z ? z[1] : 0;
+    /* beta and gamma are relative tilt, so unlike the compass this needs no
+       absolute orientation and works on far more browsers. */
+    this.handler = e => {
+      if (typeof e.beta !== 'number' || typeof e.gamma !== 'number') return;
+      const first = this.b == null;
+      this.b = e.beta; this.g = e.gamma;
+      if (first) {
+        this.sb = e.beta - this.zb; this.sg = e.gamma - this.zg;
+        this.dead = false; vial.style.opacity = ''; lvMsg.textContent = '';
+      }
+    };
+    addEventListener('deviceorientation', this.handler, true);
+    this.dead = false;
+    lvMsg.textContent = '';
+    vlNum.textContent = '--';
+    vlBubG.setAttribute('transform', 'translate(100,100)');
+    this.miss = setTimeout(() => {
+      if (this.b != null) return;
+      this.dead = true;
+      vial.style.opacity = '.25';
+      lvMsg.textContent = 'no tilt sensor here';
+    }, 2200);
+  },
+  exit() {
+    clearTimeout(this.miss);
+    if (this.handler) removeEventListener('deviceorientation', this.handler, true);
+    this.handler = null;
+    vLevel.classList.remove('flat');
+  },
+  tap() {
+    if (this.b == null) return;
+    this.zb = this.b; this.zg = this.g;
+    store.set('lvzero', [this.zb, this.zg]);
+    haptic([0, 12, 50, 24]);
+    toast('zeroed here');
+  },
+  long() {
+    this.zb = 0; this.zg = 0;
+    store.set('lvzero', null);
+    haptic(38); toast('zero cleared');
+  },
+  rotate(d) {
+    this.ri = (this.ri + d + RANGES.length) % RANGES.length;
+    store.set('lvr', this.ri);
+    haptic(9);
+    toast('\u00b1' + RANGES[this.ri] + '\u00b0');
+  },
+  frame() {
+    if (this.b == null) return;
+    clearTimeout(this.miss);
+    const R = RANGES[this.ri];
+    const b = this.b - this.zb, g = this.g - this.zg;
+    this.sb += (b - this.sb) * 0.22;
+    this.sg += (g - this.sg) * 0.22;
+    /* the bubble rides to the high side, the way one in oil would */
+    vlBubG.setAttribute('transform', 'translate(' +
+      (100 + clamp(this.sg / R, -1, 1) * TRAVEL).toFixed(1) + ',' +
+      (100 - clamp(this.sb / R, -1, 1) * TRAVEL).toFixed(1) + ')');
+    const tilt = Math.hypot(this.sb, this.sg);
+    vlNum.textContent = (tilt < 10 ? tilt.toFixed(1) : Math.round(tilt)) + '°';
+    const flat = tilt < 0.4;
+    if (flat !== this.flat) {
+      this.flat = flat;
+      vLevel.classList.toggle('flat', flat);
+      if (flat) { haptic([0, 18, 60, 18]); tone(1046, 0.09, 'sine', 0.14); }
+    }
+  }
+});
+
 /* ── reaction ──────────────────────────────────────────────────────────── */
 
 const rxOut = $('#rxOut'), rxHint = $('#rxHint'), rxBest = $('#rxBest');
@@ -1175,6 +1267,7 @@ reg({
     this.paint();
   },
   live() { return this.on; },
+  now() { return this.bpm + ' bpm'; },
   tap() { this.on ? this.stop() : this.start(); haptic(14); },
   long() { this.stop(); this.bpm = 96; store.set('bpm', 96); haptic(38); toast('96 bpm'); this.paint(); },
   rotate(d, m) {
@@ -1251,8 +1344,18 @@ function paintDial() {
   dialIco.innerHTML = a.icon;
   dialIco.style.color = a.color;
   dialName.textContent = a.name;
+  paintHint();
   HUD.set((selIdx + 1) / APPS.length, a.color, true, true);
   store.set('sel', rotIdx);
+}
+
+/* If the selected app is doing something, the dial says what — no point making
+   someone open a timer just to see how long is left. */
+function paintHint() {
+  const a = APPS[selIdx];
+  const live = a.live && a.live() && a.now ? a.now() : '';
+  dialHint.textContent = live || 'tap to open';
+  dialHint.style.color = live ? a.color : '';
 }
 
 function paintLive() {
@@ -1282,12 +1385,13 @@ const HOME = {
     }
     open(APPS[selIdx].key);
   },
-  long() { haptic(30); toast('SW7 v' + VERSION + ' · ' + BUILD, 2600); },
+  long() { haptic(30); showCard(); },
   rotate(d) { rotIdx += d; paintDial(); },
   frame() {
     const n = new Date();
     dialClock.textContent = pad(n.getHours()) + ':' + pad(n.getMinutes());
     paintLive();
+    paintHint();
   }
 };
 
@@ -1295,11 +1399,51 @@ const HOME = {
    ROUTER
    ═══════════════════════════════════════════════════════════════════════ */
 
+/* Fifteen apps times three gestures is more than anyone will hold in their
+   head. Holding the home button (or the dial) asks the current app instead. */
+const HELP = {
+  home:    ['open the app', 'this card', 'browse the deck'],
+  clock:   ['12-hour ⇄ 24-hour', '—', 'digital / analog / words'],
+  timer:   ['start · pause', 'reset', 'set the time'],
+  reps:    ['start · stop', 'stop', 'pick a set'],
+  stop:    ['start · stop', 'lap, or reset when idle', '—'],
+  tally:   ['+1', 'reset to zero', 'correct by ±1'],
+  breathe: ['start · stop', 'stop', 'pick a pattern'],
+  sun:     ['refresh the fix', 'forget the location', 'cycle the readout'],
+  moon:    ['cycle the readout', 'back to tonight', 'walk the calendar'],
+  compass: ['drop · clear a bearing', 'clear the bearing', 'nudge the bearing'],
+  level:   ['zero it here', 'clear the zero', 'range ±5 / 15 / 45°'],
+  react:   ['arm, then tap the cue', 'clear the best', 'see it ⇄ feel it'],
+  echo:    ['start · tap the pads back', 'clear the best', 'easy / brisk / sharp'],
+  dice:    ['roll', 'roll', 'd6 / d20 / d100 / coin'],
+  metro:   ['start · stop', 'back to 96 bpm', '±2 bpm'],
+  torch:   ['light on · off', 'off', 'brightness']
+};
+
+const cardEl = $('#card'), cdName = $('#cdName'), cdTap = $('#cdTap'),
+      cdHold = $('#cdHold'), cdRim = $('#cdRim'), cdVer = $('#cdVer');
+let cardT = 0;
+
+function showCard() {
+  const h = HELP[cur.key] || HELP.home;
+  cdName.textContent = cur.name;
+  cdTap.textContent = h[0];
+  cdHold.textContent = h[1];
+  cdRim.textContent = h[2];
+  cdVer.textContent = 'v' + VERSION + ' · ' + BUILD;
+  cardEl.classList.add('on');
+  clearTimeout(cardT);
+  cardT = setTimeout(hideCard, 7000);
+}
+function hideCard() { clearTimeout(cardT); cardEl.classList.remove('on'); }
+cardEl.addEventListener('pointerdown', e => { e.stopPropagation(); haptic(10); hideCard(); });
+
 let cur = HOME;
 
 function render(key) {
   const next = key ? APPS.find(a => a.key === key) || HOME : HOME;
   if (next === cur) return;
+  hideCard();
   if (cur.exit) cur.exit();
   cur.view.classList.remove('on');
   cur = next;
@@ -1335,7 +1479,20 @@ addEventListener('popstate', e => {
   render(e.state && e.state.app);
 });
 
-$('#homeBtn').addEventListener('click', e => { e.stopPropagation(); home(); });
+const homeBtn = $('#homeBtn');
+let hbTimer = 0, hbLong = false;
+homeBtn.addEventListener('pointerdown', e => {
+  e.stopPropagation();
+  hbLong = false;
+  hbTimer = setTimeout(() => { hbLong = true; haptic(30); showCard(); }, 600);
+});
+homeBtn.addEventListener('pointerup', e => {
+  e.stopPropagation();
+  clearTimeout(hbTimer);
+  if (!hbLong) home();
+});
+['pointerleave', 'pointercancel'].forEach(t =>
+  homeBtn.addEventListener(t, () => clearTimeout(hbTimer)));
 
 /* ═══════════════════════════════════════════════════════════════════════
    INPUT — the outer 40% of the glass is a bezel

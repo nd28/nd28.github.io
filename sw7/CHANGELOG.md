@@ -1,5 +1,9 @@
 # SW7 changelog
 
+## 0.6.0 — 2026-08-27 18:30 IST
+
+Hold the home button or the dial and the current app lists its tap, hold and rim. New: Level, reading relative tilt with the number riding inside the bubble. The dial now shows a running app's state instead of 'tap to open'.
+
 ## 0.5.0 — 2026-08-27 18:14 IST
 
 Clock gets three faces on the rim — digital, a real analog one with a sweeping second hand, and words. New: Moon, with a properly drawn terminator and a rim that walks the calendar. New: Echo, the memory game, pads on the diagonals so the home button does not sit on one.

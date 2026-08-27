@@ -27,7 +27,7 @@ and drops the URL bar.
 - **The system back swipe** pops to the dial instead of leaving the page — each
   app pushes a history entry.
 
-## The fourteen
+## The fifteen
 
 | app | tap | hold | bezel |
 | --- | --- | --- | --- |
@@ -40,13 +40,23 @@ and drops the URL bar.
 | Sun | refresh location | forget location | next / sunrise / sunset / golden hour / daylight |
 | Moon | cycle the readout, or jump back to tonight | back to tonight | walk the calendar a day at a time |
 | Compass | drop or clear a bearing | clear the bearing | nudge the bearing ±1° |
+| Level | zero it where it sits | clear the zero | range ±5° / 15° / 45° |
 | Reaction | arm, then tap on the cue | clear the best | see it ⇄ feel it |
 | Echo | start, then tap the pads back | clear the best | easy / brisk / sharp |
 | Decide | roll | roll | d6 / d20 / d100 / coin / yes-no |
 | Metronome | start / stop | back to 96 bpm | ±2 bpm |
 | Torch | light on / off | off | five brightness steps |
 
-Holding the dial itself shows the build stamp.
+**Hold the home button — or the dial — and the app tells you what it answers
+to.** Fifteen apps times three gestures is more than anyone will hold in their
+head, and there is no room on a 44 mm screen to label anything. The card lists
+tap, hold and rim for whatever is on screen, plus the build stamp. It clears on
+a tap, or by itself after seven seconds.
+
+**The dial says what is happening.** If the selected app is doing something —
+a timer counting down, an interval set running, a stopwatch going — the line
+under its name is that, live, in the app's colour, rather than *tap to open*.
+Their icons pulse on the dial at the same time.
 
 **Timer and Intervals keep running when you leave them.** Both derive their
 state from a timestamp rather than from frame counting, and both arm a real
@@ -80,6 +90,13 @@ bulges the other way past half. Phase comes from Meeus' low-precision series,
 which puts the new moon of 6 January 2000 at 0.00000 lit — the mean-lunation
 shortcut most code uses is a day out near the quarters. Turn the rim and it
 walks the calendar a day at a time, filling and emptying as it goes.
+
+**Level** reads `deviceorientation`'s relative tilt, so unlike the compass it
+needs no absolute orientation and works in far more browsers. The reading rides
+inside the bubble — anywhere else on a round face and the bubble ends up
+sitting on top of it at some tilt. Tap zeroes it wherever it is, for a surface
+that is not itself flat. Axes follow the W3C convention; the bubble rides to
+the high side.
 
 **Echo** is the memory game, with a tone and a haptic per pad. The pads sit on
 the diagonals rather than the axes, because bottom-centre belongs to the home

@@ -144,6 +144,24 @@
       </div>
     </section>
 
+    <!-- ─── level ─────────────────────────────────────────────── -->
+    <section class="view" id="v-level">
+      <div class="title">Level</div>
+      <svg class="vial" id="vial" viewBox="0 0 200 200" aria-hidden="true">
+        <circle class="vl-ring" id="vlRing" cx="100" cy="100" r="62"/>
+        <circle class="vl-ring inner" cx="100" cy="100" r="24"/>
+        <line class="vl-cross" x1="100" y1="26" x2="100" y2="44"/>
+        <line class="vl-cross" x1="100" y1="156" x2="100" y2="174"/>
+        <line class="vl-cross" x1="26" y1="100" x2="44" y2="100"/>
+        <line class="vl-cross" x1="156" y1="100" x2="174" y2="100"/>
+        <g id="vlBubG" transform="translate(100,100)">
+          <circle class="vl-bub" cx="0" cy="0" r="22"/>
+          <text class="vl-num" id="vlNum" x="0" y="0">--</text>
+        </g>
+      </svg>
+      <div class="vial-msg" id="lvMsg">&nbsp;</div>
+    </section>
+
     <!-- ─── reaction ──────────────────────────────────────────── -->
     <section class="view" id="v-react">
       <div class="title">Reaction</div>
@@ -199,6 +217,14 @@
         <path d="M3.5 11.2 12 4l8.5 7.2"/><path d="M5.6 10v8.4a1.6 1.6 0 0 0 1.6 1.6h9.6a1.6 1.6 0 0 0 1.6-1.6V10"/>
       </svg>
     </button>
+
+    <div id="card">
+      <div class="cname" id="cdName">&nbsp;</div>
+      <div class="crow"><b>tap</b><span id="cdTap">&nbsp;</span></div>
+      <div class="crow"><b>hold</b><span id="cdHold">&nbsp;</span></div>
+      <div class="crow"><b>rim</b><span id="cdRim">&nbsp;</span></div>
+      <div class="cver" id="cdVer">&nbsp;</div>
+    </div>
 
     <div id="toast"></div>
   </div>
