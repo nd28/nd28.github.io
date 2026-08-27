@@ -9,6 +9,14 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
+# gh defaults to the work account on this machine, which cannot push to nd28 —
+# and it fails only at the very end, after the commit is already made.
+if command -v gh >/dev/null && [ "$(gh api user --jq .login 2>/dev/null)" != "nd28" ]; then
+  echo "gh is on $(gh api user --jq .login 2>/dev/null || echo '?'), which cannot push to nd28." >&2
+  echo "  gh auth switch --user nd28   # then re-run; switch back when you are done" >&2
+  exit 1
+fi
+
 VER="${1:?usage: ./bump.sh <version> [message]}"
 MSG="${2:-}"
 STAMP="$(date '+%Y-%m-%d %H:%M %Z')"
