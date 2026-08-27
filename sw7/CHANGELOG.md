@@ -1,5 +1,9 @@
 # SW7 changelog
 
+## 0.4.1 — 2026-08-27 15:59 IST
+
+Take a new build automatically when it is safe to — reload on the dial, toast otherwise, never yank you out of a running timer.
+
 ## 0.4.0 — 2026-08-27 15:57 IST
 
 Four more: Intervals (timestamp-driven, keeps running off-screen), Sun (offline NOAA sunrise math on a 24-hour ring), Compass (absolute-orientation rose with a bearing mark), Reaction (see-it or feel-it). Bezel now accelerates when you spin it. Fixed a router race where tapping an app during a back() bounced you to the dial.

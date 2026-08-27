@@ -9,8 +9,8 @@
 'use strict';
 
 /* Stamped by ./bump.sh on every publish — do not hand-edit these two lines. */
-const VERSION = '0.4.0';
-const BUILD   = '2026-08-27 15:57 IST';
+const VERSION = '0.4.1';
+const BUILD   = '2026-08-27 15:59 IST';
 
 const $ = (s, r = document) => r.querySelector(s);
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -1220,6 +1220,18 @@ if (DEV) {
 
 /* ?dev also skips the service worker, so an edit shows up on reload. */
 if ('serviceWorker' in navigator && !DEV) {
+  /* A new build lands in the cache behind the page that is already running, so
+     without this the watch keeps showing the old SW7 until someone thinks to
+     reload. Take the update only when it costs nothing: sitting on the dial
+     with nothing counting down. Otherwise say so and let them choose. */
+  const hadController = !!navigator.serviceWorker.controller;
+  let handled = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || handled) return;
+    handled = true;
+    if (cur === HOME && !APPS.some(a => a.live && a.live())) location.reload();
+    else toast('update ready · reload', 3200);
+  });
   addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
 

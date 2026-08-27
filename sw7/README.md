@@ -94,5 +94,11 @@ worker, so an edit shows up on plain reload.
     ./bump.sh 0.2.0 "what changed"
 
 Stamps `VERSION`/`BUILD` in `app.js`, renames the service-worker cache, writes
-`CHANGELOG.md`, commits and pushes. The cache rename is the part that matters:
-without it a watch happily runs yesterday's build forever.
+`CHANGELOG.md`, commits and pushes. It refuses to start if `gh` is on the wrong
+account, because otherwise it fails at the push, after the commit is made.
+
+The cache rename is the part that matters: without it a watch happily runs
+yesterday's build forever. Even with it, the page already running keeps its old
+assets — so when the new worker takes over, SW7 reloads itself if it is sitting
+on the dial with nothing counting down, and toasts *update ready · reload* if
+it isn't.
