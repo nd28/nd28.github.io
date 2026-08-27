@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>SW7</title>
+<meta name="description" content="A round-first micro-app deck for a Galaxy Watch browser.">
+<meta name="theme-color" content="#07070A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="case">
+  <div id="watch">
+
+    <svg class="hud" viewBox="0 0 200 200" aria-hidden="true">
+      <circle class="hud-track" cx="100" cy="100" r="93"/>
+      <circle class="hud-arc" cx="100" cy="100" r="93"/>
+    </svg>
+
+    <!-- ─── home dial ─────────────────────────────────────────── -->
+    <section class="view on" id="v-home">
+      <div class="dial-top"><span id="dialClock">--:--</span><i class="wake" id="wakeDot"></i></div>
+      <div class="dial-ring" id="dialRing"></div>
+      <div class="dial-center">
+        <div class="dial-ico" id="dialIco"></div>
+        <div class="dial-name" id="dialName">&nbsp;</div>
+        <div class="dial-hint" id="dialHint">tap to open</div>
+      </div>
+    </section>
+
+    <!-- ─── clock ─────────────────────────────────────────────── -->
+    <section class="view" id="v-clock">
+      <div class="title">Clock</div>
+      <div class="big" id="ckTime">00:00</div>
+      <div class="sub" id="ckDate">&nbsp;</div>
+      <div class="sub2" id="ckMeta">&nbsp;</div>
+    </section>
+
+    <!-- ─── timer ─────────────────────────────────────────────── -->
+    <section class="view" id="v-timer">
+      <div class="title">Timer</div>
+      <div class="big" id="tmTime">05:00</div>
+      <div class="sub" id="tmState">turn the edge to set</div>
+    </section>
+
+    <!-- ─── stopwatch ─────────────────────────────────────────── -->
+    <section class="view" id="v-stop">
+      <div class="title">Stopwatch</div>
+      <div class="big" id="swTime">0:00<span class="cs">.00</span></div>
+      <div class="laps" id="swLaps"></div>
+      <div class="sub" id="swHint">tap to start</div>
+    </section>
+
+    <!-- ─── tally ─────────────────────────────────────────────── -->
+    <section class="view" id="v-tally">
+      <div class="title">Tally</div>
+      <div class="huge" id="tlNum">0</div>
+      <div class="sub" id="tlHint">tap anywhere &middot; hold to reset</div>
+    </section>
+
+    <!-- ─── breathe ───────────────────────────────────────────── -->
+    <section class="view" id="v-breathe">
+      <div class="title">Breathe</div>
+      <div class="orb" id="brOrb"></div>
+      <div class="orb-label">
+        <div class="phase" id="brPhase">Box</div>
+        <div class="count" id="brCount">4&middot;4&middot;4&middot;4</div>
+      </div>
+      <div class="sub" id="brHint">tap to begin</div>
+    </section>
+
+    <!-- ─── dice ──────────────────────────────────────────────── -->
+    <section class="view" id="v-dice">
+      <div class="title">Decide</div>
+      <div class="huge roll" id="dcOut">6</div>
+      <div class="sub" id="dcMode">d6</div>
+    </section>
+
+    <!-- ─── metronome ─────────────────────────────────────────── -->
+    <section class="view" id="v-metro">
+      <div class="title">Metronome</div>
+      <div class="pulse" id="mtPulse"></div>
+      <div class="big" id="mtBpm">96</div>
+      <div class="sub"><span id="mtBeat">&middot; &middot; &middot; &middot;</span></div>
+      <div class="sub2" id="mtHint">bpm &middot; turn the edge</div>
+    </section>
+
+    <!-- ─── torch ─────────────────────────────────────────────── -->
+    <section class="view" id="v-torch">
+      <div class="title">Torch</div>
+      <div class="big torch-num" id="trLvl">100</div>
+      <div class="sub" id="trHint">tap for light</div>
+    </section>
+
+    <div id="torchLight"></div>
+
+    <button id="homeBtn" type="button" aria-label="Home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3.5 11.2 12 4l8.5 7.2"/><path d="M5.6 10v8.4a1.6 1.6 0 0 0 1.6 1.6h9.6a1.6 1.6 0 0 0 1.6-1.6V10"/>
+      </svg>
+    </button>
+
+    <div id="toast"></div>
+  </div>
+</div>
+
+<p id="caption">SW7</p>
+
+<script src="app.js"></script>
+</body>
+</html>

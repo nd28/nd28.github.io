@@ -33,6 +33,19 @@ one-off report or tool.
   drop), field clears for the next keyword, list filters by those chips. Capped
   at 3 keywords; an AND/OR toggle (default AND) switches match-all to match-any.
 
+## sw7/ — the watch deck
+
+- `https://nd28.github.io/sw7/`, a round-first micro-app deck for a Galaxy
+  Watch 7 browser. See `sw7/README.md` for the interaction model.
+- **The only place in this repo that is not theme-aware, on purpose.** It is a
+  device app for an AMOLED panel worn outdoors: pure black background, no light
+  mode. It still uses the house tokens (`--pink`, `--pink-bold`, `--mint`).
+- **Not a single self-contained file, also on purpose** — a service worker has
+  to be its own file at its own scope, and the manifest has to be fetchable.
+- Publish with `sw7/bump.sh <version> "<message>"`, never by hand. It keeps the
+  version the app shows, the service-worker cache name, and `CHANGELOG.md` in
+  lockstep; a stale cache is the one way the watch runs an old build.
+
 ## Publishing
 
 1. Keep source files locally; copy into the repo (`probe/<name>.html`,

@@ -1,0 +1,421 @@
+/* SW7 — round-first watch deck.
+   Every length is calc(var(--u) * n), where --u is 1% of the watch diameter,
+   set from JS. That keeps the layout identical whether the circle is 480 px on
+   a wrist or 320 px in a desktop preview. No vmin, no media queries for size. */
+
+:root {
+  --u: 3.2px;
+
+  --bg:       #07070A;
+  --surface:  #16131F;
+  --surface-2:#221C30;
+  --border:   #322A42;
+  --text:     #ECE7F4;
+  --muted:    #8A8199;
+
+  --pink:      #F7B8D2;
+  --pink-bold: #F06FA3;
+  --mint:      #5FD3C4;
+
+  --accent: var(--mint);
+
+  --font: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ease: cubic-bezier(.2, .8, .25, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #000;
+  color: var(--text);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: calc(var(--u) * 6);
+}
+
+#case { display: grid; place-items: center; }
+
+#watch {
+  position: relative;
+  width:  calc(var(--u) * 100);
+  height: calc(var(--u) * 100);
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg);
+  touch-action: none;
+  isolation: isolate;
+}
+
+/* Desktop preview only: draw a case around the glass so the round crop reads
+   as a watch instead of a mistake. On the wrist this is all off. */
+#caption { display: none; }
+body.preview { background: #0A0910; }
+body.preview #watch {
+  box-shadow:
+    0 0 0 calc(var(--u) * 1.6) #0C0B12,
+    0 0 0 calc(var(--u) * 3.4) #26212F,
+    0 0 0 calc(var(--u) * 4.2) #100E17,
+    0 calc(var(--u) * 5) calc(var(--u) * 14) rgba(0, 0, 0, .75);
+}
+#caption b { color: var(--mint); font-weight: 500; }
+body.preview #caption {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: .01em;
+  text-align: center;
+  max-width: 44ch;
+  line-height: 1.6;
+}
+
+/* ── the progress ring shared by every app ─────────────────────────────── */
+
+.hud {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity .25s ease;
+  pointer-events: none;
+}
+.hud.on { opacity: 1; }
+.hud circle { fill: none; stroke-linecap: round; }
+.hud-track { stroke: #191527; stroke-width: 3; }
+.hud-arc {
+  stroke: var(--accent);
+  stroke-width: 3.4;
+  stroke-dasharray: 584.34;
+  stroke-dashoffset: 584.34;
+  transform: rotate(-90deg);
+  transform-origin: 100px 100px;
+}
+.hud.snap .hud-arc { transition: stroke-dashoffset .25s var(--ease); }
+/* on the dial the arc is only a "5 of 8" marker, so it stays out of the way */
+.hud.dim .hud-arc { opacity: .4; stroke-width: 2.4; }
+
+/* ── views ─────────────────────────────────────────────────────────────── */
+
+.view {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--u) * 20) calc(var(--u) * 15);
+  text-align: center;
+}
+.view.on { display: flex; }
+
+.title {
+  position: absolute;
+  top: calc(var(--u) * 12);
+  left: 0; right: 0;
+  font-size: calc(var(--u) * 3.6);
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.big {
+  font-size: calc(var(--u) * 21);
+  font-weight: 200;
+  letter-spacing: -.035em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+.big .cs { font-size: .52em; color: var(--muted); letter-spacing: -.02em; }
+
+.huge {
+  font-size: calc(var(--u) * 34);
+  font-weight: 200;
+  letter-spacing: -.05em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.sub {
+  margin-top: calc(var(--u) * 4);
+  font-size: calc(var(--u) * 4.2);
+  color: var(--muted);
+  line-height: 1.35;
+  max-width: calc(var(--u) * 62);
+}
+.sub2 {
+  margin-top: calc(var(--u) * 1.6);
+  font-size: calc(var(--u) * 3.4);
+  color: #5E5770;
+  letter-spacing: .04em;
+}
+
+/* ── home dial ─────────────────────────────────────────────────────────── */
+
+.dial-top {
+  position: absolute;
+  top: calc(var(--u) * 3.6);
+  left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--u) * 2);
+  font-size: calc(var(--u) * 3.4);
+  font-weight: 500;
+  letter-spacing: .1em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.wake {
+  width: calc(var(--u) * 1.6);
+  height: calc(var(--u) * 1.6);
+  border-radius: 50%;
+  background: #2A2438;
+  transition: background .3s ease;
+}
+.wake.lit { background: var(--mint); box-shadow: 0 0 calc(var(--u) * 2) var(--mint); }
+
+.dial-ring {
+  position: absolute;
+  inset: 0;
+  transform: rotate(var(--rot, 0deg));
+  transition: transform .34s var(--ease);
+}
+.slot {
+  position: absolute;
+  width: calc(var(--u) * 15);
+  height: calc(var(--u) * 15);
+  margin: calc(var(--u) * -7.5) 0 0 calc(var(--u) * -7.5);
+  display: grid;
+  place-items: center;
+}
+.sico {
+  width: calc(var(--u) * 8);
+  height: calc(var(--u) * 8);
+  color: #55506A;
+  transform: rotate(calc(-1 * var(--rot, 0deg))) scale(.86);
+  transition: transform .34s var(--ease), color .34s ease, opacity .34s ease;
+  opacity: .8;
+}
+.sico svg { width: 100%; height: 100%; display: block; }
+.slot.sel .sico {
+  color: var(--c);
+  opacity: 1;
+  transform: rotate(calc(-1 * var(--rot, 0deg))) scale(1.2);
+}
+
+.dial-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--u) * 1.5);
+}
+.dial-ico {
+  width: calc(var(--u) * 15);
+  height: calc(var(--u) * 15);
+  color: var(--accent);
+  transition: color .3s ease;
+}
+.dial-ico svg { width: 100%; height: 100%; display: block; }
+.dial-name {
+  font-size: calc(var(--u) * 6.4);
+  font-weight: 300;
+  letter-spacing: -.01em;
+  margin-top: calc(var(--u) * 1);
+}
+.dial-hint {
+  font-size: calc(var(--u) * 3.2);
+  color: #5E5770;
+  letter-spacing: .1em;
+  text-transform: lowercase;
+}
+
+/* ── stopwatch laps ────────────────────────────────────────────────────── */
+
+.laps {
+  margin-top: calc(var(--u) * 3);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * .6);
+  font-size: calc(var(--u) * 3.6);
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  min-height: calc(var(--u) * 13);
+}
+.laps span { display: block; }
+.laps span:first-child { color: var(--pink); }
+
+/* ── breathe ───────────────────────────────────────────────────────────── */
+
+/* The orb never shrinks below the width of the word inside it — that was the
+   whole problem with the first pass. .46 is the floor, 1 is a full breath. */
+#v-breathe .orb {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: calc(var(--u) * 52);
+  height: calc(var(--u) * 52);
+  margin: calc(var(--u) * -26) 0 0 calc(var(--u) * -26);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, rgba(95, 211, 196, .26), rgba(95, 211, 196, .04) 72%);
+  border: 1px solid rgba(95, 211, 196, .45);
+  transform: scale(.46);
+  transition: transform linear;
+}
+/* the hint clears the orb at full stretch instead of sitting under it */
+#v-breathe .sub {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: calc(var(--u) * 17);
+  margin: 0;
+  max-width: none;
+}
+.orb-label {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--u) * 1);
+}
+.orb-label .phase {
+  font-size: calc(var(--u) * 6.4);
+  font-weight: 300;
+  letter-spacing: -.01em;
+}
+.orb-label .count:empty { display: none; }
+.orb-label .count {
+  font-size: calc(var(--u) * 4.6);
+  font-weight: 300;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── dice ──────────────────────────────────────────────────────────────── */
+
+.roll { transition: transform .18s var(--ease), opacity .18s ease; }
+.roll.spin { opacity: .55; transform: scale(.92); }
+.roll.word { font-size: calc(var(--u) * 19); letter-spacing: -.03em; }
+
+/* ── metronome ─────────────────────────────────────────────────────────── */
+
+#v-metro .pulse {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: calc(var(--u) * 46);
+  height: calc(var(--u) * 46);
+  margin: calc(var(--u) * -23) 0 0 calc(var(--u) * -23);
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  opacity: 0;
+  pointer-events: none;
+}
+#v-metro .pulse.hit { animation: ping .38s var(--ease); }
+#v-metro .pulse.hit.acc { animation-duration: .5s; }
+@keyframes ping {
+  0%   { opacity: .85; transform: scale(.72); }
+  100% { opacity: 0;   transform: scale(1.5); }
+}
+#mtBeat { letter-spacing: .5em; font-size: calc(var(--u) * 5); }
+#mtBeat b { color: var(--accent); font-weight: 400; }
+
+/* ── torch ─────────────────────────────────────────────────────────────── */
+
+#torchLight {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: #FFF6E8;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s ease;
+}
+body.torch #torchLight { opacity: var(--lvl, 1); }
+body.torch .view, body.torch .hud { opacity: 0; }
+body.torch #homeBtn {
+  z-index: 4;
+  color: #3A3243;
+  background: rgba(0, 0, 0, .10);
+  border-color: rgba(0, 0, 0, .18);
+}
+
+/* ── home button ───────────────────────────────────────────────────────── */
+
+#homeBtn {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: calc(var(--u) * 4.5);
+  transform: translateX(-50%);
+  width: calc(var(--u) * 26);
+  height: calc(var(--u) * 11);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(236, 231, 244, .06);
+  color: var(--muted);
+  cursor: pointer;
+  transition: transform .12s ease, background .2s ease, opacity .2s ease;
+}
+#homeBtn svg { width: calc(var(--u) * 5.4); height: calc(var(--u) * 5.4); }
+#homeBtn:active { transform: translateX(-50%) scale(.92); background: rgba(236, 231, 244, .13); }
+body.inapp #homeBtn { display: flex; }
+
+/* ── toast ─────────────────────────────────────────────────────────────── */
+
+#toast {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: calc(var(--u) * 19);
+  transform: translate(-50%, calc(var(--u) * 2));
+  padding: calc(var(--u) * 1.6) calc(var(--u) * 4);
+  border-radius: 999px;
+  background: rgba(34, 28, 48, .94);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: calc(var(--u) * 3.4);
+  letter-spacing: .02em;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s var(--ease);
+}
+#toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+/* ── entrance ──────────────────────────────────────────────────────────── */
+
+/* Only elements whose transform is otherwise unused get the entrance —
+   .dial-ring, .orb and .pulse all own their transform, so they stay out. */
+.view.on .title,
+.view.on .big,
+.view.on .huge,
+.view.on .sub,
+.view.on .sub2,
+.view.on .laps,
+.view.on .dial-top,
+.view.on .dial-center,
+.view.on .orb-label { animation: rise .3s var(--ease) both; }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(calc(var(--u) * 2)); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
