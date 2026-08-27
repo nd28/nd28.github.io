@@ -9,8 +9,8 @@
 'use strict';
 
 /* Stamped by ./bump.sh on every publish — do not hand-edit these two lines. */
-const VERSION = '0.1.0';
-const BUILD   = '2026-08-27 15:24 IST';
+const VERSION = '0.2.0';
+const BUILD   = '2026-08-27 15:28 IST';
 
 const $ = (s, r = document) => r.querySelector(s);
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -200,25 +200,43 @@ const stepFor = v => v < 120 ? 10 : v < 600 ? 30 : 60;
 reg({
   key: 'timer', name: 'Timer', color: '#F06FA3', icon: ICONS.timer,
   target: store.get('timer', 300), left: 0, endAt: 0, running: false, done: false,
-  enter() { if (!this.running && !this.left) this.left = this.target; this.paint(); },
+  enter() { if (!this.running && !this.done && this.left <= 0) this.left = this.target; this.paint(); },
   exit() { /* keeps running in the background on purpose */ },
   tap() {
     if (this.done) { this.done = false; this.left = this.target; haptic(14); this.paint(); return; }
     if (this.running) {
       this.left = (this.endAt - Date.now()) / 1000;
       this.running = false;
+      this.disarm();
       haptic(14);
     } else {
       if (this.left <= 0) this.left = this.target;
       this.endAt = Date.now() + this.left * 1000;
       this.running = true;
+      this.arm();
       haptic([0, 10, 60, 10]);
       tone(880, 0.06, 'sine', 0.14);
     }
     this.paint();
   },
+  /* frame() only ticks for whichever app is on screen, so the countdown needs
+     its own timeout to survive a trip back to the dial. */
+  arm() {
+    this.disarm();
+    this.al = setTimeout(() => this.fire(), Math.max(0, this.endAt - Date.now()));
+  },
+  disarm() { clearTimeout(this.al); this.al = 0; },
+  fire() {
+    if (this.done) return;
+    this.running = false; this.left = 0; this.done = true;
+    this.disarm();
+    this.alarm();
+    if (cur !== this) toast('timer done', 3000);
+    else this.paint();
+  },
   long() {
     this.running = false; this.done = false;
+    this.disarm();
     this.left = this.target;
     haptic(38); toast('reset'); this.paint();
   },
@@ -227,10 +245,12 @@ reg({
       const rem = (this.endAt - Date.now()) / 1000;
       this.endAt += d * stepFor(rem) * 1000;
       if (this.endAt < Date.now()) this.endAt = Date.now();
+      this.arm();
     } else {
       this.done = false;
       this.target = clamp(this.target + d * stepFor(this.target), 10, 5400);
       this.left = this.target;
+      this.disarm();
       store.set('timer', this.target);
     }
     this.paint();
@@ -242,17 +262,17 @@ reg({
   paint() {
     const v = this.running ? (this.endAt - Date.now()) / 1000 : this.left;
     tmTime.textContent = mmss(v);
-    tmState.textContent = this.done ? 'done' :
+    tmState.textContent = this.done ? 'done · tap to reset' :
       this.running ? 'running · tap to pause' :
       this.left < this.target ? 'paused · tap to resume' : 'turn the edge to set';
     HUD.set(this.done ? 1 : clamp(v / this.target, 0, 1), this.done ? '#FFC46B' : this.color, !this.running);
   },
   frame() {
     if (!this.running) return;
-    const v = (this.endAt - Date.now()) / 1000;
-    if (v <= 0) { this.running = false; this.left = 0; this.done = true; this.alarm(); }
+    if (this.endAt - Date.now() <= 0) { this.fire(); return; }
     this.paint();
-  }
+  },
+  live() { return this.running || this.done; }
 });
 
 /* ── stopwatch ─────────────────────────────────────────────────────────── */
@@ -298,7 +318,8 @@ reg({
     }).join('');
     swHint.textContent = this.running ? 'hold for a lap' : this.acc ? 'hold to reset' : 'tap to start';
   },
-  frame() { if (this.running) this.paint(); }
+  frame() { if (this.running) this.paint(); },
+  live() { return this.running; }
 });
 
 /* ── tally ─────────────────────────────────────────────────────────────── */
@@ -506,6 +527,7 @@ reg({
     clearInterval(this.fallback); this.fallback = 0;
     this.paint();
   },
+  live() { return this.on; },
   tap() { this.on ? this.stop() : this.start(); haptic(14); },
   long() { this.stop(); this.bpm = 96; store.set('bpm', 96); haptic(38); toast('96 bpm'); this.paint(); },
   rotate(d) {
@@ -574,12 +596,19 @@ function paintDial() {
   selIdx = ((rotIdx % APPS.length) + APPS.length) % APPS.length;
   dialRing.style.setProperty('--rot', (-rotIdx * SLOT_DEG) + 'deg');
   slotEls.forEach((el, i) => el.classList.toggle('sel', i === selIdx));
+  paintLive();
   const a = APPS[selIdx];
   dialIco.innerHTML = a.icon;
   dialIco.style.color = a.color;
   dialName.textContent = a.name;
   HUD.set((selIdx + 1) / APPS.length, a.color, true, true);
   store.set('sel', rotIdx);
+}
+
+function paintLive() {
+  for (let i = 0; i < APPS.length; i++) {
+    slotEls[i].classList.toggle('live', !!(APPS[i].live && APPS[i].live()));
+  }
 }
 
 const HOME = {
@@ -608,6 +637,7 @@ const HOME = {
   frame() {
     const n = new Date();
     dialClock.textContent = pad(n.getHours()) + ':' + pad(n.getMinutes());
+    paintLive();
   }
 };
 

@@ -218,6 +218,15 @@ body.preview #caption {
   opacity: 1;
   transform: rotate(calc(-1 * var(--rot, 0deg))) scale(1.2);
 }
+/* a timer still counting down while you are back on the dial */
+.slot.live .sico {
+  color: var(--c);
+  animation: alive 2s ease-in-out infinite;
+}
+@keyframes alive {
+  0%, 100% { opacity: .45; }
+  50%      { opacity: 1; }
+}
 
 .dial-center {
   display: flex;
