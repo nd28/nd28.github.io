@@ -1,10 +1,16 @@
 /* SW7 offline shell. Bump CACHE on every deploy — the watch is often on a
    flaky Bluetooth tether, so a stale-but-working app beats a spinner. */
-const CACHE = 'sw7-v0.4.1';
+const CACHE = 'sw7-v0.4.2';
 const SHELL = ['./', './index.html', './style.css', './app.js', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  // cache: 'reload' matters — Pages serves assets with max-age=600, so a plain
+  // fetch here would happily precache the build we are trying to replace.
+  e.waitUntil(
+    caches.open(CACHE)
+      .then(c => c.addAll(SHELL.map(u => new Request(u, { cache: 'reload' }))))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', e => {

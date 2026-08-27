@@ -1,5 +1,9 @@
 # SW7 changelog
 
+## 0.4.2 — 2026-08-27 16:02 IST
+
+Precache with cache:'reload' and register with updateViaCache:'none' — Pages sends max-age=600, so the worker could cache the very build it was replacing.
+
 ## 0.4.1 — 2026-08-27 15:59 IST
 
 Take a new build automatically when it is safe to — reload on the dial, toast otherwise, never yank you out of a running timer.

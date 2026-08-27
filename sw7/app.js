@@ -9,8 +9,8 @@
 'use strict';
 
 /* Stamped by ./bump.sh on every publish — do not hand-edit these two lines. */
-const VERSION = '0.4.1';
-const BUILD   = '2026-08-27 15:59 IST';
+const VERSION = '0.4.2';
+const BUILD   = '2026-08-27 16:02 IST';
 
 const $ = (s, r = document) => r.querySelector(s);
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -1232,7 +1232,8 @@ if ('serviceWorker' in navigator && !DEV) {
     if (cur === HOME && !APPS.some(a => a.live && a.live())) location.reload();
     else toast('update ready · reload', 3200);
   });
-  addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  addEventListener('load', () =>
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(() => {}));
 }
 
 })();
