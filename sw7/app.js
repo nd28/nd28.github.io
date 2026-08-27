@@ -9,8 +9,8 @@
 'use strict';
 
 /* Stamped by ./bump.sh on every publish — do not hand-edit these two lines. */
-const VERSION = '0.3.0';
-const BUILD   = '2026-08-27 15:33 IST';
+const VERSION = '0.3.1';
+const BUILD   = '2026-08-27 15:34 IST';
 
 const $ = (s, r = document) => r.querySelector(s);
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;

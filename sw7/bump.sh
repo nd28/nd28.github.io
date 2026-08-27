@@ -24,7 +24,12 @@ python3 -c "import json; json.load(open('manifest.webmanifest'))"
 grep -q "^const VERSION = '${VER}';" app.js || { echo "version stamp failed"; exit 1; }
 grep -q "^const CACHE = 'sw7-v${VER}';" sw.js || { echo "cache stamp failed"; exit 1; }
 
-printf '## %s — %s\n\n%s\n\n' "$VER" "$STAMP" "${MSG:-build}" | cat - CHANGELOG.md > .cl.tmp
+# newest entry goes under the header, not above it
+{
+  head -n 2 CHANGELOG.md
+  printf '## %s — %s\n\n%s\n\n' "$VER" "$STAMP" "${MSG:-build}"
+  tail -n +3 CHANGELOG.md
+} > .cl.tmp
 mv .cl.tmp CHANGELOG.md
 
 git -C .. add sw7
