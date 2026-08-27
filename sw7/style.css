@@ -11,7 +11,7 @@
   --surface-2:#221C30;
   --border:   #322A42;
   --text:     #ECE7F4;
-  --muted:    #8A8199;
+  --muted:    #9A93A8;
 
   --pink:      #F7B8D2;
   --pink-bold: #F06FA3;
@@ -161,7 +161,7 @@ body.preview #caption {
 .sub2 {
   margin-top: calc(var(--u) * 1.6);
   font-size: calc(var(--u) * 3.4);
-  color: #5E5770;
+  color: #736C86;
   letter-spacing: .04em;
 }
 
@@ -249,7 +249,7 @@ body.preview #caption {
 }
 .dial-hint {
   font-size: calc(var(--u) * 3.2);
-  color: #5E5770;
+  color: #736C86;
   letter-spacing: .1em;
   text-transform: lowercase;
 }
@@ -419,10 +419,15 @@ body.inapp #homeBtn { display: flex; }
 .view.on .laps,
 .view.on .dial-top,
 .view.on .dial-center,
-.view.on .orb-label { animation: rise .3s var(--ease) both; }
+.view.on .orb-label { animation: rise .3s var(--ease); }
+/* Transform only — deliberately no opacity, and no fill-mode. A browser that
+   freezes the animation timeline (occluded window, screen asleep) parks the
+   animation at 0%, and an opacity of 0 there would render the whole view
+   invisible with no way back. A 2% offset is a motion cue that cannot hide
+   anything. */
 @keyframes rise {
-  from { opacity: 0; transform: translateY(calc(var(--u) * 2)); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { transform: translateY(calc(var(--u) * 2)); }
+  to   { transform: translateY(0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
