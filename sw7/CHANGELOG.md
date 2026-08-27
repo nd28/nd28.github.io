@@ -1,5 +1,9 @@
 # SW7 changelog
 
+## 0.5.0 — 2026-08-27 18:14 IST
+
+Clock gets three faces on the rim — digital, a real analog one with a sweeping second hand, and words. New: Moon, with a properly drawn terminator and a rim that walks the calendar. New: Echo, the memory game, pads on the diagonals so the home button does not sit on one.
+
 ## 0.4.2 — 2026-08-27 16:02 IST
 
 Precache with cache:'reload' and register with updateViaCache:'none' — Pages sends max-age=600, so the worker could cache the very build it was replacing.

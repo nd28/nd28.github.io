@@ -27,19 +27,21 @@ and drops the URL bar.
 - **The system back swipe** pops to the dial instead of leaving the page — each
   app pushes a history entry.
 
-## The twelve
+## The fourteen
 
 | app | tap | hold | bezel |
 | --- | --- | --- | --- |
-| Clock | 12 h ⇄ 24 h | — | — |
+| Clock | 12 h ⇄ 24 h | — | face: digital / analog / words |
 | Timer | start / pause | reset | ±10 s / 30 s / 60 s, or shift a running timer |
 | Intervals | start / stop | stop | pick a set (tabata, 30/15, 40/20, 45/15, 60/30, 60/60) |
 | Stopwatch | start / stop | lap while running, reset while stopped | — |
 | Tally | +1 | reset | ±1, for fixing a miscount |
 | Breathe | start / stop | stop | switch pattern (Box, 4-7-8, Calm, Deep) |
 | Sun | refresh location | forget location | next / sunrise / sunset / golden hour / daylight |
+| Moon | cycle the readout, or jump back to tonight | back to tonight | walk the calendar a day at a time |
 | Compass | drop or clear a bearing | clear the bearing | nudge the bearing ±1° |
 | Reaction | arm, then tap on the cue | clear the best | see it ⇄ feel it |
+| Echo | start, then tap the pads back | clear the best | easy / brisk / sharp |
 | Decide | roll | roll | d6 / d20 / d100 / coin / yes-no |
 | Metronome | start / stop | back to 96 bpm | ±2 bpm |
 | Torch | light on / off | off | five brightness steps |
@@ -66,6 +68,22 @@ sitting on a dead rose.
 
 **Reaction** in *feel it* mode gives no visual cue at all — only the haptic. It
 is a genuinely different reflex, and a good use of a thing strapped to you.
+
+**Clock** has three faces on the rim. The analog one has a real sweeping second
+hand — sub-second precision every frame, not a tick — because that is the whole
+point of putting hands on a round screen. The words face reads the time out:
+*quarter past / six*.
+
+**Moon** draws the terminator properly: the lit face is a semicircular limb
+closed by a half-ellipse whose width collapses to nothing at the quarters and
+bulges the other way past half. Phase comes from Meeus' low-precision series,
+which puts the new moon of 6 January 2000 at 0.00000 lit — the mean-lunation
+shortcut most code uses is a day out near the quarters. Turn the rim and it
+walks the calendar a day at a time, filling and emptying as it goes.
+
+**Echo** is the memory game, with a tone and a haptic per pad. The pads sit on
+the diagonals rather than the axes, because bottom-centre belongs to the home
+button and a pad hiding underneath it would be unhittable.
 
 ## Layout
 

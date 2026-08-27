@@ -36,11 +36,25 @@
     </section>
 
     <!-- ─── clock ─────────────────────────────────────────────── -->
-    <section class="view" id="v-clock">
+    <section class="view" id="v-clock" data-face="0">
       <div class="title">Clock</div>
-      <div class="big" id="ckTime">00:00</div>
-      <div class="sub" id="ckDate">&nbsp;</div>
-      <div class="sub2" id="ckMeta">&nbsp;</div>
+
+      <svg class="face" id="ckFace" viewBox="0 0 200 200" aria-hidden="true">
+        <g id="ckTicks"></g>
+        <text class="fdate" id="ckFDate" x="100" y="140">&nbsp;</text>
+        <line class="hand hr" id="ckHr" x1="100" y1="106" x2="100" y2="52"/>
+        <line class="hand mn" id="ckMn" x1="100" y1="108" x2="100" y2="30"/>
+        <line class="hand sc" id="ckSc" x1="100" y1="116" x2="100" y2="26"/>
+        <circle class="cap" cx="100" cy="100" r="2.6"/>
+      </svg>
+
+      <div class="digital">
+        <div class="big" id="ckTime">00:00</div>
+        <div class="sub" id="ckDate">&nbsp;</div>
+        <div class="sub2" id="ckMeta">&nbsp;</div>
+      </div>
+
+      <div class="words"><span id="ckW1">&nbsp;</span><span id="ckW2">&nbsp;</span></div>
     </section>
 
     <!-- ─── timer ─────────────────────────────────────────────── -->
@@ -102,6 +116,21 @@
       </div>
     </section>
 
+    <!-- ─── moon ──────────────────────────────────────────────── -->
+    <section class="view" id="v-moon">
+      <div class="title">Moon</div>
+      <svg class="moon" id="moonSvg" viewBox="0 0 200 200" aria-hidden="true">
+        <circle class="mn-dark" cx="100" cy="80" r="42"/>
+        <path class="mn-lit" id="mnLit" d=""/>
+        <circle class="mn-rim" cx="100" cy="80" r="42"/>
+      </svg>
+      <div class="moon-mid">
+        <div class="moon-name" id="mnName">&nbsp;</div>
+        <div class="sub" id="mnRead">&nbsp;</div>
+        <div class="sub2" id="mnWhen">&nbsp;</div>
+      </div>
+    </section>
+
     <!-- ─── compass ───────────────────────────────────────────── -->
     <section class="view" id="v-compass">
       <div class="title">Compass</div>
@@ -121,6 +150,22 @@
       <div class="big" id="rxOut">tap</div>
       <div class="sub" id="rxHint">tap to arm</div>
       <div class="sub2" id="rxBest">&nbsp;</div>
+    </section>
+
+    <!-- ─── echo ──────────────────────────────────────────────── -->
+    <section class="view" id="v-echo">
+      <div class="title">Echo</div>
+      <svg class="quads" id="quads" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="q" id="q0" d=""/>
+        <path class="q" id="q1" d=""/>
+        <path class="q" id="q2" d=""/>
+        <path class="q" id="q3" d=""/>
+      </svg>
+      <div class="echo-mid">
+        <div class="big" id="ecOut">go</div>
+        <div class="sub" id="ecHint">tap to start</div>
+        <div class="sub2" id="ecBest">&nbsp;</div>
+      </div>
     </section>
 
     <!-- ─── dice ──────────────────────────────────────────────── -->

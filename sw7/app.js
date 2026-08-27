@@ -9,8 +9,8 @@
 'use strict';
 
 /* Stamped by ./bump.sh on every publish — do not hand-edit these two lines. */
-const VERSION = '0.4.2';
-const BUILD   = '2026-08-27 16:02 IST';
+const VERSION = '0.5.0';
+const BUILD   = '2026-08-27 18:14 IST';
 
 const $ = (s, r = document) => r.querySelector(s);
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -26,6 +26,19 @@ const store = {
 /* ── haptics ───────────────────────────────────────────────────────────── */
 
 function haptic(p) { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} }
+
+/* ── geometry shared by every dial-shaped view ─────────────────────────── */
+
+const RAD = Math.PI / 180, DEG = 180 / Math.PI;
+/* 0° points right and angles run clockwise, matching SVG. Callers subtract 90
+   when they want twelve o'clock to be zero. */
+const pol = (a, r) => [100 + r * Math.cos(a * RAD), 100 + r * Math.sin(a * RAD)];
+function arcDeg(a0, a1, r) {
+  const [x0, y0] = pol(a0, r), [x1, y1] = pol(a1, r);
+  const large = (((a1 - a0) % 360) + 360) % 360 > 180 ? 1 : 0;
+  return 'M' + x0.toFixed(2) + ' ' + y0.toFixed(2) +
+         'A' + r + ' ' + r + ' 0 ' + large + ' 1 ' + x1.toFixed(2) + ' ' + y1.toFixed(2);
+}
 
 /* ── audio ─────────────────────────────────────────────────────────────── */
 
@@ -147,6 +160,9 @@ const ICONS = {
              '<circle cx="12" cy="12" r="2.5"/>'),
   sun: ico('<circle cx="12" cy="12" r="4.2"/><path d="M12 2.4v2.2M12 19.4v2.2M2.4 12h2.2M19.4 12h2.2' +
            'M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/>'),
+  moon: ico('<path d="M15.9 3.1A9.1 9.1 0 1 0 20.9 14.3 7.3 7.3 0 0 1 15.9 3.1z"/>'),
+  echo: ico('<circle cx="12" cy="5.2" r="2.3"/><circle cx="18.8" cy="12" r="2.3"/>' +
+            '<circle cx="12" cy="18.8" r="2.3"/><circle cx="5.2" cy="12" r="2.3"/>'),
   compass: ico('<circle cx="12" cy="12" r="9"/><path d="M15.6 8.4l-2.2 5-5 2.2 2.2-5z"/>'),
   react: ico('<path d="M13.4 2.4 5.6 13.4h5.2l-.6 8.2 7.8-11h-5.2z"/>'),
   torch: ico('<path d="M8.4 2.6h7.2l-.9 4.4H9.3z"/><path d="M9.3 7h5.4v13a1.4 1.4 0 0 1-1.4 1.4h-2.6A1.4 1.4 0 0 1 9.3 20z"/>' +
@@ -164,6 +180,10 @@ const reg = a => { a.view = $('#v-' + a.key); APPS.push(a); return a; };
 /* ── clock ─────────────────────────────────────────────────────────────── */
 
 const ckTime = $('#ckTime'), ckDate = $('#ckDate'), ckMeta = $('#ckMeta');
+const vClock = $('#v-clock'), ckTicks = $('#ckTicks'), ckFDate = $('#ckFDate');
+const ckHr = $('#ckHr'), ckMn = $('#ckMn'), ckSc = $('#ckSc');
+const ckW1 = $('#ckW1'), ckW2 = $('#ckW2');
+
 let batteryTxt = '';
 if (navigator.getBattery) {
   navigator.getBattery().then(b => {
@@ -172,28 +192,78 @@ if (navigator.getBattery) {
   }).catch(() => {});
 }
 
+(function buildFace() {
+  let out = '';
+  for (let i = 0; i < 60; i++) {
+    const maj = i % 5 === 0;
+    const [x1, y1] = pol(i * 6 - 90, maj ? 81 : 87);
+    const [x2, y2] = pol(i * 6 - 90, 92);
+    out += '<line class="tick' + (maj ? ' maj' : '') + '" x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) +
+           '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '"/>';
+  }
+  ckTicks.innerHTML = out;
+})();
+
+const WMIN = ['', 'five past', 'ten past', 'quarter past', 'twenty past', 'twenty-five past',
+              'half past', 'twenty-five to', 'twenty to', 'quarter to', 'ten to', 'five to'];
+const WHR = ['twelve', 'one', 'two', 'three', 'four', 'five',
+             'six', 'seven', 'eight', 'nine', 'ten', 'eleven'];
+const FACES = ['digital', 'analog', 'words'];
+
 reg({
   key: 'clock', name: 'Clock', color: '#F7B8D2', icon: ICONS.clock,
-  enter() { this.h24 = store.get('h24', true); this.last = ''; },
+  h24: store.get('h24', true), face: store.get('face', 0), last: '',
+  enter() { this.apply(); },
+  apply() {
+    vClock.setAttribute('data-face', this.face);
+    if (this.face === 1) HUD.off();
+    this.last = '';
+  },
   tap() {
     this.h24 = !this.h24;
     store.set('h24', this.h24);
     haptic(12);
+    this.last = '';
     toast(this.h24 ? '24-hour' : '12-hour');
+  },
+  rotate(d) {
+    this.face = (this.face + d + FACES.length) % FACES.length;
+    store.set('face', this.face);
+    haptic(10);
+    this.apply();
+    toast(FACES[this.face]);
   },
   frame() {
     const d = new Date();
     const secs = d.getSeconds() + d.getMilliseconds() / 1000;
-    HUD.set(secs / 60, this.color);
+
+    if (this.face === 1) {
+      /* sub-second on the second hand, so it sweeps instead of stepping */
+      const mins = d.getMinutes() + secs / 60;
+      const hrs = (d.getHours() % 12) + mins / 60;
+      ckSc.setAttribute('transform', 'rotate(' + (secs * 6).toFixed(2) + ' 100 100)');
+      ckMn.setAttribute('transform', 'rotate(' + (mins * 6).toFixed(2) + ' 100 100)');
+      ckHr.setAttribute('transform', 'rotate(' + (hrs * 30).toFixed(2) + ' 100 100)');
+    } else if (this.face === 0) {
+      HUD.set(secs / 60, this.color);
+    }
+
+    const key = d.getHours() + ':' + d.getMinutes();
+    if (key === this.last) return;
+    this.last = key;
+
     let h = d.getHours(), suf = '';
     if (!this.h24) { suf = h < 12 ? ' am' : ' pm'; h = h % 12 || 12; }
-    const t = (this.h24 ? pad(h) : h) + ':' + pad(d.getMinutes());
-    if (t + suf !== this.last) {
-      this.last = t + suf;
-      ckTime.innerHTML = t + (suf ? '<span class="cs">' + suf + '</span>' : '');
-      ckDate.textContent = d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
-      ckMeta.textContent = batteryTxt;
-    }
+    ckTime.innerHTML = (this.h24 ? pad(h) : h) + ':' + pad(d.getMinutes()) +
+                       (suf ? '<span class="cs">' + suf + '</span>' : '');
+    ckDate.textContent = d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+    ckMeta.textContent = batteryTxt;
+    ckFDate.textContent = d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }).toUpperCase();
+
+    const step = Math.round(d.getMinutes() / 5);
+    const wi = step % 12;
+    ckW1.textContent = WMIN[wi] || ' ';
+    ckW2.textContent = WHR[(d.getHours() + (step >= 7 ? 1 : 0)) % 12] + (wi === 0 ? " o'clock" : '');
   }
 });
 
@@ -528,7 +598,7 @@ reg({
 
 /* Sunrise equation, NOAA form — pure arithmetic, so it works with the watch
    offline. Good to a couple of minutes, which is all a wrist needs. */
-const RAD = Math.PI / 180, DEG = 180 / Math.PI, J2000 = 2451545.0;
+const J2000 = 2451545.0;
 const toJD = d => d.getTime() / 86400000 + 2440587.5;
 const fromJD = j => new Date((j - 2440587.5) * 86400000);
 
@@ -555,14 +625,7 @@ const sdDay = $('#sdDay'), sdGoldA = $('#sdGoldA'), sdGoldB = $('#sdGoldB'), sdN
 const SR = 80;
 const hourOf = d => d.getHours() + d.getMinutes() / 60 + d.getSeconds() / 3600;
 const hAng = h => (h / 24) * 360 + 90;                    // midnight at the bottom
-const pol = (a, r) => [100 + r * Math.cos(a * RAD), 100 + r * Math.sin(a * RAD)];
-function arcPath(h0, h1, r) {
-  const a0 = hAng(h0), a1 = hAng(h1);
-  const [x0, y0] = pol(a0, r), [x1, y1] = pol(a1, r);
-  const large = (((a1 - a0) % 360) + 360) % 360 > 180 ? 1 : 0;
-  return 'M' + x0.toFixed(2) + ' ' + y0.toFixed(2) +
-         'A' + r + ' ' + r + ' 0 ' + large + ' 1 ' + x1.toFixed(2) + ' ' + y1.toFixed(2);
-}
+const arcPath = (h0, h1, r) => arcDeg(hAng(h0), hAng(h1), r);
 const clock = d => pad(d.getHours()) + ':' + pad(d.getMinutes());
 function until(d) {
   let m = Math.round((d - Date.now()) / 60000);
@@ -659,6 +722,85 @@ reg({
   frame() {
     if (this.pos && this.sol && new Date().toDateString() !== this.day) this.compute();
     this.paint();
+  }
+});
+
+/* ── moon ──────────────────────────────────────────────────────────────── */
+
+/* Meeus, low precision (Astronomical Algorithms ch. 48). The mean-lunation
+   shortcut is a day out either way near the quarters; this is not. */
+const SYNODIC = 29.530588853;
+const norm360 = x => ((x % 360) + 360) % 360;
+
+function moonPhase(date) {
+  const T = (toJD(date) - J2000) / 36525;
+  const D  = norm360(297.8501921 + 445267.1114034 * T - 0.0018819 * T * T);
+  const M  = norm360(357.5291092 + 35999.0502909 * T - 0.0001536 * T * T);
+  const Mp = norm360(134.9633964 + 477198.8675055 * T + 0.0087414 * T * T);
+  const i = 180 - D
+          - 6.289 * Math.sin(Mp * RAD)
+          + 2.100 * Math.sin(M * RAD)
+          - 1.274 * Math.sin((2 * D - Mp) * RAD)
+          - 0.658 * Math.sin(2 * D * RAD)
+          - 0.214 * Math.sin(2 * Mp * RAD)
+          - 0.110 * Math.sin(D * RAD);
+  return { k: (1 + Math.cos(i * RAD)) / 2, waxing: D < 180, elong: D };
+}
+
+function moonName(k, waxing) {
+  if (k < 0.015) return 'New moon';
+  if (k > 0.985) return 'Full moon';
+  if (k < 0.47) return waxing ? 'Waxing crescent' : 'Waning crescent';
+  if (k < 0.53) return waxing ? 'First quarter' : 'Last quarter';
+  return waxing ? 'Waxing gibbous' : 'Waning gibbous';
+}
+
+/* The lit face is a semicircular limb closed by the terminator, which is a
+   half-ellipse whose width collapses to zero at the quarters and bulges the
+   other way once past half. */
+function moonPath(k, waxing, cx, cy, R) {
+  const rx = (R * Math.abs(1 - 2 * k)).toFixed(2);
+  const limb = waxing ? 1 : 0;
+  const term = ((k > 0.5) === waxing) ? 1 : 0;
+  return 'M' + cx + ' ' + (cy - R) +
+         'A' + R + ' ' + R + ' 0 0 ' + limb + ' ' + cx + ' ' + (cy + R) +
+         'A' + rx + ' ' + R + ' 0 0 ' + term + ' ' + cx + ' ' + (cy - R) + 'Z';
+}
+
+const mnLit = $('#mnLit'), mnName = $('#mnName'), mnRead = $('#mnRead'), mnWhen = $('#mnWhen');
+const MREADS = ['lit', 'age', 'next full', 'next new'];
+const days = n => n < 1 ? Math.round(n * 24) + 'h' : n.toFixed(1) + ' days';
+
+reg({
+  key: 'moon', name: 'Moon', color: '#CFD6FF', icon: ICONS.moon,
+  off: 0, i: 0,
+  enter() { HUD.off(); this.off = 0; this.paint(); },
+  tap() {
+    if (this.off) { this.off = 0; haptic(14); toast('tonight'); }
+    else { this.i = (this.i + 1) % MREADS.length; haptic(10); }
+    this.paint();
+  },
+  long() { this.off = 0; this.i = 0; haptic(38); this.paint(); },
+  /* turning the rim walks the calendar and the disc fills and empties with it */
+  rotate(d, m) { this.off = clamp(this.off + d * (m || 1), -400, 400); haptic(7); this.paint(); },
+  paint() {
+    const when = new Date(Date.now() + this.off * 86400000);
+    const ph = moonPhase(when);
+    mnLit.setAttribute('d', moonPath(ph.k, ph.waxing, 100, 80, 42));
+    mnName.textContent = moonName(ph.k, ph.waxing);
+
+    const age = ph.elong / 360 * SYNODIC;
+    const toFull = norm360(180 - ph.elong) / 360 * SYNODIC;
+    const toNew = norm360(360 - ph.elong) / 360 * SYNODIC;
+    const k = MREADS[this.i];
+    mnRead.textContent =
+      k === 'lit' ? Math.round(ph.k * 100) + '% lit' :
+      k === 'age' ? 'day ' + age.toFixed(1) + ' of 29.5' :
+      k === 'next full' ? 'full in ' + days(toFull) :
+                          'new in ' + days(toNew);
+
+    mnWhen.textContent = this.off === 0 ? 'tonight'
+      : when.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
   }
 });
 
@@ -825,6 +967,102 @@ reg({
       rxHint.textContent = RXMODE[this.mode] + ' · tap to arm';
     }
     rxBest.textContent = this.best != null ? 'best ' + this.best + ' ms' : '';
+  }
+});
+
+/* ── echo ──────────────────────────────────────────────────────────────── */
+
+const QUADS = [$('#q0'), $('#q1'), $('#q2'), $('#q3')];
+const QTONE = [523.25, 659.25, 783.99, 1046.50];
+const ecOut = $('#ecOut'), ecHint = $('#ecHint'), ecBest = $('#ecBest');
+const SPEEDS = [{ n: 'easy', on: 440, gap: 200 }, { n: 'brisk', on: 310, gap: 130 }, { n: 'sharp', on: 200, gap: 80 }];
+
+/* Centred on the diagonals, not the axes: bottom-centre belongs to the home
+   button, and a pad hiding behind it would be unhittable. */
+QUADS.forEach((el, i) => el.setAttribute('d', arcDeg(i * 90 - 83, i * 90 - 7, 74)));
+
+reg({
+  key: 'echo', name: 'Echo', color: '#9BE8A8', icon: ICONS.echo,
+  state: 'idle', seq: [], pos: 0, timers: [],
+  sp: store.get('ecsp', 1), best: store.get('ecbest', null),
+  enter() { HUD.off(); this.reset(); },
+  exit() { this.reset(); },
+  reset() {
+    this.timers.forEach(clearTimeout);
+    this.timers = [];
+    QUADS.forEach(q => q.classList.remove('lit'));
+    this.state = 'idle'; this.seq = []; this.pos = 0;
+    HUD.off();
+    this.paint();
+  },
+  lightUp(q) {
+    QUADS[q].classList.add('lit');
+    tone(QTONE[q], 0.24, 'sine', 0.16);
+    haptic(16);
+    this.timers.push(setTimeout(() => QUADS[q].classList.remove('lit'), SPEEDS[this.sp].on));
+  },
+  next() {
+    this.seq.push(Math.floor(Math.random() * 4));
+    this.state = 'show';
+    this.pos = 0;
+    HUD.off();
+    this.paint();
+    const sp = SPEEDS[this.sp];
+    let t = 400;
+    this.seq.forEach(q => {
+      this.timers.push(setTimeout(() => this.lightUp(q), t));
+      t += sp.on + sp.gap;
+    });
+    this.timers.push(setTimeout(() => { this.state = 'input'; this.pos = 0; this.paint(); }, t));
+  },
+  fail() {
+    this.state = 'over';
+    QUADS.forEach(q => q.classList.remove('lit'));
+    haptic([0, 90, 70, 240]);
+    tone(180, 0.34, 'sawtooth', 0.16);
+    HUD.off();
+    this.paint();
+  },
+  tap(pt) {
+    if (this.state === 'idle' || this.state === 'over') {
+      this.timers.forEach(clearTimeout); this.timers = [];
+      this.seq = []; haptic(12); this.next(); return;
+    }
+    if (this.state !== 'input') return;
+    if (pt.r < 0.2) return;                     // the middle is not a pad
+    const a = (Math.atan2(pt.ny, pt.nx) * DEG + 450) % 360;   // 0 = up, clockwise
+    const q = Math.floor(a / 90);                            // 0 NE, 1 SE, 2 SW, 3 NW
+    this.lightUp(q);
+    if (q !== this.seq[this.pos]) { this.fail(); return; }
+    this.pos++;
+    HUD.set(this.pos / this.seq.length, this.color);
+    if (this.pos < this.seq.length) { this.paint(); return; }
+    const round = this.seq.length;
+    if (this.best == null || round > this.best) { this.best = round; store.set('ecbest', round); }
+    this.state = 'show';
+    this.paint();
+    this.timers.push(setTimeout(() => this.next(), 640));
+  },
+  long() { this.best = null; store.set('ecbest', null); haptic(38); toast('cleared'); this.reset(); },
+  rotate(d) {
+    if (this.state !== 'idle' && this.state !== 'over') return;
+    this.sp = (this.sp + d + SPEEDS.length) % SPEEDS.length;
+    store.set('ecsp', this.sp);
+    haptic(9);
+    this.paint();
+  },
+  paint() {
+    if (this.state === 'idle') {
+      ecOut.textContent = 'go';
+      ecHint.textContent = SPEEDS[this.sp].n + ' · tap to start';
+    } else if (this.state === 'over') {
+      ecOut.textContent = String(Math.max(0, this.seq.length - 1));
+      ecHint.textContent = 'missed · tap to retry';
+    } else {
+      ecOut.textContent = String(this.seq.length);
+      ecHint.textContent = this.state === 'show' ? 'watch' : 'repeat it';
+    }
+    ecBest.textContent = this.best != null ? 'best ' + this.best : '';
   }
 });
 
