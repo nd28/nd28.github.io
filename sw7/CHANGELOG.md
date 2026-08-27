@@ -1,5 +1,9 @@
 # SW7 changelog
 
+## 0.7.0 — 2026-08-27 18:51 IST
+
+New: Weather — keyless Open-Meteo, the day's temperature drawn as a curve round the rim, last reading kept for when the watch is out of range. Stopwatch keeps every lap and the rim walks them. Breathe shows how long you have been at it. The title now sits above the view's own graphic instead of under it.
+
 ## 0.6.0 — 2026-08-27 18:30 IST
 
 Hold the home button or the dial and the current app lists its tap, hold and rim. New: Level, reading relative tilt with the number riding inside the bubble. The dial now shows a running app's state instead of 'tap to open'.

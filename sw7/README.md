@@ -27,17 +27,18 @@ and drops the URL bar.
 - **The system back swipe** pops to the dial instead of leaving the page — each
   app pushes a history entry.
 
-## The fifteen
+## The sixteen
 
 | app | tap | hold | bezel |
 | --- | --- | --- | --- |
 | Clock | 12 h ⇄ 24 h | — | face: digital / analog / words |
 | Timer | start / pause | reset | ±10 s / 30 s / 60 s, or shift a running timer |
 | Intervals | start / stop | stop | pick a set (tabata, 30/15, 40/20, 45/15, 60/30, 60/60) |
-| Stopwatch | start / stop | lap while running, reset while stopped | — |
+| Stopwatch | start / stop | lap while running, reset while stopped | scroll the laps |
 | Tally | +1 | reset | ±1, for fixing a miscount |
 | Breathe | start / stop | stop | switch pattern (Box, 4-7-8, Calm, Deep) |
 | Sun | refresh location | forget location | next / sunrise / sunset / golden hour / daylight |
+| Weather | refresh now | forget the location | now / feels like / wind / humidity / range |
 | Moon | cycle the readout, or jump back to tonight | back to tonight | walk the calendar a day at a time |
 | Compass | drop or clear a bearing | clear the bearing | nudge the bearing ±1° |
 | Level | zero it where it sits | clear the zero | range ±5° / 15° / 45° |
@@ -52,6 +53,8 @@ to.** Fifteen apps times three gestures is more than anyone will hold in their
 head, and there is no room on a 44 mm screen to label anything. The card lists
 tap, hold and rim for whatever is on screen, plus the build stamp. It clears on
 a tap, or by itself after seven seconds.
+
+**Stopwatch** keeps every lap. Three fit on the glass; the rim walks the rest.
 
 **The dial says what is happening.** If the selected app is doing something —
 a timer counting down, an interval set running, a stopwatch going — the line
@@ -70,6 +73,14 @@ It asks for a location once and caches it; the ring is a 24-hour dial with
 midnight at the bottom, the lit arc is daylight, the pale caps are the golden
 hours, and the dot is now. Accurate to a couple of minutes, which is all a
 wrist needs. Polar day and night are handled rather than dividing by nothing.
+
+**Weather** is the one app that talks to the network. Open-Meteo needs no key
+and sends `Access-Control-Allow-Origin: *`, so there is nothing to configure —
+it reuses the location Sun already cached. The day's temperature is drawn as a
+curve round the rim, midnight at the bottom, radius rising with the reading,
+with a dot for now. The last reading is kept, so a watch out of range shows the
+curve in grey and *as of 18:09* rather than nothing. The service worker leaves
+cross-origin requests alone, so it never serves a stale forecast by accident.
 
 **Compass** wants `deviceorientationabsolute` (Android) or
 `webkitCompassHeading` (iOS). Plain relative `deviceorientation` is ignored

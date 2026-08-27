@@ -9,8 +9,8 @@
 'use strict';
 
 /* Stamped by ./bump.sh on every publish — do not hand-edit these two lines. */
-const VERSION = '0.6.0';
-const BUILD   = '2026-08-27 18:30 IST';
+const VERSION = '0.7.0';
+const BUILD   = '2026-08-27 18:51 IST';
 
 const $ = (s, r = document) => r.querySelector(s);
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -160,6 +160,7 @@ const ICONS = {
              '<circle cx="12" cy="12" r="2.5"/>'),
   sun: ico('<circle cx="12" cy="12" r="4.2"/><path d="M12 2.4v2.2M12 19.4v2.2M2.4 12h2.2M19.4 12h2.2' +
            'M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/>'),
+  wx: ico('<path d="M7.4 18.4a4.3 4.3 0 0 1 .5-8.6 5.5 5.5 0 0 1 10.5 1.6 3.8 3.8 0 0 1-.6 7z"/>'),
   moon: ico('<path d="M15.9 3.1A9.1 9.1 0 1 0 20.9 14.3 7.3 7.3 0 0 1 15.9 3.1z"/>'),
   echo: ico('<circle cx="12" cy="5.2" r="2.3"/><circle cx="18.8" cy="12" r="2.3"/>' +
             '<circle cx="12" cy="18.8" r="2.3"/><circle cx="5.2" cy="12" r="2.3"/>'),
@@ -467,7 +468,7 @@ function hms(ms) {
 
 reg({
   key: 'stop', name: 'Stopwatch', color: '#7FB3FF', icon: ICONS.stop,
-  running: false, acc: 0, t0: 0, laps: [],
+  running: false, acc: 0, t0: 0, laps: [], off: 0,
   el() { return this.acc + (this.running ? Date.now() - this.t0 : 0); },
   enter() { this.paint(); },
   tap() {
@@ -480,23 +481,33 @@ reg({
       const e = this.el();
       const prev = this.laps.length ? this.laps[0].at : 0;
       this.laps.unshift({ at: e, split: e - prev });
+      this.off = 0;
       haptic(30); tone(1200, 0.05, 'square', 0.12);
       toast('lap ' + this.laps.length);
     } else {
-      this.acc = 0; this.laps = []; haptic(38); toast('reset');
+      this.acc = 0; this.laps = []; this.off = 0; haptic(38); toast('reset');
     }
     this.paint();
   },
-  rotate() {},
+  /* three laps fit on the glass; the rest are still there, the rim walks them */
+  rotate(d) {
+    if (this.laps.length <= 3) return;
+    this.off = clamp(this.off + d, 0, this.laps.length - 3);
+    haptic(7);
+    this.paint();
+  },
   paint() {
     const e = this.el(), f = hms(e);
     swTime.innerHTML = f.head + '<span class="cs">.' + f.cs + '</span>';
     HUD.set(e % 60000 / 60000, this.color);
-    swLaps.innerHTML = this.laps.slice(0, 3).map((l, i) => {
+    swLaps.innerHTML = this.laps.slice(this.off, this.off + 3).map((l, i) => {
       const s = hms(l.split);
-      return '<span>' + (this.laps.length - i) + '   ' + s.head + '.' + s.cs + '</span>';
+      return '<span>' + (this.laps.length - this.off - i) + '   ' + s.head + '.' + s.cs + '</span>';
     }).join('');
-    swHint.textContent = this.running ? 'hold for a lap' : this.acc ? 'hold to reset' : 'tap to start';
+    swHint.textContent =
+      this.laps.length > 3 ? this.laps.length + ' laps · turn to scroll'
+      : this.running ? 'hold for a lap'
+      : this.acc ? 'hold to reset' : 'tap to start';
   },
   frame() { if (this.running) this.paint(); },
   live() { return this.running; },
@@ -561,7 +572,7 @@ reg({
     HUD.off();
   },
   start() {
-    this.on = true; this.ph = -1; this.cycles = 0;
+    this.on = true; this.ph = -1; this.cycles = 0; this.began = Date.now();
     this.next();
   },
   next() {
@@ -593,7 +604,8 @@ reg({
     const el = now - this.phT;
     if (el >= dur) { this.next(); return; }
     brCount.textContent = Math.ceil((dur - el) / 1000);
-    brHint.textContent = 'cycle ' + this.cycles + ' · tap to stop';
+    const sec = Math.floor((Date.now() - this.began) / 1000);
+    brHint.textContent = 'cycle ' + this.cycles + ' · ' + Math.floor(sec / 60) + ':' + pad(sec % 60);
     const total = pt.reduce((a, x) => a + x[1], 0) * 1000;
     const before = pt.slice(0, this.ph).reduce((a, x) => a + x[1], 0) * 1000;
     HUD.set((before + el) / total, this.color);
@@ -729,6 +741,131 @@ reg({
     if (this.pos && this.sol && new Date().toDateString() !== this.day) this.compute();
     this.paint();
   }
+});
+
+/* ── weather ───────────────────────────────────────────────────────────── */
+
+/* Open-Meteo needs no key and sends Access-Control-Allow-Origin: *, so this is
+   the one app that talks to the network — and it keeps the last reading, so a
+   watch out of range still shows something honest rather than nothing. */
+const WMO = {
+  0: 'clear', 1: 'mainly clear', 2: 'partly cloudy', 3: 'overcast',
+  45: 'fog', 48: 'rime fog',
+  51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle',
+  56: 'freezing drizzle', 57: 'freezing drizzle',
+  61: 'light rain', 63: 'rain', 65: 'heavy rain',
+  66: 'freezing rain', 67: 'freezing rain',
+  71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains',
+  80: 'light showers', 81: 'showers', 82: 'violent showers',
+  85: 'snow showers', 86: 'snow showers',
+  95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail'
+};
+
+const wxLabel = $('#wxLabel'), wxVal = $('#wxVal'), wxSub = $('#wxSub');
+const wxCurve = $('#wxCurve'), wxNow = $('#wxNow'), vWx = $('#v-wx');
+const WXREADS = ['now', 'feels like', 'wind', 'humidity', 'range'];
+const FRESH = 15 * 60 * 1000;
+
+reg({
+  key: 'wx', name: 'Weather', color: '#8A9BFF', icon: ICONS.wx,
+  i: 0, busy: false, failed: false,
+  enter() {
+    HUD.off();
+    const c = store.get('wx', null);
+    this.at = c ? c.at : 0;
+    this.d = c ? c.d : null;
+    this.failed = false;
+    this.paint();
+    if (Date.now() - this.at > FRESH) this.load();
+  },
+  pos() { return store.get('geo', null); },
+  load() {
+    if (this.busy) return;
+    const p = this.pos();
+    if (!p) { this.locate(); return; }
+    this.busy = true;
+    this.paint();
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=' + p.lat + '&longitude=' + p.lng +
+          '&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m' +
+          '&hourly=temperature_2m&forecast_days=1&timezone=auto')
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(d => {
+        this.d = d; this.at = Date.now(); this.failed = false;
+        store.set('wx', { at: this.at, d: d });
+        haptic(14);
+      })
+      .catch(() => { this.failed = true; })
+      .then(() => { this.busy = false; this.paint(); });
+  },
+  locate() {
+    if (!navigator.geolocation) { this.paint(); return; }
+    this.busy = true; this.paint();
+    navigator.geolocation.getCurrentPosition(
+      g => {
+        store.set('geo', { lat: +g.coords.latitude.toFixed(3), lng: +g.coords.longitude.toFixed(3) });
+        this.busy = false;
+        this.load();
+      },
+      () => { this.busy = false; this.failed = true; this.paint(); },
+      { timeout: 15000, maximumAge: 6 * 3600 * 1000 }
+    );
+  },
+  tap() { haptic(14); this.at = 0; this.load(); },
+  long() { store.set('geo', null); store.set('wx', null); this.d = null; this.at = 0; haptic(38); toast('forgotten'); this.paint(); },
+  rotate(d) { this.i = (this.i + d + WXREADS.length) % WXREADS.length; haptic(9); this.paint(); },
+  curve() {
+    const t = this.d && this.d.hourly && this.d.hourly.temperature_2m;
+    if (!t || !t.length) { wxCurve.setAttribute('points', ''); return; }
+    const lo = Math.min.apply(null, t), hi = Math.max.apply(null, t);
+    const span = hi - lo || 1;
+    const rOf = v => 60 + (v - lo) / span * 19;   // stays clear of the title
+    wxCurve.setAttribute('points', t.map((v, h) => {
+      const [x, y] = pol(hAng(h), rOf(v));
+      return x.toFixed(1) + ',' + y.toFixed(1);
+    }).join(' '));
+    const now = new Date();
+    const fh = now.getHours() + now.getMinutes() / 60;
+    const a = Math.floor(fh), b = Math.min(a + 1, t.length - 1);
+    const v = t[a] + (t[b] - t[a]) * (fh - a);
+    const [nx, ny] = pol(hAng(fh), rOf(v));
+    wxNow.setAttribute('cx', nx.toFixed(1));
+    wxNow.setAttribute('cy', ny.toFixed(1));
+  },
+  paint() {
+    vWx.classList.toggle('stale', Date.now() - this.at > FRESH);
+    if (!this.d) {
+      wxLabel.textContent = this.busy ? 'fetching' : this.failed ? 'no signal' : 'weather';
+      wxVal.textContent = '--';
+      wxSub.textContent = this.pos() ? 'tap to load' : 'tap to allow location';
+      wxCurve.setAttribute('points', '');
+      return;
+    }
+    this.curve();
+    const c = this.d.current, t = this.d.hourly.temperature_2m;
+    const k = WXREADS[this.i];
+    const deg = n => Math.round(n) + '°';
+    if (k === 'now') {
+      wxLabel.textContent = WMO[c.weather_code] || 'weather';
+      wxVal.textContent = deg(c.temperature_2m);
+    } else if (k === 'feels like') {
+      wxLabel.textContent = 'feels like';
+      wxVal.textContent = deg(c.apparent_temperature);
+    } else if (k === 'wind') {
+      wxLabel.textContent = 'wind';
+      wxVal.textContent = Math.round(c.wind_speed_10m) + ' km/h';
+    } else if (k === 'humidity') {
+      wxLabel.textContent = 'humidity';
+      wxVal.textContent = Math.round(c.relative_humidity_2m) + '%';
+    } else {
+      wxLabel.textContent = 'today';
+      wxVal.textContent = Math.round(Math.min.apply(null, t)) + '–' + deg(Math.max.apply(null, t));
+    }
+    const age = Date.now() - this.at;
+    wxSub.textContent = this.busy ? 'fetching…'
+      : age < FRESH ? 'just now'
+      : 'as of ' + pad(new Date(this.at).getHours()) + ':' + pad(new Date(this.at).getMinutes());
+  },
+  frame() { if (this.d) this.curve(); }
 });
 
 /* ── moon ──────────────────────────────────────────────────────────────── */
@@ -1406,10 +1543,11 @@ const HELP = {
   clock:   ['12-hour ⇄ 24-hour', '—', 'digital / analog / words'],
   timer:   ['start · pause', 'reset', 'set the time'],
   reps:    ['start · stop', 'stop', 'pick a set'],
-  stop:    ['start · stop', 'lap, or reset when idle', '—'],
+  stop:    ['start · stop', 'lap, or reset when idle', 'scroll the laps'],
   tally:   ['+1', 'reset to zero', 'correct by ±1'],
   breathe: ['start · stop', 'stop', 'pick a pattern'],
   sun:     ['refresh the fix', 'forget the location', 'cycle the readout'],
+  wx:      ['refresh now', 'forget the location', 'cycle the readout'],
   moon:    ['cycle the readout', 'back to tonight', 'walk the calendar'],
   compass: ['drop · clear a bearing', 'clear the bearing', 'nudge the bearing'],
   level:   ['zero it here', 'clear the zero', 'range ±5 / 15 / 45°'],

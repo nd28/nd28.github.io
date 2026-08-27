@@ -122,8 +122,13 @@ body.preview #caption {
 }
 .view.on { display: flex; }
 
+/* Sits above the view's own graphic — a weather curve or a compass rose runs
+   right through this height, and the app name should not be the thing that
+   gets crossed out. The halo separates it without a solid backing. */
 .title {
   position: absolute;
+  z-index: 1;
+  text-shadow: 0 0 calc(var(--u) * 1.6) var(--bg), 0 0 calc(var(--u) * .8) var(--bg);
   top: calc(var(--u) * 12);
   left: 0; right: 0;
   font-size: calc(var(--u) * 3.6);
@@ -402,6 +407,32 @@ body.torch #homeBtn {
   margin-bottom: calc(var(--u) * 1.5);
 }
 .big.sun-time { font-size: calc(var(--u) * 17); }
+
+/* ── weather ───────────────────────────────────────────────────────────── */
+
+/* The day's temperature drawn as a closed-ish curve round the rim: midnight at
+   the bottom, radius rising with the reading. */
+.wxdial {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+.wx-mean {
+  fill: none;
+  stroke: #241E33;
+  stroke-width: 1.2;
+  stroke-dasharray: 2 4;
+}
+.wx-curve {
+  fill: none;
+  stroke: #8A9BFF;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.wx-now { fill: var(--text); stroke: var(--bg); stroke-width: 2.4; }
+#v-wx.stale .wx-curve { stroke: #5D5A7A; }
 
 /* ── compass ───────────────────────────────────────────────────────────── */
 
