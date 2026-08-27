@@ -9,8 +9,8 @@
 'use strict';
 
 /* Stamped by ./bump.sh on every publish — do not hand-edit these two lines. */
-const VERSION = '0.3.1';
-const BUILD   = '2026-08-27 15:34 IST';
+const VERSION = '0.4.0';
+const BUILD   = '2026-08-27 15:57 IST';
 
 const $ = (s, r = document) => r.querySelector(s);
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -143,6 +143,12 @@ const ICONS = {
              '<circle cx="8.6" cy="8.6" r="1.25" fill="currentColor" stroke="none"/>' +
              '<circle cx="12" cy="12" r="1.25" fill="currentColor" stroke="none"/>' +
              '<circle cx="15.4" cy="15.4" r="1.25" fill="currentColor" stroke="none"/>'),
+  reps: ico('<path d="M20.4 12a8.4 8.4 0 1 1-2.5-5.9"/><path d="M20.4 2.9v3.6h-3.6"/>' +
+             '<circle cx="12" cy="12" r="2.5"/>'),
+  sun: ico('<circle cx="12" cy="12" r="4.2"/><path d="M12 2.4v2.2M12 19.4v2.2M2.4 12h2.2M19.4 12h2.2' +
+           'M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/>'),
+  compass: ico('<circle cx="12" cy="12" r="9"/><path d="M15.6 8.4l-2.2 5-5 2.2 2.2-5z"/>'),
+  react: ico('<path d="M13.4 2.4 5.6 13.4h5.2l-.6 8.2 7.8-11h-5.2z"/>'),
   torch: ico('<path d="M8.4 2.6h7.2l-.9 4.4H9.3z"/><path d="M9.3 7h5.4v13a1.4 1.4 0 0 1-1.4 1.4h-2.6A1.4 1.4 0 0 1 9.3 20z"/>' +
              '<path d="M12 10.8v2.6"/>')
 };
@@ -240,15 +246,16 @@ reg({
     this.left = this.target;
     haptic(38); toast('reset'); this.paint();
   },
-  rotate(d) {
+  rotate(d, m) {
+    const k = m || 1;
     if (this.running) {
       const rem = (this.endAt - Date.now()) / 1000;
-      this.endAt += d * stepFor(rem) * 1000;
+      this.endAt += d * stepFor(rem) * 1000 * k;
       if (this.endAt < Date.now()) this.endAt = Date.now();
       this.arm();
     } else {
       this.done = false;
-      this.target = clamp(this.target + d * stepFor(this.target), 10, 5400);
+      this.target = clamp(this.target + d * stepFor(this.target) * k, 10, 5400);
       this.left = this.target;
       this.disarm();
       store.set('timer', this.target);
@@ -273,6 +280,104 @@ reg({
     this.paint();
   },
   live() { return this.running || this.done; }
+});
+
+/* ── intervals ─────────────────────────────────────────────────────────── */
+
+const rpPhase = $('#rpPhase'), rpTime = $('#rpTime'), rpSet = $('#rpSet'), rpHint = $('#rpHint');
+const SETS = [
+  { w: 20, r: 10, n: 8, tag: 'tabata' },
+  { w: 30, r: 15, n: 8 },
+  { w: 40, r: 20, n: 6 },
+  { w: 45, r: 15, n: 12 },
+  { w: 60, r: 30, n: 10 },
+  { w: 60, r: 60, n: 5 }
+];
+const setName = s => s.w + ' / ' + s.r + ' \u00d7 ' + s.n + (s.tag ? '  ' + s.tag : '');
+
+reg({
+  key: 'reps', name: 'Intervals', color: '#FF5D73', icon: ICONS.reps,
+  i: store.get('reps', 1), on: false, startAt: 0, cue: 0,
+  enter() { this.paint(); },
+  live() { return this.on; },
+
+  /* The whole run is derived from one timestamp, so leaving for the dial and
+     coming back lands on the right second instead of resuming from a stall. */
+  phaseAt(el) {
+    const s = SETS[this.i], cyc = s.w + s.r;
+    for (let k = 0; k < s.n; k++) {
+      const t0 = k * cyc;
+      if (el < t0 + s.w) return { kind: 'WORK', round: k + 1, left: t0 + s.w - el, dur: s.w };
+      if (k === s.n - 1) break;
+      if (el < t0 + cyc) return { kind: 'REST', round: k + 1, left: t0 + cyc - el, dur: s.r };
+    }
+    return null;
+  },
+  arm() {
+    clearTimeout(this.cue);
+    const p = this.phaseAt((Date.now() - this.startAt) / 1000);
+    if (p) this.cue = setTimeout(() => this.boundary(), Math.max(0, p.left * 1000));
+  },
+  boundary() {
+    const p = this.phaseAt((Date.now() - this.startAt) / 1000);
+    if (!p) { this.finish(); return; }
+    this.signal(p.kind);
+    this.arm();
+  },
+  signal(kind) {
+    if (kind === 'WORK') {
+      haptic([0, 90, 60, 90]);
+      tone(880, 0.10, 'square', 0.20); tone(1320, 0.12, 'square', 0.15, 0.10);
+    } else {
+      haptic(40);
+      tone(587, 0.13, 'sine', 0.15);
+    }
+  },
+  start() {
+    this.on = true;
+    this.startAt = Date.now();
+    this.signal('WORK');
+    this.arm();
+    this.paint();
+  },
+  stop() { this.on = false; clearTimeout(this.cue); this.paint(); },
+  finish() {
+    this.on = false; clearTimeout(this.cue);
+    haptic([0, 300, 120, 300, 120, 520]);
+    for (let i = 0; i < 3; i++) tone(1046, 0.16, 'sine', 0.22, i * 0.28);
+    if (cur !== this) toast('intervals done', 3000);
+    this.paint();
+  },
+  tap() { this.on ? this.stop() : this.start(); haptic(14); },
+  long() { this.stop(); haptic(38); toast('stopped'); },
+  rotate(d) {
+    if (this.on) return;
+    this.i = (this.i + d + SETS.length) % SETS.length;
+    store.set('reps', this.i);
+    haptic(9);
+    this.paint();
+  },
+  paint() {
+    const s = SETS[this.i];
+    if (!this.on) {
+      rpPhase.textContent = '';
+      rpTime.textContent = s.w;
+      rpSet.textContent = setName(s);
+      rpHint.textContent = 'turn to pick \u00b7 tap to start';
+      HUD.off();
+      return;
+    }
+    const p = this.phaseAt((Date.now() - this.startAt) / 1000);
+    if (!p) return;
+    const c = p.kind === 'WORK' ? '#FF5D73' : '#5FD3C4';
+    document.documentElement.style.setProperty('--accent', c);
+    rpPhase.textContent = p.kind;
+    rpTime.textContent = Math.ceil(p.left);
+    rpSet.textContent = 'round ' + p.round + ' of ' + s.n;
+    rpHint.textContent = 'tap to stop';
+    HUD.set(p.left / p.dur, c);
+  },
+  frame() { if (this.on) this.paint(); }
 });
 
 /* ── stopwatch ─────────────────────────────────────────────────────────── */
@@ -345,7 +450,7 @@ reg({
     );
   },
   long() { this.n = 0; store.set('tally', 0); haptic(38); toast('reset'); this.paint(); },
-  rotate(d) { this.bump(d); haptic(8); },
+  rotate(d, m) { this.bump(d * (m || 1)); haptic(8); },
   paint() {
     tlNum.textContent = this.n;
     tlHint.textContent = this.n ? 'turn the edge to correct · hold to reset' : 'tap anywhere to count';
@@ -416,6 +521,310 @@ reg({
     const total = pt.reduce((a, x) => a + x[1], 0) * 1000;
     const before = pt.slice(0, this.ph).reduce((a, x) => a + x[1], 0) * 1000;
     HUD.set((before + el) / total, this.color);
+  }
+});
+
+/* ── sun ───────────────────────────────────────────────────────────────── */
+
+/* Sunrise equation, NOAA form — pure arithmetic, so it works with the watch
+   offline. Good to a couple of minutes, which is all a wrist needs. */
+const RAD = Math.PI / 180, DEG = 180 / Math.PI, J2000 = 2451545.0;
+const toJD = d => d.getTime() / 86400000 + 2440587.5;
+const fromJD = j => new Date((j - 2440587.5) * 86400000);
+
+function solar(date, lat, lng) {
+  const n = Math.round(toJD(date) - J2000 - 0.0009 + lng / 360);
+  const Js = J2000 + 0.0009 - lng / 360 + n;
+  const M = (357.5291 + 0.98560028 * (Js - J2000)) % 360;
+  const C = 1.9148 * Math.sin(M * RAD) + 0.02 * Math.sin(2 * M * RAD) + 0.0003 * Math.sin(3 * M * RAD);
+  const lam = (M + C + 180 + 102.9372) % 360;
+  const Jt = Js + 0.0053 * Math.sin(M * RAD) - 0.0069 * Math.sin(2 * lam * RAD);
+  const dec = Math.asin(Math.sin(lam * RAD) * Math.sin(23.4397 * RAD));
+  const at = h => {
+    const c = (Math.sin(h * RAD) - Math.sin(lat * RAD) * Math.sin(dec)) /
+              (Math.cos(lat * RAD) * Math.cos(dec));
+    if (c > 1 || c < -1) return null;                    // polar night / midnight sun
+    const w = Math.acos(c) * DEG / 360;
+    return { rise: fromJD(Jt - w), set: fromJD(Jt + w) };
+  };
+  return { noon: fromJD(Jt), day: at(-0.833), gold: at(6) };
+}
+
+const snLabel = $('#snLabel'), snTime = $('#snTime'), snIn = $('#snIn');
+const sdDay = $('#sdDay'), sdGoldA = $('#sdGoldA'), sdGoldB = $('#sdGoldB'), sdNow = $('#sdNow');
+const SR = 80;
+const hourOf = d => d.getHours() + d.getMinutes() / 60 + d.getSeconds() / 3600;
+const hAng = h => (h / 24) * 360 + 90;                    // midnight at the bottom
+const pol = (a, r) => [100 + r * Math.cos(a * RAD), 100 + r * Math.sin(a * RAD)];
+function arcPath(h0, h1, r) {
+  const a0 = hAng(h0), a1 = hAng(h1);
+  const [x0, y0] = pol(a0, r), [x1, y1] = pol(a1, r);
+  const large = (((a1 - a0) % 360) + 360) % 360 > 180 ? 1 : 0;
+  return 'M' + x0.toFixed(2) + ' ' + y0.toFixed(2) +
+         'A' + r + ' ' + r + ' 0 ' + large + ' 1 ' + x1.toFixed(2) + ' ' + y1.toFixed(2);
+}
+const clock = d => pad(d.getHours()) + ':' + pad(d.getMinutes());
+function until(d) {
+  let m = Math.round((d - Date.now()) / 60000);
+  const past = m < 0;
+  m = Math.abs(m);
+  const h = Math.floor(m / 60);
+  const span = (h ? h + 'h ' : '') + (m % 60) + 'm';
+  return past ? span + ' ago' : 'in ' + span;
+}
+
+const READS = ['next', 'sunrise', 'sunset', 'golden hour', 'daylight'];
+
+reg({
+  key: 'sun', name: 'Sun', color: '#FF9E2C', icon: ICONS.sun,
+  pos: store.get('geo', null), sol: null, day: '', i: 0, asking: false,
+  enter() { HUD.off(); this.pos ? this.compute() : this.locate(); this.paint(); },
+  locate() {
+    if (this.asking || !navigator.geolocation) { this.paint(); return; }
+    this.asking = true;
+    snLabel.textContent = 'locating';
+    navigator.geolocation.getCurrentPosition(
+      p => {
+        this.asking = false;
+        this.pos = { lat: +p.coords.latitude.toFixed(3), lng: +p.coords.longitude.toFixed(3) };
+        store.set('geo', this.pos);
+        haptic(16);
+        this.compute(); this.paint();
+      },
+      () => { this.asking = false; this.paint(); },
+      { timeout: 15000, maximumAge: 6 * 3600 * 1000 }
+    );
+  },
+  compute() {
+    const now = new Date();
+    this.day = now.toDateString();
+    this.sol = solar(now, this.pos.lat, this.pos.lng);
+    this.arcs();
+  },
+  arcs() {
+    const s = this.sol;
+    if (!s || !s.day) { sdDay.setAttribute('d', ''); sdGoldA.setAttribute('d', ''); sdGoldB.setAttribute('d', ''); return; }
+    const r = hourOf(s.day.rise), st = hourOf(s.day.set);
+    sdDay.setAttribute('d', arcPath(r, st, SR));
+    if (s.gold) {
+      sdGoldA.setAttribute('d', arcPath(r, hourOf(s.gold.rise), SR));
+      sdGoldB.setAttribute('d', arcPath(hourOf(s.gold.set), st, SR));
+    }
+  },
+  tap() { haptic(14); this.locate(); },
+  long() { this.pos = null; this.sol = null; store.set('geo', null); haptic(38); toast('location cleared'); this.locate(); },
+  rotate(d) { this.i = (this.i + d + READS.length) % READS.length; haptic(9); this.paint(); },
+  paint() {
+    const [x, y] = pol(hAng(hourOf(new Date())), SR);
+    sdNow.setAttribute('cx', x.toFixed(2));
+    sdNow.setAttribute('cy', y.toFixed(2));
+
+    if (!this.pos) {
+      snLabel.textContent = this.asking ? 'locating' : 'no location';
+      snTime.textContent = '--:--';
+      snIn.textContent = this.asking ? 'hold still' : 'tap to allow';
+      return;
+    }
+    const s = this.sol;
+    if (!s) { snLabel.textContent = 'no fix'; snTime.textContent = '--:--'; snIn.textContent = 'tap to retry'; return; }
+    if (!s.day) {
+      snLabel.textContent = 'polar';
+      snTime.textContent = '--:--';
+      snIn.textContent = hourOf(s.noon) ? 'no sunrise or sunset today' : '';
+      return;
+    }
+    const k = READS[this.i];
+    if (k === 'next') {
+      const nxt = Date.now() < s.day.rise ? ['sunrise', s.day.rise]
+                : Date.now() < s.day.set ? ['sunset', s.day.set]
+                : ['sunrise tomorrow', s.day.rise];
+      snLabel.textContent = nxt[0];
+      snTime.textContent = clock(nxt[1]);
+      snIn.textContent = Date.now() < s.day.set ? until(nxt[1]) : 'tomorrow';
+    } else if (k === 'sunrise') {
+      snLabel.textContent = 'sunrise'; snTime.textContent = clock(s.day.rise); snIn.textContent = until(s.day.rise);
+    } else if (k === 'sunset') {
+      snLabel.textContent = 'sunset'; snTime.textContent = clock(s.day.set); snIn.textContent = until(s.day.set);
+    } else if (k === 'golden hour') {
+      snLabel.textContent = 'golden hour';
+      snTime.textContent = s.gold ? clock(s.gold.set) : '--:--';
+      snIn.textContent = s.gold ? 'until ' + clock(s.day.set) : 'not today';
+    } else {
+      const mins = Math.round((s.day.set - s.day.rise) / 60000);
+      snLabel.textContent = 'daylight';
+      snTime.textContent = Math.floor(mins / 60) + 'h ' + pad(mins % 60) + 'm';
+      snIn.textContent = 'noon ' + clock(s.noon);
+    }
+  },
+  frame() {
+    if (this.pos && this.sol && new Date().toDateString() !== this.day) this.compute();
+    this.paint();
+  }
+});
+
+/* ── compass ───────────────────────────────────────────────────────────── */
+
+const roseG = $('#roseG'), cpDeg = $('#cpDeg'), cpCard = $('#cpCard');
+const CARD = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+              'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+(function buildRose() {
+  let out = '';
+  for (let a = 0; a < 360; a += 5) {
+    const maj = a % 30 === 0;
+    const [x1, y1] = pol(a - 90, maj ? 76 : 83);
+    const [x2, y2] = pol(a - 90, 90);
+    out += '<line class="' + (maj ? 'maj' : '') + '" x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) +
+           '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '"/>';
+  }
+  ['N', 'E', 'S', 'W'].forEach((c, i) => {
+    const [x, y] = pol(i * 90 - 90, 63);
+    out += '<text class="' + (c === 'N' ? 'north' : '') + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '">' + c + '</text>';
+  });
+  out += '<line class="bearing" id="cpBear" x1="100" y1="10" x2="100" y2="26" style="display:none"/>';
+  roseG.innerHTML = out;
+})();
+const cpBear = $('#cpBear');
+
+reg({
+  key: 'compass', name: 'Compass', color: '#55E0A6', icon: ICONS.compass,
+  h: null, sh: 0, bearing: store.get('bearing', null), t0: 0, handler: null,
+  enter() {
+    HUD.off();
+    this.h = null; this.t0 = performance.now();
+    /* deviceorientationabsolute is the Android path; webkitCompassHeading the
+       iOS one. Plain deviceorientation without absolute is relative, so it is
+       no use as a compass and gets ignored. */
+    this.handler = e => {
+      let hd = null;
+      if (typeof e.webkitCompassHeading === 'number') hd = e.webkitCompassHeading;
+      else if (e.absolute && typeof e.alpha === 'number') hd = (360 - e.alpha) % 360;
+      if (hd == null || isNaN(hd)) return;
+      if (this.h == null) this.sh = hd;
+      this.h = hd;
+    };
+    addEventListener('deviceorientationabsolute', this.handler, true);
+    addEventListener('deviceorientation', this.handler, true);
+    this.miss = setTimeout(() => {
+      if (this.h != null) return;
+      cpDeg.textContent = '—';
+      cpCard.textContent = 'no compass here';
+    }, 2200);
+    this.paintBearing();
+  },
+  exit() {
+    clearTimeout(this.miss);
+    if (!this.handler) return;
+    removeEventListener('deviceorientationabsolute', this.handler, true);
+    removeEventListener('deviceorientation', this.handler, true);
+    this.handler = null;
+  },
+  paintBearing() {
+    if (this.bearing == null) { cpBear.style.display = 'none'; return; }
+    cpBear.style.display = '';
+    cpBear.setAttribute('transform', 'rotate(' + this.bearing + ' 100 100)');
+  },
+  tap() {
+    if (this.h == null) return;
+    this.bearing = this.bearing == null ? Math.round(this.sh) : null;
+    store.set('bearing', this.bearing);
+    haptic(this.bearing == null ? 14 : [0, 12, 50, 24]);
+    this.paintBearing();
+  },
+  long() { this.bearing = null; store.set('bearing', null); haptic(38); toast('bearing cleared'); this.paintBearing(); },
+  rotate(d) {
+    if (this.bearing == null) return;
+    this.bearing = (this.bearing + d + 360) % 360;
+    store.set('bearing', this.bearing);
+    haptic(7);
+    this.paintBearing();
+  },
+  frame() {
+    if (this.h == null) return;
+    clearTimeout(this.miss);
+    let d = this.h - this.sh;
+    while (d > 180) d -= 360;
+    while (d < -180) d += 360;
+    this.sh = (this.sh + d * 0.2 + 360) % 360;
+    roseG.setAttribute('transform', 'rotate(' + (-this.sh).toFixed(1) + ' 100 100)');
+    const deg = Math.round(this.sh) % 360;
+    cpDeg.textContent = String(deg).padStart(3, '0') + '°';
+    let sub = CARD[Math.round(deg / 22.5) % 16];
+    if (this.bearing != null) {
+      let off = this.bearing - deg;
+      while (off > 180) off -= 360;
+      while (off < -180) off += 360;
+      sub += Math.abs(off) < 2 ? '  ·  on bearing'
+           : '  ·  ' + (off > 0 ? '› ' : '‹ ') + Math.abs(Math.round(off)) + '°';
+    }
+    cpCard.textContent = sub;
+  }
+});
+
+/* ── reaction ──────────────────────────────────────────────────────────── */
+
+const rxOut = $('#rxOut'), rxHint = $('#rxHint'), rxBest = $('#rxBest');
+const RXMODE = ['see it', 'feel it'];
+
+reg({
+  key: 'react', name: 'Reaction', color: '#E8F06F', icon: ICONS.react,
+  state: 'idle', at: 0, to: 0, last: null,
+  mode: store.get('rxmode', 0), best: store.get('rxbest', null),
+  enter() { HUD.off(); this.idle(); },
+  exit() { clearTimeout(this.to); document.body.classList.remove('flash'); this.state = 'idle'; },
+  idle() {
+    clearTimeout(this.to);
+    document.body.classList.remove('flash');
+    this.state = 'idle';
+    this.paint();
+  },
+  arm() {
+    this.state = 'wait';
+    this.paint();
+    this.to = setTimeout(() => this.fire(), 1300 + Math.random() * 3200);
+  },
+  fire() {
+    this.state = 'go';
+    this.at = performance.now();
+    if (this.mode === 0) document.body.classList.add('flash');
+    haptic(this.mode === 0 ? 30 : [0, 140]);
+    tone(1320, 0.06, 'square', 0.16);
+    this.to = setTimeout(() => { this.last = null; this.idle(); toast('too slow'); }, 3000);
+    this.paint();
+  },
+  tap() {
+    if (this.state === 'idle') { haptic(10); this.arm(); return; }
+    if (this.state === 'wait') { clearTimeout(this.to); this.last = null; haptic(50); toast('too soon'); this.idle(); return; }
+    const ms = Math.round(performance.now() - this.at);
+    clearTimeout(this.to);
+    this.last = ms;
+    if (this.best == null || ms < this.best) { this.best = ms; store.set('rxbest', ms); toast('best yet'); tone(1568, 0.12, 'sine', 0.2); }
+    haptic(18);
+    this.idle();
+  },
+  long() { this.best = null; store.set('rxbest', null); this.last = null; haptic(38); toast('cleared'); this.idle(); },
+  rotate(d) {
+    if (this.state !== 'idle') return;
+    this.mode = (this.mode + d + RXMODE.length) % RXMODE.length;
+    store.set('rxmode', this.mode);
+    haptic(9);
+    this.paint();
+  },
+  paint() {
+    if (this.state === 'wait') {
+      rxOut.textContent = '…'; rxOut.classList.remove('small');
+      rxHint.textContent = 'wait for it';
+    } else if (this.state === 'go') {
+      rxOut.textContent = 'now'; rxOut.classList.remove('small');
+      rxHint.textContent = '';
+    } else if (this.last != null) {
+      rxOut.innerHTML = this.last + '<span class="cs">ms</span>';
+      rxOut.classList.add('small');
+      rxHint.textContent = RXMODE[this.mode] + ' · tap to go again';
+    } else {
+      rxOut.textContent = 'tap'; rxOut.classList.remove('small');
+      rxHint.textContent = RXMODE[this.mode] + ' · tap to arm';
+    }
+    rxBest.textContent = this.best != null ? 'best ' + this.best + ' ms' : '';
   }
 });
 
@@ -530,8 +939,8 @@ reg({
   live() { return this.on; },
   tap() { this.on ? this.stop() : this.start(); haptic(14); },
   long() { this.stop(); this.bpm = 96; store.set('bpm', 96); haptic(38); toast('96 bpm'); this.paint(); },
-  rotate(d) {
-    this.bpm = clamp(this.bpm + d * 2, 30, 260);
+  rotate(d, m) {
+    this.bpm = clamp(this.bpm + d * 2 * (m || 1), 30, 260);
     store.set('bpm', this.bpm);
     haptic(7);
     if (this.on) { this.stop(); this.start(); } else this.paint();
@@ -576,7 +985,10 @@ const dialRing = $('#dialRing'), dialIco = $('#dialIco'), dialName = $('#dialNam
       dialHint = $('#dialHint'), dialClock = $('#dialClock'), vHome = $('#v-home');
 
 const SLOT_DEG = 360 / APPS.length;
-const SLOT_R = 30;               // % of the diameter, from the centre
+const SLOT_R = 33;               // % of the diameter, from the centre
+/* Half the gap between neighbouring icons: with twelve on the dial a generous
+   radius would open whichever app happens to sit next to the one you hit. */
+const TAP_R = Math.min(0.28, (SLOT_R / 50) * Math.sin(Math.PI / APPS.length) * 0.96);
 const slotPos = APPS.map((_, i) => {
   const a = (i * SLOT_DEG - 90) * Math.PI / 180;
   return { x: SLOT_R * Math.cos(a) / 50, y: SLOT_R * Math.sin(a) / 50 };  // normalised -1..1
@@ -624,7 +1036,7 @@ const HOME = {
       const d = Math.hypot(x - pt.nx, y - pt.ny);
       if (d < bd) { bd = d; best = i; }
     });
-    if (bd < 0.30 && best !== selIdx) {
+    if (bd < TAP_R && best !== selIdx) {
       rotIdx += ((best - selIdx + APPS.length + APPS.length / 2) % APPS.length) - APPS.length / 2;
       paintDial();
       haptic(10);
@@ -660,21 +1072,30 @@ function render(key) {
   if (cur.enter) cur.enter();
 }
 
+/* history.back() lands a tick later, so opening an app in that window would
+   push on top of the old entry and then get popped straight back to the dial.
+   Hold the open until the pop has landed. */
+let backPending = false;
+
 function open(key) {
   if (cur.key === key) return;
+  if (backPending) { setTimeout(() => open(key), 0); return; }
   history.pushState({ app: key }, '');
   render(key);
   haptic([0, 14, 50, 8]);
 }
 function home() {
   if (cur === HOME) return;
-  if (history.state && history.state.app) history.back();
+  if (history.state && history.state.app) { backPending = true; history.back(); }
   else render(null);
   haptic(12);
 }
 
 history.replaceState({ app: null }, '');
-addEventListener('popstate', e => render(e.state && e.state.app));
+addEventListener('popstate', e => {
+  backPending = false;
+  render(e.state && e.state.app);
+});
 
 $('#homeBtn').addEventListener('click', e => { e.stopPropagation(); home(); });
 
@@ -703,6 +1124,7 @@ watch.addEventListener('pointerdown', e => {
     id: e.pointerId, rect, ang: p.ang, acc: 0,
     bezel: p.r > OUTER, moved: 0, rotated: false, longFired: false,
     x0: e.clientX, y0: e.clientY, t0: performance.now(),
+    lastDetent: performance.now(),
     lt: setTimeout(() => {
       if (!g || g.rotated || g.moved > 14) return;
       g.longFired = true;
@@ -728,7 +1150,13 @@ watch.addEventListener('pointermove', e => {
     g.acc -= s * STEP_DEG;
     g.rotated = true;
     clearTimeout(g.lt);
-    if (cur.rotate) cur.rotate(s);
+    /* Spin fast and each detent counts for more, the way a digital crown
+       behaves. Without it, 5:00 to 45:00 is forty separate detents. Apps with
+       a small value space (patterns, modes, the dial itself) ignore it. */
+    const t = performance.now();
+    const gap = t - g.lastDetent;
+    g.lastDetent = t;
+    if (cur.rotate) cur.rotate(s, gap < 70 ? 5 : gap < 130 ? 3 : 1);
   }
 });
 
@@ -778,16 +1206,16 @@ document.documentElement.style.setProperty('--accent', APPS[selIdx].color);
 
 if (!store.get('seen', false)) {
   store.set('seen', true);
-  setTimeout(() => toast('tap — goes fullscreen, stays awake', 3200), 700);
-} else {
-  setTimeout(() => { dialHint.textContent = 'turn the edge · tap to open'; }, 1500);
+  setTimeout(() => toast('tap — goes fullscreen, stays awake', 3400), 700);
+  setTimeout(() => toast('turn the rim to browse', 3400), 4400);
 }
 
 /* ?dev exposes the router for a desktop browser console — handy when you are
    poking at a view without a wrist in front of you. */
 const DEV = /[?&]dev\b/.test(location.search);
 if (DEV) {
-  window.SW7 = { open, home, apps: APPS.map(a => a.key), cur: () => cur.key, g: () => g && { bezel: g.bezel, acc: g.acc, moved: g.moved, rotated: g.rotated } };
+  window.SW7 = { open, home, apps: APPS.map(a => a.key), cur: () => cur.key, app: k => APPS.find(a => a.key === k),
+    g: () => g && { bezel: g.bezel, acc: g.acc, moved: g.moved, rotated: g.rotated } };
 }
 
 /* ?dev also skips the service worker, so an edit shows up on reload. */

@@ -1,5 +1,9 @@
 # SW7 changelog
 
+## 0.4.0 — 2026-08-27 15:57 IST
+
+Four more: Intervals (timestamp-driven, keeps running off-screen), Sun (offline NOAA sunrise math on a 24-hour ring), Compass (absolute-orientation rose with a bearing mark), Reaction (see-it or feel-it). Bezel now accelerates when you spin it. Fixed a router race where tapping an app during a back() bounced you to the dial.
+
 ## 0.3.1 — 2026-08-27 15:34 IST
 
 bump.sh was prepending the changelog above its own header.

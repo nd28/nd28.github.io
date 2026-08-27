@@ -1,6 +1,6 @@
 /* SW7 offline shell. Bump CACHE on every deploy — the watch is often on a
    flaky Bluetooth tether, so a stale-but-working app beats a spinner. */
-const CACHE = 'sw7-v0.3.1';
+const CACHE = 'sw7-v0.4.0';
 const SHELL = ['./', './index.html', './style.css', './app.js', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', e => {

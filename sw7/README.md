@@ -16,7 +16,9 @@ and drops the URL bar.
 
 - **The outer 40% of the glass is a bezel.** Drag around it and the selection
   ticks every 18°, with a haptic detent on each step. Works with the Watch 7's
-  touch bezel because that is just touch input near the rim.
+  touch bezel because that is just touch input near the rim. Spin it fast and
+  each detent counts for up to five, the way a digital crown behaves —
+  otherwise 5:00 to 45:00 is forty separate detents.
 - **The middle is a button.** Tap to act, hold ~0.6 s to reset.
 - **The first tap** requests fullscreen, takes a screen wake lock, and unlocks
   audio. A watch screen sleeps in about 15 seconds otherwise, which makes a
@@ -25,20 +27,45 @@ and drops the URL bar.
 - **The system back swipe** pops to the dial instead of leaving the page — each
   app pushes a history entry.
 
-## The eight
+## The twelve
 
 | app | tap | hold | bezel |
 | --- | --- | --- | --- |
 | Clock | 12 h ⇄ 24 h | — | — |
 | Timer | start / pause | reset | ±10 s / 30 s / 60 s, or shift a running timer |
+| Intervals | start / stop | stop | pick a set (tabata, 30/15, 40/20, 45/15, 60/30, 60/60) |
 | Stopwatch | start / stop | lap while running, reset while stopped | — |
 | Tally | +1 | reset | ±1, for fixing a miscount |
 | Breathe | start / stop | stop | switch pattern (Box, 4-7-8, Calm, Deep) |
+| Sun | refresh location | forget location | next / sunrise / sunset / golden hour / daylight |
+| Compass | drop or clear a bearing | clear the bearing | nudge the bearing ±1° |
+| Reaction | arm, then tap on the cue | clear the best | see it ⇄ feel it |
 | Decide | roll | roll | d6 / d20 / d100 / coin / yes-no |
 | Metronome | start / stop | back to 96 bpm | ±2 bpm |
 | Torch | light on / off | off | five brightness steps |
 
 Holding the dial itself shows the build stamp.
+
+**Timer and Intervals keep running when you leave them.** Both derive their
+state from a timestamp rather than from frame counting, and both arm a real
+timeout for the next cue — `frame()` only ticks for whichever app is on screen,
+so a countdown that relied on it would go quiet the moment you went back to the
+dial. Their icons pulse there while they run.
+
+**Sun** works out sunrise, solar noon, sunset and the golden hours from the
+NOAA sunrise equation — pure arithmetic, so it needs the network exactly never.
+It asks for a location once and caches it; the ring is a 24-hour dial with
+midnight at the bottom, the lit arc is daylight, the pale caps are the golden
+hours, and the dot is now. Accurate to a couple of minutes, which is all a
+wrist needs. Polar day and night are handled rather than dividing by nothing.
+
+**Compass** wants `deviceorientationabsolute` (Android) or
+`webkitCompassHeading` (iOS). Plain relative `deviceorientation` is ignored
+because it is not a compass. If nothing arrives in 2.2 s it says so instead of
+sitting on a dead rose.
+
+**Reaction** in *feel it* mode gives no visual cue at all — only the haptic. It
+is a genuinely different reflex, and a good use of a thing strapped to you.
 
 ## Layout
 

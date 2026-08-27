@@ -76,6 +76,53 @@
       <div class="sub" id="brHint">tap to begin</div>
     </section>
 
+    <!-- ─── intervals ─────────────────────────────────────────── -->
+    <section class="view" id="v-reps">
+      <div class="title">Intervals</div>
+      <div class="phase-tag" id="rpPhase">&nbsp;</div>
+      <div class="big" id="rpTime">30</div>
+      <div class="sub" id="rpSet">30 / 15 &times; 8</div>
+      <div class="sub2" id="rpHint">turn to pick &middot; tap to start</div>
+    </section>
+
+    <!-- ─── sun ───────────────────────────────────────────────── -->
+    <section class="view" id="v-sun">
+      <div class="title">Sun</div>
+      <svg class="sundial" id="sunDial" viewBox="0 0 200 200" aria-hidden="true">
+        <circle class="sd-track" cx="100" cy="100" r="80"/>
+        <path class="sd-day"  id="sdDay"  d=""/>
+        <path class="sd-gold" id="sdGoldA" d=""/>
+        <path class="sd-gold" id="sdGoldB" d=""/>
+        <circle class="sd-now" id="sdNow" cx="100" cy="20" r="3.4"/>
+      </svg>
+      <div class="sun-mid">
+        <div class="sun-label" id="snLabel">locating</div>
+        <div class="big sun-time" id="snTime">--:--</div>
+        <div class="sub" id="snIn">&nbsp;</div>
+      </div>
+    </section>
+
+    <!-- ─── compass ───────────────────────────────────────────── -->
+    <section class="view" id="v-compass">
+      <div class="title">Compass</div>
+      <svg class="rose" id="rose" viewBox="0 0 200 200" aria-hidden="true">
+        <g id="roseG"></g>
+        <path class="rose-mark" d="M100 8 L104.6 17 L95.4 17 Z"/>
+      </svg>
+      <div class="rose-mid">
+        <div class="big" id="cpDeg">---&deg;</div>
+        <div class="sub" id="cpCard">&nbsp;</div>
+      </div>
+    </section>
+
+    <!-- ─── reaction ──────────────────────────────────────────── -->
+    <section class="view" id="v-react">
+      <div class="title">Reaction</div>
+      <div class="big" id="rxOut">tap</div>
+      <div class="sub" id="rxHint">tap to arm</div>
+      <div class="sub2" id="rxBest">&nbsp;</div>
+    </section>
+
     <!-- ─── dice ──────────────────────────────────────────────── -->
     <section class="view" id="v-dice">
       <div class="title">Decide</div>
@@ -100,6 +147,7 @@
     </section>
 
     <div id="torchLight"></div>
+    <div id="rxFlash"></div>
 
     <button id="homeBtn" type="button" aria-label="Home">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
