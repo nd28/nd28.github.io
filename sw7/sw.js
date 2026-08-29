@@ -1,7 +1,8 @@
 /* SW7 offline shell. Bump CACHE on every deploy — the watch is often on a
    flaky Bluetooth tether, so a stale-but-working app beats a spinner. */
-const CACHE = 'sw7-v0.7.0';
-const SHELL = ['./', './index.html', './style.css', './app.js', './manifest.webmanifest', './icon.svg'];
+const CACHE = 'sw7-v0.8.0';
+const SHELL = ['./', './index.html', './style.css', './app.js', './manifest.webmanifest',
+               './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
 self.addEventListener('install', e => {
   // cache: 'reload' matters — Pages serves assets with max-age=600, so a plain

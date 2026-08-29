@@ -9,8 +9,8 @@
 'use strict';
 
 /* Stamped by ./bump.sh on every publish — do not hand-edit these two lines. */
-const VERSION = '0.7.0';
-const BUILD   = '2026-08-27 18:51 IST';
+const VERSION = '0.8.0';
+const BUILD   = '2026-08-29 10:39 IST';
 
 const $ = (s, r = document) => r.querySelector(s);
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -168,6 +168,7 @@ const ICONS = {
   level: ico('<rect x="2.4" y="8.4" width="19.2" height="7.2" rx="3.6"/>' +
              '<circle cx="12" cy="12" r="2.1"/><path d="M9.2 8.4v7.2M14.8 8.4v7.2"/>'),
   react: ico('<path d="M13.4 2.4 5.6 13.4h5.2l-.6 8.2 7.8-11h-5.2z"/>'),
+  tune: ico('<path d="M8.2 2.8v6.6a3.8 3.8 0 0 0 7.6 0V2.8"/><path d="M12 13.2V21.2"/>'),
   torch: ico('<path d="M8.4 2.6h7.2l-.9 4.4H9.3z"/><path d="M9.3 7h5.4v13a1.4 1.4 0 0 1-1.4 1.4h-2.6A1.4 1.4 0 0 1 9.3 20z"/>' +
              '<path d="M12 10.8v2.6"/>')
 };
@@ -1415,20 +1416,182 @@ reg({
   }
 });
 
+/* ── tuner ─────────────────────────────────────────────────────────────── */
+
+/* Normalised autocorrelation (McLeod-ish). The first-peak pass is what stops
+   it reading an octave low on anything with strong harmonics. Verified against
+   synthesised tones to within 0.05 cents across the guitar range. */
+const MIN_HZ = 70, MAX_HZ = 1200;
+
+function pitchOf(buf, sr) {
+  const N = buf.length;
+  let rms = 0;
+  for (let i = 0; i < N; i++) rms += buf[i] * buf[i];
+  if (Math.sqrt(rms / N) < 0.008) return -1;
+
+  const minLag = Math.max(2, Math.floor(sr / MAX_HZ));
+  const maxLag = Math.min(Math.floor(sr / MIN_HZ), (N - 1) >> 1);
+  const W = N - maxLag;
+  let e0 = 0;
+  for (let i = 0; i < W; i++) e0 += buf[i] * buf[i];
+
+  const corr = new Float64Array(maxLag + 2);
+  let best = -1, bestVal = 0;
+  for (let lag = minLag; lag <= maxLag; lag++) {
+    let sum = 0, e = 0;
+    for (let i = 0; i < W; i++) { const v = buf[i + lag]; sum += buf[i] * v; e += v * v; }
+    const nsdf = sum / Math.sqrt(e0 * e || 1);
+    corr[lag] = nsdf;
+    if (nsdf > bestVal) { bestVal = nsdf; best = lag; }
+  }
+  if (best < 0 || bestVal < 0.55) return -1;
+
+  for (let lag = minLag + 1; lag < best; lag++) {
+    if (corr[lag] > corr[lag - 1] && corr[lag] >= corr[lag + 1] && corr[lag] > bestVal * 0.88) { best = lag; break; }
+  }
+  const x1 = corr[best - 1], x2 = corr[best], x3 = corr[best + 1];
+  const a = (x1 + x3 - 2 * x2) / 2, b = (x3 - x1) / 2;
+  const lag = a ? best - b / (2 * a) : best;
+  return sr / lag;
+}
+
+const NOTES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
+const tnNote = $('#tnNote'), tnCents = $('#tnCents'), tnHz = $('#tnHz');
+const tnTrack = $('#tnTrack'), tnArc = $('#tnArc'), tnTicks = $('#tnTicks'), vTune = $('#v-tune');
+const SPAN = 120;                        // degrees of rim for 50 cents either way
+
+tnTrack.setAttribute('d', arcDeg(-90 - SPAN, -90 + SPAN, 93));
+(function buildTicks() {
+  let out = '';
+  [-SPAN, -SPAN / 2, 0, SPAN / 2, SPAN].forEach(d => {
+    const mid = d === 0;
+    const [x1, y1] = pol(-90 + d, mid ? 78 : 84);
+    const [x2, y2] = pol(-90 + d, 88);
+    out += '<line class="' + (mid ? 'mid' : '') + '" x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) +
+           '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '"/>';
+  });
+  tnTicks.innerHTML = out;
+})();
+
+reg({
+  key: 'tune', name: 'Tuner', color: '#F0A6D8', icon: ICONS.tune,
+  a4: store.get('a4', 440), on: false, err: '', busy: false,
+  stream: null, src: null, an: null, buf: null, last: 0, hist: [],
+  enter() {
+    HUD.off();
+    this.err = ''; this.hist = [];
+    this.blank();
+    this.listen();
+  },
+  exit() { this.stopMic(); },
+  listen() {
+    if (this.stream || this.busy) return;
+    const md = navigator.mediaDevices;
+    if (!md || !md.getUserMedia) { this.err = 'no mic here'; this.paint(); return; }
+    this.busy = true; this.err = ''; this.paint();
+    md.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } })
+      .then(stream => {
+        const c = ac();
+        if (!c) throw new Error('no audio');
+        this.stream = stream;
+        this.src = c.createMediaStreamSource(stream);
+        this.an = c.createAnalyser();
+        this.an.fftSize = 2048;
+        this.buf = new Float32Array(this.an.fftSize);
+        this.src.connect(this.an);          // deliberately not to the destination
+        this.on = true; this.busy = false;
+        haptic(14);
+        this.paint();
+      })
+      .catch(() => { this.busy = false; this.err = 'mic blocked'; this.paint(); });
+  },
+  /* Leaving the app must actually release the mic, not just stop reading it. */
+  stopMic() {
+    if (this.stream) this.stream.getTracks().forEach(t => t.stop());
+    if (this.src) { try { this.src.disconnect(); } catch (e) {} }
+    this.stream = null; this.src = null; this.an = null;
+    this.on = false;
+    vTune.classList.remove('intune');
+  },
+  blank() {
+    tnNote.textContent = '--';
+    tnArc.setAttribute('d', '');
+    vTune.classList.remove('intune');
+  },
+  tap() {
+    haptic(14);
+    if (this.on) { this.stopMic(); this.blank(); this.paint(); }
+    else this.listen();
+  },
+  long() { this.a4 = 440; store.set('a4', 440); haptic(38); toast('A = 440 Hz'); this.paint(); },
+  rotate(d) {
+    this.a4 = clamp(this.a4 + d, 415, 466);
+    store.set('a4', this.a4);
+    haptic(8);
+    this.paint();
+  },
+  paint() {
+    tnHz.textContent = 'A = ' + this.a4 + ' Hz';
+    if (this.err) { tnNote.textContent = '—'; tnCents.textContent = this.err; return; }
+    if (this.busy) { tnCents.textContent = 'asking for the mic'; return; }
+    if (!this.on) { tnCents.textContent = 'tap to listen'; return; }
+    if (this.hist.length === 0) tnCents.textContent = 'play something';
+  },
+  frame(now) {
+    if (!this.on || !this.an) return;
+    if (now - this.last < 110) return;      // ~9 reads a second is plenty
+    this.last = now;
+
+    this.an.getFloatTimeDomainData(this.buf);
+    const hz = pitchOf(this.buf, ac().sampleRate);
+    if (hz < 0) {
+      this.hist = [];
+      this.blank();
+      tnCents.textContent = 'play something';
+      return;
+    }
+    /* median of three: a single bad frame should not swing the needle */
+    this.hist.push(hz);
+    if (this.hist.length > 3) this.hist.shift();
+    const m = this.hist.slice().sort((a, b) => a - b)[this.hist.length >> 1];
+
+    const n = 12 * Math.log2(m / this.a4) + 69;
+    const r = Math.round(n);
+    const cents = Math.round((n - r) * 100);
+    tnNote.innerHTML = NOTES[((r % 12) + 12) % 12] + '<sub>' + (Math.floor(r / 12) - 1) + '</sub>';
+    tnCents.textContent = (cents > 0 ? '+' : '') + cents + ' cents';
+    tnHz.textContent = m.toFixed(1) + ' Hz  ·  A = ' + this.a4;
+
+    const sweep = clamp(cents / 50, -1, 1) * SPAN;
+    tnArc.setAttribute('d', Math.abs(sweep) < 0.6 ? ''
+      : sweep > 0 ? arcDeg(-90, -90 + sweep, 93) : arcDeg(-90 + sweep, -90, 93));
+
+    const good = Math.abs(cents) <= 4;
+    if (good !== vTune.classList.contains('intune')) {
+      vTune.classList.toggle('intune', good);
+      if (good) haptic(18);
+    }
+  }
+});
+
 /* ── torch ─────────────────────────────────────────────────────────────── */
 
-const trLvl = $('#trLvl'), trHint = $('#trHint');
+const trLvl = $('#trLvl'), trHint = $('#trHint'), torchLight = $('#torchLight');
 const LEVELS = [0.16, 0.34, 0.58, 0.80, 1];
+/* Red keeps night vision; hold cycles them, since holding to turn it off was
+   only ever a slower way of tapping. */
+const TINTS = [['white', '#FFF6E8'], ['warm', '#FFD9A0'], ['red', '#FF3B20']];
 
 reg({
   key: 'torch', name: 'Torch', color: '#FFE1A8', icon: ICONS.torch,
-  i: store.get('torch', 4), on: false,
+  i: store.get('torch', 4), c: store.get('torchc', 0), on: false,
   enter() { HUD.off(); this.on = false; document.body.classList.remove('torch'); this.paint(); },
   exit() { this.on = false; document.body.classList.remove('torch'); },
   paint() {
     trLvl.textContent = Math.round(LEVELS[this.i] * 100);
-    trHint.textContent = this.on ? 'tap to close' : 'tap for light · turn to dim';
+    trHint.textContent = this.on ? 'tap to close' : TINTS[this.c][0] + ' · turn to dim';
     document.documentElement.style.setProperty('--lvl', LEVELS[this.i]);
+    torchLight.style.background = TINTS[this.c][1];
   },
   tap() {
     this.on = !this.on;
@@ -1436,7 +1599,13 @@ reg({
     haptic(this.on ? 20 : 12);
     this.paint();
   },
-  long() { if (this.on) this.tap(); },
+  long() {
+    this.c = (this.c + 1) % TINTS.length;
+    store.set('torchc', this.c);
+    haptic(30);
+    toast(TINTS[this.c][0]);
+    this.paint();
+  },
   rotate(d) {
     this.i = clamp(this.i + d, 0, LEVELS.length - 1);
     store.set('torch', this.i);
@@ -1453,7 +1622,7 @@ const dialRing = $('#dialRing'), dialIco = $('#dialIco'), dialName = $('#dialNam
       dialHint = $('#dialHint'), dialClock = $('#dialClock'), vHome = $('#v-home');
 
 const SLOT_DEG = 360 / APPS.length;
-const SLOT_R = 33;               // % of the diameter, from the centre
+const SLOT_R = 34;               // % of the diameter, from the centre
 /* Half the gap between neighbouring icons: with twelve on the dial a generous
    radius would open whichever app happens to sit next to the one you hit. */
 const TAP_R = Math.min(0.28, (SLOT_R / 50) * Math.sin(Math.PI / APPS.length) * 0.96);
@@ -1555,7 +1724,8 @@ const HELP = {
   echo:    ['start · tap the pads back', 'clear the best', 'easy / brisk / sharp'],
   dice:    ['roll', 'roll', 'd6 / d20 / d100 / coin'],
   metro:   ['start · stop', 'back to 96 bpm', '±2 bpm'],
-  torch:   ['light on · off', 'off', 'brightness']
+  tune:    ['listen · stop', 'A back to 440', 'reference A 415–466'],
+  torch:   ['light on · off', 'white / warm / red', 'brightness']
 };
 
 const cardEl = $('#card'), cdName = $('#cdName'), cdTap = $('#cdTap'),

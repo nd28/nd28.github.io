@@ -210,8 +210,8 @@ body.preview #caption {
   place-items: center;
 }
 .sico {
-  width: calc(var(--u) * 7);
-  height: calc(var(--u) * 7);
+  width: calc(var(--u) * 6.5);
+  height: calc(var(--u) * 6.5);
   color: #55506A;
   transform: rotate(calc(-1 * var(--rot, 0deg))) scale(.86);
   transition: transform .34s var(--ease), color .34s ease, opacity .34s ease;
@@ -346,6 +346,39 @@ body.preview #caption {
 }
 #mtBeat { letter-spacing: .5em; font-size: calc(var(--u) * 5); }
 #mtBeat b { color: var(--accent); font-weight: 400; }
+
+/* ── tuner ─────────────────────────────────────────────────────────────── */
+
+/* The rim is the meter: twelve o'clock is in tune, the arc grows clockwise for
+   sharp and anticlockwise for flat, ±50 cents over ±120°. */
+.tune {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+.tune path { fill: none; stroke-linecap: round; }
+.tn-track { stroke: #1D1830; stroke-width: 3; }
+.tn-arc { stroke: #F0A6D8; stroke-width: 4; }
+.tune line { stroke: #4A4166; stroke-width: 1.8; stroke-linecap: round; }
+.tune line.mid { stroke: var(--muted); stroke-width: 2.4; }
+#v-tune.intune .tn-arc { stroke: #9BE8A8; }
+#v-tune.intune line.mid { stroke: #9BE8A8; }
+
+.tune-mid {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#tnNote { font-size: calc(var(--u) * 24); }
+#tnNote sub {
+  font-size: .42em;
+  vertical-align: baseline;
+  color: var(--muted);
+  margin-left: .04em;
+}
+#v-tune .sub { margin-top: calc(var(--u) * 2); }
 
 /* ── torch ─────────────────────────────────────────────────────────────── */
 

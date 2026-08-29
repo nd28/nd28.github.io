@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -215,6 +215,21 @@
       <div class="big" id="mtBpm">96</div>
       <div class="sub"><span id="mtBeat">&middot; &middot; &middot; &middot;</span></div>
       <div class="sub2" id="mtHint">bpm &middot; turn the edge</div>
+    </section>
+
+    <!-- ─── tuner ─────────────────────────────────────────────── -->
+    <section class="view" id="v-tune">
+      <div class="title">Tuner</div>
+      <svg class="tune" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="tn-track" id="tnTrack" d=""/>
+        <path class="tn-arc" id="tnArc" d=""/>
+        <g id="tnTicks"></g>
+      </svg>
+      <div class="tune-mid">
+        <div class="big" id="tnNote">--</div>
+        <div class="sub" id="tnCents">&nbsp;</div>
+        <div class="sub2" id="tnHz">&nbsp;</div>
+      </div>
     </section>
 
     <!-- ─── torch ─────────────────────────────────────────────── -->

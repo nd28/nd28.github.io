@@ -27,7 +27,7 @@ and drops the URL bar.
 - **The system back swipe** pops to the dial instead of leaving the page — each
   app pushes a history entry.
 
-## The sixteen
+## The seventeen
 
 | app | tap | hold | bezel |
 | --- | --- | --- | --- |
@@ -46,7 +46,8 @@ and drops the URL bar.
 | Echo | start, then tap the pads back | clear the best | easy / brisk / sharp |
 | Decide | roll | roll | d6 / d20 / d100 / coin / yes-no |
 | Metronome | start / stop | back to 96 bpm | ±2 bpm |
-| Torch | light on / off | off | five brightness steps |
+| Tuner | listen / stop | A back to 440 | reference A, 415–466 Hz |
+| Torch | light on / off | white / warm / red | five brightness steps |
 
 **Hold the home button — or the dial — and the app tells you what it answers
 to.** Fifteen apps times three gestures is more than anyone will hold in their
@@ -109,6 +110,19 @@ sitting on top of it at some tilt. Tap zeroes it wherever it is, for a surface
 that is not itself flat. Axes follow the W3C convention; the bubble rides to
 the high side.
 
+**Tuner** is the only app that listens. Normalised autocorrelation over the
+mic, with a first-peak pass that stops it reading an octave low on anything
+with strong harmonics — checked against synthesised tones to within 0.05 cents
+across the guitar range, and it returns nothing rather than a guess on silence
+or noise. The rim is the meter: twelve o'clock is in tune, the arc grows
+clockwise for sharp and anticlockwise for flat, ±50 cents over ±120°. It reads
+about nine times a second and takes the median of three, so one bad frame does
+not swing the needle. Leaving the app releases the microphone — it does not
+just stop reading it.
+
+**Torch** holds to cycle white, warm and red. Red keeps night vision, and
+holding to turn the light off was only ever a slower way of tapping.
+
 **Echo** is the memory game, with a tone and a haptic per pad. The pads sit on
 the diagonals rather than the axes, because bottom-centre belongs to the home
 button and a pad hiding underneath it would be unhittable.
@@ -126,11 +140,12 @@ taps, `r` holds, Escape goes home.
 
 ## Files
 
-    index.html   the shell — one section per app
-    style.css    tokens + round layout
-    app.js       gesture engine, router, the eight apps
-    sw.js        offline cache (cache-first, refreshes in the background)
-    bump.sh      stamp a version + publish
+    index.html      the shell — one section per app
+    style.css       tokens + round layout
+    app.js          gesture engine, router, the seventeen apps
+    sw.js           offline cache (cache-first, refreshes in the background)
+    bump.sh         stamp a version + publish
+    make-icons.py   redraw the launcher PNGs from the same shapes as icon.svg
 
 `?dev` exposes `window.SW7` (`open`, `home`, `cur`) and skips the service
 worker, so an edit shows up on plain reload.

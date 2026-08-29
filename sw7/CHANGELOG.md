@@ -1,5 +1,9 @@
 # SW7 changelog
 
+## 0.8.0 — 2026-08-29 10:39 IST
+
+New: Tuner — normalised autocorrelation over the mic, the rim as a cents meter, and it releases the mic on exit. Torch holds to cycle white/warm/red. Real PNG launcher icons so an installed SW7 looks like an app instead of a broken image.
+
 ## 0.7.0 — 2026-08-27 18:51 IST
 
 New: Weather — keyless Open-Meteo, the day's temperature drawn as a curve round the rim, last reading kept for when the watch is out of range. Stopwatch keeps every lap and the rim walks them. Breathe shows how long you have been at it. The title now sits above the view's own graphic instead of under it.
